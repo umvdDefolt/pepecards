@@ -9,39 +9,91 @@
     <style>
         /* CSS переменные для тем */
         :root {
+            /* Светлая тема (по умолчанию) */
             --tg-theme-bg-color: #ffffff;
             --tg-theme-text-color: #000000;
             --tg-theme-hint-color: #999999;
             --tg-theme-link-color: #2481cc;
             --tg-theme-button-color: #40a7e3;
             --tg-theme-button-text-color: #ffffff;
-            --bg-primary: var(--tg-theme-bg-color, #ffffff);
-            --bg-secondary: #f5f5f5;
+            
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
             --bg-card: #ffffff;
-            --text-primary: var(--tg-theme-text-color, #000000);
-            --text-secondary: #666666;
+            --text-primary: #2d3748;
+            --text-secondary: #718096;
             --accent-color: #8B5CF6;
             --accent-light: #A78BFA;
-            --border-color: #e0e0e0;
-            --shadow-color: rgba(0, 0, 0, 0.1);
+            --border-color: #e2e8f0;
+            --shadow-color: rgba(0, 0, 0, 0.08);
             --card-back: #8B5CF6;
-            --header-bg: rgba(255, 255, 255, 0.98);
+            --header-bg: rgba(255, 255, 255, 0.95);
             --footer-bg: #ffffff;
             --nav-bg: #ffffff;
             --nav-active: #8B5CF6;
-            --nav-inactive: #888888;
-            --rarity-common: #a0a0a0;
+            --nav-inactive: #a0aec0;
+            
+            /* Редкости */
+            --rarity-common: #9ca3af;
             --rarity-rare: #3b82f6;
             --rarity-epic: #8b5cf6;
             --rarity-legendary: #f59e0b;
             --rarity-mythic: #ef4444;
             --rarity-secret: #10b981;
+            
+            /* Статусы */
             --cooldown-normal: #ef4444;
             --cooldown-vip: #10b981;
-            --vip-gradient: linear-gradient(135deg, #f59e0b, #fbbf24, #fcd34d);
-            --rainbow: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);
+            --vip-gradient: linear-gradient(135deg, #f59e0b, #fbbf24);
+            --pepepremium-gradient: linear-gradient(135deg, #8b5cf6, #3b82f6, #10b981);
+            --rainbow: linear-gradient(90deg, #ef4444, #f59e0b, #10b981, #3b82f6, #8b5cf6);
+            
+            /* Админ/Премиум */
             --admin-color: #dc2626;
-            --premium-color: #f59e0b;
+            --premium-color: #8b5cf6;
+            
+            /* Снег */
+            --snow-color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Темно-фиолетовая тема */
+        .theme-dark-purple {
+            --bg-primary: #1a1a2e;
+            --bg-secondary: #16213e;
+            --bg-card: #0f3460;
+            --text-primary: #e2e8f0;
+            --text-secondary: #a0aec0;
+            --accent-color: #9d4edd;
+            --accent-light: #c77dff;
+            --border-color: #2d3748;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --card-back: #9d4edd;
+            --header-bg: rgba(26, 26, 46, 0.95);
+            --footer-bg: #1a1a2e;
+            --nav-bg: #1a1a2e;
+            --nav-active: #c77dff;
+            --nav-inactive: #718096;
+            --snow-color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* Ночная тема */
+        .theme-night {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #121212;
+            --bg-card: #1e1e2e;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --accent-color: #7c3aed;
+            --accent-light: #a78bfa;
+            --border-color: #2d3748;
+            --shadow-color: rgba(0, 0, 0, 0.4);
+            --card-back: #7c3aed;
+            --header-bg: rgba(10, 10, 15, 0.95);
+            --footer-bg: #0a0a0f;
+            --nav-bg: #0a0a0f;
+            --nav-active: #a78bfa;
+            --nav-inactive: #64748b;
+            --snow-color: rgba(255, 255, 255, 0.9);
         }
 
         /* Анимации */
@@ -101,9 +153,33 @@
             to { width: var(--progress); }
         }
 
-        @keyframes maintenancePulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+        @keyframes snowFall {
+            0% { transform: translateY(-10px) translateX(0); opacity: 1; }
+            100% { transform: translateY(100vh) translateX(20px); opacity: 0; }
+        }
+
+        @keyframes snowFall2 {
+            0% { transform: translateY(-10px) translateX(0); opacity: 1; }
+            100% { transform: translateY(100vh) translateX(-20px); opacity: 0; }
+        }
+
+        /* Снег на фоне */
+        .snow-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .snowflake {
+            position: absolute;
+            background: var(--snow-color);
+            border-radius: 50%;
+            pointer-events: none;
         }
 
         /* Общие стили */
@@ -112,16 +188,17 @@
             padding: 0;
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Segoe UI Emoji', sans-serif;
         }
 
         body {
             background-color: var(--bg-primary);
             color: var(--text-primary);
-            line-height: 1.6;
+            line-height: 1.5;
             overflow-x: hidden;
             min-height: 100vh;
-            padding-bottom: 80px;
+            padding-bottom: 70px;
+            position: relative;
         }
 
         /* Экран загрузки */
@@ -141,23 +218,23 @@
         }
 
         .loading-logo {
-            font-size: 4rem;
-            margin-bottom: 2rem;
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
             animation: bounce 1s infinite;
         }
 
         .loading-text {
             color: white;
-            font-size: 1.2rem;
-            margin-bottom: 2rem;
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
             text-align: center;
             padding: 0 20px;
         }
 
         .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(255, 255, 255, 0.3);
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
             border-top-color: white;
             border-radius: 50%;
             animation: spin 1s linear infinite;
@@ -170,9 +247,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57, #ff9ff3);
-            background-size: 600% 600%;
-            animation: gradientBG 15s ease infinite;
+            background: rgba(0, 0, 0, 0.95);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -180,40 +255,35 @@
             z-index: 9998;
             padding: 20px;
             text-align: center;
-        }
-
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            backdrop-filter: blur(10px);
         }
 
         .maintenance-content {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 40px 30px;
+            background: var(--bg-card);
+            padding: 30px 25px;
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            animation: maintenancePulse 2s infinite;
             max-width: 90%;
+            border: 2px solid var(--accent-color);
         }
 
         .maintenance-icon {
-            font-size: 4rem;
-            margin-bottom: 20px;
-            color: #ff6b6b;
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: var(--accent-color);
         }
 
         .maintenance-title {
-            font-size: 2rem;
+            font-size: 1.5rem;
             font-weight: 700;
-            margin-bottom: 15px;
-            color: #333;
+            margin-bottom: 10px;
+            color: var(--text-primary);
         }
 
         .maintenance-text {
-            font-size: 1.1rem;
-            color: #666;
-            line-height: 1.6;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
         }
 
         /* Шапка */
@@ -227,26 +297,26 @@
             -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--border-color);
             z-index: 1000;
-            padding: 15px 20px;
+            padding: 12px 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            height: 60px;
+            height: 56px;
         }
 
         .header-left {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
 
         .logo {
-            font-size: 1.6rem;
+            font-size: 1.4rem;
             font-weight: 700;
             color: var(--accent-color);
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             text-decoration: none;
         }
 
@@ -257,46 +327,36 @@
         .header-right {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .coins-display {
             display: flex;
             align-items: center;
-            gap: 6px;
-            background: linear-gradient(135deg, var(--accent-color), var(--accent-light));
-            color: white;
-            padding: 8px 12px;
+            gap: 5px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            padding: 6px 12px;
             border-radius: 20px;
             font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .add-coins-btn {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: var(--accent-color);
-            border: none;
-            color: white;
-            display: flex;
-            align-items: center;
+            font-size: 0.85rem;
+            border: 1px solid var(--border-color);
+            min-width: 100px;
             justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
         }
 
-        .add-coins-btn:hover {
-            transform: scale(1.1);
-            background: var(--accent-light);
+        .coins-display i {
+            color: #f59e0b;
         }
 
         /* Основной контент */
         .main-content {
-            margin-top: 60px;
-            padding: 20px;
+            margin-top: 56px;
+            padding: 16px;
             animation: fadeIn 0.5s ease;
-            min-height: calc(100vh - 140px);
+            min-height: calc(100vh - 126px);
+            position: relative;
+            z-index: 2;
         }
 
         /* Страницы */
@@ -311,40 +371,41 @@
 
         /* Главная страница */
         .main-page {
-            padding-top: 10px;
+            padding-top: 5px;
         }
 
         .greeting {
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
 
         .greeting h1 {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             margin-bottom: 5px;
             color: var(--accent-color);
         }
 
         .greeting p {
             color: var(--text-secondary);
-            font-size: 0.95rem;
+            font-size: 0.9rem;
         }
 
         .user-id {
             background: var(--bg-secondary);
-            padding: 6px 12px;
+            padding: 4px 10px;
             border-radius: 12px;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: var(--text-secondary);
-            margin-top: 8px;
+            margin-top: 6px;
             display: inline-block;
+            font-family: monospace;
         }
 
         .cooldown-section {
-            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
-            border-radius: 20px;
-            padding: 25px;
-            margin-bottom: 25px;
-            color: white;
+            background: linear-gradient(135deg, var(--bg-card), var(--bg-secondary));
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
             position: relative;
             overflow: hidden;
         }
@@ -355,43 +416,53 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 4px;
+            height: 3px;
             background: linear-gradient(90deg, var(--accent-color), var(--accent-light));
         }
 
         .cooldown-timer {
-            font-size: 2.5rem;
+            font-size: 2rem;
             font-weight: 800;
             text-align: center;
-            margin: 15px 0;
+            margin: 10px 0;
             font-family: 'Courier New', monospace;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
+            color: var(--text-primary);
         }
 
         .cooldown-text {
             text-align: center;
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .vip-badge, .premium-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-top: 8px;
+            animation: pulse 2s infinite;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
         }
 
         .vip-badge {
-            display: inline-block;
             background: var(--vip-gradient);
             color: #fff;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            margin-top: 10px;
-            animation: pulse 2s infinite;
-            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+        }
+
+        .premium-badge {
+            background: var(--pepepremium-gradient);
+            color: #fff;
         }
 
         .open-card-section {
-            background: var(--bg-secondary);
-            border-radius: 20px;
-            padding: 25px;
-            text-align: center;
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 20px;
         }
 
         .open-card-btn {
@@ -399,39 +470,24 @@
             color: white;
             border: none;
             width: 100%;
-            padding: 20px;
-            border-radius: 15px;
-            font-size: 1.3rem;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 1.1rem;
             font-weight: 700;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
-            margin: 20px 0;
+            gap: 10px;
+            margin: 15px 0;
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
         }
 
-        .open-card-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s;
-        }
-
-        .open-card-btn:hover::before {
-            left: 100%;
-        }
-
         .open-card-btn:hover:not(:disabled) {
             transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4);
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.4);
         }
 
         .open-card-btn:active:not(:disabled) {
@@ -441,36 +497,104 @@
         .open-card-btn:disabled {
             opacity: 0.6;
             cursor: not-allowed;
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
         }
 
         .rewards-preview {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-top: 20px;
+            gap: 12px;
+            margin-top: 15px;
         }
 
         .reward-item {
-            background: var(--bg-primary);
-            padding: 15px;
+            background: var(--bg-secondary);
+            padding: 12px;
             border-radius: 12px;
             text-align: center;
-            transition: transform 0.3s ease;
-        }
-
-        .reward-item:hover {
-            transform: translateY(-3px);
+            border: 1px solid var(--border-color);
         }
 
         .reward-icon {
-            font-size: 1.8rem;
-            margin-bottom: 8px;
+            font-size: 1.5rem;
+            margin-bottom: 6px;
             color: var(--accent-color);
         }
 
         .reward-text {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: var(--text-secondary);
+        }
+
+        /* Админ панель */
+        .admin-section {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 20px;
+            border: 2px solid var(--admin-color);
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .admin-section h2 {
+            color: var(--admin-color);
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .admin-controls {
+            display: grid;
+            gap: 12px;
+        }
+
+        .admin-control-group {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 12px;
+        }
+
+        .admin-control-group h3 {
+            font-size: 1rem;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .admin-input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+
+        .admin-btn {
+            width: 100%;
+            padding: 10px;
+            border-radius: 10px;
+            border: none;
+            background: var(--admin-color);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .admin-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .admin-btn.success {
+            background: #10b981;
         }
 
         /* Инвентарь */
@@ -478,40 +602,42 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .inventory-header h1 {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             color: var(--accent-color);
         }
 
         .total-cards {
             background: var(--bg-secondary);
-            padding: 8px 15px;
-            border-radius: 15px;
+            padding: 6px 12px;
+            border-radius: 12px;
             font-weight: 600;
+            font-size: 0.85rem;
+            border: 1px solid var(--border-color);
         }
 
         .filters-container {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .filters-scroll {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             overflow-x: auto;
-            padding-bottom: 10px;
+            padding-bottom: 8px;
             -webkit-overflow-scrolling: touch;
         }
 
         .filter-btn {
-            padding: 10px 18px;
+            padding: 8px 14px;
             border-radius: 20px;
-            border: 2px solid var(--border-color);
+            border: 1px solid var(--border-color);
             background: var(--bg-secondary);
             color: var(--text-primary);
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 600;
             white-space: nowrap;
             cursor: pointer;
@@ -532,76 +658,51 @@
         .cards-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
+            gap: 12px;
+        }
+
+        @media (min-width: 768px) {
+            .cards-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
         }
 
         .card-item {
             position: relative;
-            border-radius: 15px;
+            border-radius: 12px;
             overflow: hidden;
             background: var(--bg-card);
-            box-shadow: 0 5px 15px var(--shadow-color);
+            box-shadow: 0 4px 12px var(--shadow-color);
             cursor: pointer;
             transition: all 0.3s ease;
-            border: 2px solid transparent;
+            border: 1px solid var(--border-color);
         }
 
         .card-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px var(--shadow-color);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px var(--shadow-color);
         }
 
         .card-item.favorite {
             border-color: #f59e0b;
         }
 
-        .card-item::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
-            background-size: 200% 100%;
-            animation: shimmer 2s infinite linear;
-            pointer-events: none;
-            opacity: 0;
-        }
-
-        .card-item.rarity-mythic::before {
-            opacity: 0.3;
-            background: linear-gradient(45deg, transparent 30%, rgba(239, 68, 68, 0.3) 50%, transparent 70%);
-        }
-
-        .card-item.rarity-legendary::before {
-            opacity: 0.3;
-            background: linear-gradient(45deg, transparent 30%, rgba(245, 158, 11, 0.3) 50%, transparent 70%);
-        }
-
-        .card-item.rarity-secret::before {
-            opacity: 0.5;
-            background: var(--rainbow);
-            background-size: 400% 400%;
-            animation: shimmer 3s infinite linear;
-        }
-
         .card-image {
-            height: 150px;
+            height: 140px;
             background-size: cover;
             background-position: center;
             background-color: var(--bg-secondary);
         }
 
         .card-info {
-            padding: 15px;
+            padding: 12px;
             position: relative;
         }
 
         .card-name {
-            font-size: 1rem;
-            font-weight: 700;
-            margin-bottom: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 6px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -609,11 +710,11 @@
 
         .card-rarity {
             display: inline-block;
-            padding: 4px 10px;
+            padding: 3px 8px;
             border-radius: 10px;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 700;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .rarity-common .card-rarity {
@@ -645,32 +746,34 @@
 
         .rarity-secret .card-rarity {
             background: var(--rainbow);
+            background-size: 200% 200%;
             color: white;
-            animation: rarityGlow 1s infinite;
+            animation: shimmer 2s infinite linear, rarityGlow 1s infinite;
         }
 
         .favorite-btn {
             position: absolute;
-            top: 10px;
-            right: 10px;
-            width: 36px;
-            height: 36px;
+            top: 8px;
+            right: 8px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(0, 0, 0, 0.5);
             border: none;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #f59e0b;
-            font-size: 1.1rem;
+            color: #fff;
+            font-size: 1rem;
             cursor: pointer;
             transition: all 0.3s ease;
             z-index: 2;
+            backdrop-filter: blur(5px);
         }
 
         .favorite-btn:hover {
+            background: rgba(0, 0, 0, 0.7);
             transform: scale(1.1);
-            background: white;
         }
 
         .favorite-btn.active {
@@ -680,37 +783,39 @@
 
         .card-count {
             position: absolute;
-            top: 10px;
-            left: 10px;
+            top: 8px;
+            left: 8px;
             background: rgba(0, 0, 0, 0.7);
             color: white;
-            padding: 4px 8px;
+            padding: 3px 6px;
             border-radius: 10px;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: 600;
             z-index: 2;
+            backdrop-filter: blur(5px);
         }
 
         /* Магазин */
         .shop-tabs {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 8px;
+            margin-bottom: 15px;
             overflow-x: auto;
-            padding-bottom: 10px;
+            padding-bottom: 8px;
         }
 
         .shop-tab {
-            padding: 12px 20px;
-            border-radius: 15px;
+            padding: 10px 16px;
+            border-radius: 12px;
             background: var(--bg-secondary);
-            border: none;
+            border: 1px solid var(--border-color);
             color: var(--text-primary);
             font-weight: 600;
             white-space: nowrap;
             cursor: pointer;
             transition: all 0.3s ease;
             flex-shrink: 0;
+            font-size: 0.9rem;
         }
 
         .shop-tab:hover {
@@ -720,218 +825,139 @@
         .shop-tab.active {
             background: var(--accent-color);
             color: white;
+            border-color: var(--accent-color);
         }
 
         .shop-items {
             display: grid;
-            gap: 15px;
+            gap: 12px;
         }
 
         .shop-item {
             background: var(--bg-card);
-            border-radius: 15px;
-            padding: 20px;
-            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px solid var(--border-color);
             transition: all 0.3s ease;
         }
 
         .shop-item:hover {
-            transform: translateY(-3px);
+            transform: translateY(-2px);
             border-color: var(--accent-color);
-            box-shadow: 0 10px 20px var(--shadow-color);
+            box-shadow: 0 8px 20px var(--shadow-color);
         }
 
         .shop-item-header {
             display: flex;
             align-items: center;
-            gap: 15px;
-            margin-bottom: 15px;
+            gap: 12px;
+            margin-bottom: 12px;
         }
 
         .shop-item-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 15px;
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
             background: linear-gradient(135deg, var(--accent-color), var(--accent-light));
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             color: white;
+            flex-shrink: 0;
         }
 
         .shop-item-title {
             flex: 1;
+            min-width: 0;
         }
 
         .shop-item-name {
-            font-size: 1.2rem;
-            font-weight: 700;
-            margin-bottom: 5px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 4px;
         }
 
         .shop-item-desc {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: var(--text-secondary);
+            line-height: 1.4;
         }
 
         .shop-item-price {
             display: flex;
             align-items: center;
             gap: 5px;
-            font-size: 1.3rem;
+            font-size: 1.1rem;
             font-weight: 700;
             color: var(--accent-color);
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
         .shop-item-btn {
             width: 100%;
-            padding: 12px;
-            border-radius: 12px;
+            padding: 10px;
+            border-radius: 10px;
             border: none;
             background: linear-gradient(135deg, var(--accent-color), var(--accent-light));
             color: white;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
+            font-size: 0.9rem;
         }
 
         .shop-item-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(139, 92, 246, 0.3);
+            opacity: 0.9;
+            transform: translateY(-1px);
         }
 
         .shop-item-btn:active {
             transform: translateY(0);
         }
 
-        /* Персонализация */
-        .customization-items {
-            display: grid;
-            gap: 15px;
+        .shop-item-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
-        .customization-item {
-            background: var(--bg-card);
-            border-radius: 15px;
-            padding: 20px;
-            border: 2px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            transition: all 0.3s ease;
-        }
-
-        .customization-item:hover {
-            border-color: var(--accent-color);
-        }
-
-        .customization-item.equipped {
-            border-color: var(--accent-color);
-            background: linear-gradient(135deg, var(--bg-card), rgba(139, 92, 246, 0.1));
-        }
-
-        .customization-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            flex: 1;
-        }
-
-        .customization-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
-            background: var(--bg-secondary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            color: var(--accent-color);
-        }
-
-        .customization-details h4 {
-            font-size: 1.1rem;
-            margin-bottom: 5px;
-        }
-
-        .customization-details p {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-        }
-
-        .customization-price {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--accent-color);
-            margin-right: 10px;
-        }
-
-        .customization-btn {
-            padding: 8px 15px;
-            border-radius: 10px;
-            border: 2px solid var(--accent-color);
-            background: transparent;
-            color: var(--accent-color);
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            min-width: 90px;
-        }
-
-        .customization-btn:hover {
-            background: var(--accent-color);
-            color: white;
-        }
-
-        .customization-btn.equipped {
-            background: var(--accent-color);
-            color: white;
-        }
-
-        .customization-btn.buy {
-            border-color: #10b981;
-            color: #10b981;
-        }
-
-        .customization-btn.buy:hover {
+        .shop-item-btn.equipped {
             background: #10b981;
-            color: white;
         }
 
         /* Лидерборд */
         .leaderboard-header {
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
 
         .leaderboard-header h1 {
-            font-size: 2rem;
+            font-size: 1.5rem;
             color: var(--accent-color);
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .leaderboard-tabs {
             display: flex;
             justify-content: center;
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 8px;
+            margin-bottom: 15px;
         }
 
         .leaderboard-tab {
-            padding: 10px 20px;
+            padding: 8px 16px;
             border-radius: 20px;
             background: var(--bg-secondary);
-            border: 2px solid transparent;
+            border: 1px solid var(--border-color);
             color: var(--text-primary);
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
+            font-size: 0.85rem;
         }
 
         .leaderboard-tab:hover {
-            border-color: var(--border-color);
+            border-color: var(--accent-color);
         }
 
         .leaderboard-tab.active {
@@ -943,35 +969,36 @@
         .leaderboard-list {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
         }
 
         .leaderboard-item {
             background: var(--bg-card);
-            border-radius: 15px;
-            padding: 15px 20px;
+            border-radius: 12px;
+            padding: 12px 16px;
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
             transition: all 0.3s ease;
             cursor: pointer;
+            border: 1px solid var(--border-color);
         }
 
         .leaderboard-item:hover {
-            transform: translateX(5px);
-            box-shadow: 0 5px 15px var(--shadow-color);
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px var(--shadow-color);
         }
 
         .leaderboard-item.top-3 {
-            background: linear-gradient(135deg, var(--bg-card), rgba(139, 92, 246, 0.1));
             border: 2px solid var(--accent-color);
         }
 
         .leaderboard-rank {
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             font-weight: 800;
-            min-width: 40px;
+            min-width: 35px;
             text-align: center;
+            flex-shrink: 0;
         }
 
         .rank-1 .leaderboard-rank {
@@ -987,13 +1014,14 @@
         }
 
         .leaderboard-avatar {
-            width: 50px;
-            height: 50px;
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
             background: var(--bg-secondary);
             background-size: cover;
             background-position: center;
             flex-shrink: 0;
+            border: 2px solid var(--accent-color);
         }
 
         .leaderboard-info {
@@ -1002,35 +1030,36 @@
         }
 
         .leaderboard-name {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 600;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             flex-wrap: wrap;
         }
 
         .username-suffix {
             background: linear-gradient(135deg, var(--accent-color), var(--accent-light));
             color: white;
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-size: 0.75rem;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-size: 0.7rem;
             font-weight: 600;
         }
 
         .leaderboard-stats {
             display: flex;
-            gap: 15px;
-            font-size: 0.9rem;
+            gap: 12px;
+            font-size: 0.8rem;
             color: var(--text-secondary);
+            flex-wrap: wrap;
         }
 
         .leaderboard-stat {
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 4px;
         }
 
         .leaderboard-value {
@@ -1041,117 +1070,126 @@
         /* Профиль */
         .profile-header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             position: relative;
         }
 
         .profile-avatar-container {
             position: relative;
             display: inline-block;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
         .profile-avatar {
-            width: 100px;
-            height: 100px;
+            width: 90px;
+            height: 90px;
             border-radius: 50%;
             background: var(--bg-secondary);
             background-size: cover;
             background-position: center;
-            border: 4px solid var(--accent-color);
+            border: 3px solid var(--accent-color);
             position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .profile-frame {
             position: absolute;
-            top: -10px;
-            left: -10px;
-            right: -10px;
-            bottom: -10px;
-            border: 3px solid transparent;
+            top: -8px;
+            left: -8px;
+            right: -8px;
+            bottom: -8px;
+            border: 2px solid transparent;
             border-radius: 50%;
             pointer-events: none;
         }
 
         .profile-name {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             font-weight: 700;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 8px;
             flex-wrap: wrap;
         }
 
         .profile-title {
             background: linear-gradient(135deg, var(--accent-color), var(--accent-light));
             color: white;
-            padding: 5px 15px;
+            padding: 4px 12px;
             border-radius: 20px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 600;
+            margin-bottom: 8px;
+            display: inline-block;
         }
 
         .profile-id {
             background: var(--bg-secondary);
-            padding: 5px 12px;
-            border-radius: 15px;
-            font-size: 0.85rem;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
             color: var(--text-secondary);
+            font-family: monospace;
         }
 
         .profile-stats {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-bottom: 25px;
+            gap: 12px;
+            margin-bottom: 20px;
         }
 
         .profile-stat {
             background: var(--bg-card);
-            border-radius: 15px;
-            padding: 20px;
+            border-radius: 12px;
+            padding: 16px;
             text-align: center;
-            transition: transform 0.3s ease;
+            border: 1px solid var(--border-color);
         }
 
         .profile-stat:hover {
-            transform: translateY(-3px);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--shadow-color);
         }
 
         .stat-value {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             font-weight: 800;
             color: var(--accent-color);
-            margin-bottom: 5px;
+            margin-bottom: 4px;
         }
 
         .stat-label {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: var(--text-secondary);
         }
 
         .level-progress {
             background: var(--bg-secondary);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 25px;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
         }
 
         .level-info {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             font-weight: 600;
+            font-size: 0.9rem;
         }
 
         .level-bar {
-            height: 12px;
+            height: 10px;
             background: var(--border-color);
-            border-radius: 6px;
+            border-radius: 5px;
             overflow: hidden;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
         }
 
         .level-fill {
@@ -1176,481 +1214,163 @@
 
         .level-exp {
             text-align: right;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: var(--text-secondary);
         }
 
         .favorite-card-section {
-            background: var(--bg-secondary);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 25px;
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
         }
 
         .favorite-card-section h3 {
-            font-size: 1.2rem;
-            margin-bottom: 15px;
+            font-size: 1.1rem;
+            margin-bottom: 12px;
             color: var(--accent-color);
         }
 
         .favorite-card-preview {
-            background: var(--bg-card);
-            border-radius: 15px;
-            padding: 15px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 12px;
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
             cursor: pointer;
             transition: all 0.3s ease;
         }
 
         .favorite-card-preview:hover {
-            transform: translateY(-3px);
+            transform: translateY(-2px);
         }
 
         .favorite-card-image {
-            width: 80px;
-            height: 80px;
-            border-radius: 12px;
-            background: var(--bg-secondary);
+            width: 70px;
+            height: 70px;
+            border-radius: 10px;
+            background: var(--bg-primary);
             background-size: cover;
             background-position: center;
             flex-shrink: 0;
+            border: 1px solid var(--border-color);
+        }
+
+        .favorite-card-info {
+            flex: 1;
+            min-width: 0;
         }
 
         .favorite-card-info h4 {
-            font-size: 1.1rem;
-            margin-bottom: 5px;
+            font-size: 1rem;
+            margin-bottom: 4px;
         }
 
         .favorite-card-rarity {
             display: inline-block;
             padding: 3px 8px;
             border-radius: 10px;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 600;
             color: white;
         }
 
-        /* Админ панель */
-        .admin-section {
-            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
-            border-radius: 20px;
-            padding: 25px;
-            color: white;
-            margin-bottom: 25px;
-        }
-
-        .admin-section h2 {
-            color: white;
-            margin-bottom: 20px;
-            font-size: 1.5rem;
-        }
-
-        .admin-section h2 i {
-            color: var(--admin-color);
-        }
-
-        .admin-controls {
+        /* Кнопки доната в профиле */
+        .donate-buttons {
             display: grid;
-            gap: 15px;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-top: 20px;
         }
 
-        .admin-control-group {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            padding: 15px;
-        }
-
-        .admin-control-group h3 {
-            font-size: 1.1rem;
-            margin-bottom: 10px;
-            color: white;
-        }
-
-        .admin-input {
-            width: 100%;
-            padding: 12px;
-            border-radius: 10px;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            font-size: 1rem;
-            margin-bottom: 10px;
-        }
-
-        .admin-input::placeholder {
-            color: rgba(255, 255, 255, 0.5);
-        }
-
-        .admin-btn {
-            width: 100%;
-            padding: 12px;
-            border-radius: 10px;
+        .donate-profile-btn {
+            padding: 14px;
+            border-radius: 12px;
             border: none;
-            background: var(--admin-color);
-            color: white;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin-bottom: 5px;
-        }
-
-        .admin-btn:hover {
-            background: #b91c1c;
-            transform: translateY(-2px);
-        }
-
-        .admin-btn.success {
-            background: #10b981;
-        }
-
-        .admin-btn.success:hover {
-            background: #0da271;
-        }
-
-        /* Донат модалка */
-        .donate-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
             display: flex;
-            justify-content: center;
             align-items: center;
-            z-index: 2000;
-            padding: 20px;
+            justify-content: center;
+            gap: 10px;
+            font-size: 0.95rem;
         }
 
-        .donate-content {
+        .donate-coins-btn {
+            background: linear-gradient(135deg, #f59e0b, #fbbf24);
+            color: white;
+        }
+
+        .donate-premium-btn {
+            background: var(--pepepremium-gradient);
+            color: white;
+        }
+
+        .donate-profile-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .donate-profile-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Выбор темы */
+        .theme-selector {
             background: var(--bg-card);
-            border-radius: 20px;
-            padding: 30px;
-            max-width: 400px;
-            width: 100%;
-            text-align: center;
-            animation: fadeIn 0.3s ease;
+            border-radius: 16px;
+            padding: 16px;
+            margin-top: 20px;
+            border: 1px solid var(--border-color);
         }
 
-        .donate-icon {
-            font-size: 3rem;
-            color: var(--accent-color);
-            margin-bottom: 20px;
-        }
-
-        .donate-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: 15px;
+        .theme-selector h3 {
+            font-size: 1.1rem;
+            margin-bottom: 12px;
             color: var(--accent-color);
         }
 
-        .donate-text {
-            color: var(--text-secondary);
-            margin-bottom: 25px;
-            line-height: 1.6;
+        .theme-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
         }
 
-        .donate-options {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .donate-option {
+        .theme-option {
             background: var(--bg-secondary);
-            border-radius: 15px;
-            padding: 20px;
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
             border: 2px solid transparent;
         }
 
-        .donate-option:hover {
+        .theme-option:hover {
             border-color: var(--accent-color);
-            transform: translateY(-3px);
         }
 
-        .donate-option.selected {
+        .theme-option.active {
             border-color: var(--accent-color);
-            background: linear-gradient(135deg, var(--bg-secondary), rgba(139, 92, 246, 0.1));
-        }
-
-        .donate-option-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 10px;
-        }
-
-        .donate-option-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
             background: var(--accent-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.2rem;
-        }
-
-        .donate-option-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            flex: 1;
-            text-align: left;
-        }
-
-        .donate-option-price {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--accent-color);
-        }
-
-        .donate-option-desc {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            text-align: left;
-        }
-
-        .donate-buttons {
-            display: flex;
-            gap: 10px;
-        }
-
-        .donate-btn {
-            flex: 1;
-            padding: 15px;
-            border-radius: 12px;
-            border: none;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .donate-btn.primary {
-            background: linear-gradient(135deg, var(--accent-color), var(--accent-light));
             color: white;
         }
 
-        .donate-btn.primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(139, 92, 246, 0.3);
-        }
-
-        .donate-btn.secondary {
-            background: var(--bg-secondary);
-            color: var(--text-primary);
-        }
-
-        .donate-btn.secondary:hover {
-            background: var(--border-color);
-        }
-
-        /* Мини профиль */
-        .mini-profile-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-            padding: 20px;
-        }
-
-        .mini-profile-content {
-            background: var(--bg-card);
-            border-radius: 20px;
-            padding: 30px;
-            max-width: 400px;
-            width: 100%;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .mini-profile-header {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-
-        .mini-profile-avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: var(--bg-secondary);
-            background-size: cover;
-            background-position: center;
-            margin: 0 auto 15px;
-            border: 3px solid var(--accent-color);
-        }
-
-        .mini-profile-name {
+        .theme-option i {
             font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            flex-wrap: wrap;
+            margin-bottom: 8px;
         }
 
-        .mini-profile-stats {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .mini-profile-stat {
-            background: var(--bg-secondary);
-            border-radius: 12px;
-            padding: 15px;
-            text-align: center;
-        }
-
-        .mini-profile-stat-value {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--accent-color);
-            margin-bottom: 5px;
-        }
-
-        .mini-profile-stat-label {
+        .theme-option span {
             font-size: 0.85rem;
-            color: var(--text-secondary);
-        }
-
-        .mini-profile-favorite {
-            background: var(--bg-secondary);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 25px;
-        }
-
-        .mini-profile-favorite h4 {
-            font-size: 1.1rem;
-            margin-bottom: 15px;
-            color: var(--accent-color);
-        }
-
-        .favorite-card-display {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .favorite-card-display-image {
-            width: 70px;
-            height: 70px;
-            border-radius: 10px;
-            background: var(--bg-secondary);
-            background-size: cover;
-            background-position: center;
-            flex-shrink: 0;
-        }
-
-        .favorite-card-display-info h5 {
-            font-size: 1.1rem;
-            margin-bottom: 5px;
-        }
-
-        .favorite-card-display-rarity {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 10px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: white;
-        }
-
-        .mini-profile-close {
-            width: 100%;
-            padding: 15px;
-            border-radius: 12px;
-            border: none;
-            background: var(--accent-color);
-            color: white;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .mini-profile-close:hover {
-            background: var(--accent-light);
-        }
-
-        /* Нижнее меню */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: var(--nav-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-top: 1px solid var(--border-color);
-            z-index: 1000;
-            padding: 10px 20px;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-decoration: none;
-            color: var(--nav-inactive);
-            transition: all 0.3s ease;
-            padding: 10px 15px;
-            border-radius: 15px;
-            min-width: 60px;
-        }
-
-        .nav-item:hover {
-            color: var(--nav-active);
-            background: var(--bg-secondary);
-        }
-
-        .nav-item.active {
-            color: var(--nav-active);
-            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(167, 139, 250, 0.1));
-        }
-
-        .nav-icon {
-            font-size: 1.4rem;
-            margin-bottom: 5px;
-        }
-
-        .nav-label {
-            font-size: 0.7rem;
             font-weight: 600;
         }
 
-        .nav-center {
-            background: linear-gradient(135deg, var(--accent-color), var(--accent-light));
-            color: white;
-            padding: 12px;
-            border-radius: 50%;
-            transform: translateY(-10px);
-            box-shadow: 0 5px 20px rgba(139, 92, 246, 0.4);
-        }
-
-        .nav-center .nav-icon {
-            margin-bottom: 0;
-        }
-
-        /* Анимация получения карты */
-        .card-reveal-modal {
+        /* Модальное окно доната */
+        .donate-modal {
             position: fixed;
             top: 0;
             left: 0;
@@ -1662,19 +1382,348 @@
             align-items: center;
             z-index: 2000;
             padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .donate-content {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 25px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            animation: fadeIn 0.3s ease;
+            border: 2px solid var(--accent-color);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .donate-icon {
+            font-size: 2.5rem;
+            color: var(--accent-color);
+            margin-bottom: 15px;
+        }
+
+        .donate-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--accent-color);
+        }
+
+        .donate-text {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            line-height: 1.5;
+            font-size: 0.9rem;
+        }
+
+        .donate-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .donate-option {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .donate-option:hover {
+            border-color: var(--accent-color);
+            transform: translateY(-2px);
+        }
+
+        .donate-option.selected {
+            border-color: var(--accent-color);
+            background: linear-gradient(135deg, var(--bg-secondary), rgba(139, 92, 246, 0.1));
+        }
+
+        .donate-option-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .donate-option-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .donate-option-title {
+            font-size: 1rem;
+            font-weight: 600;
+            flex: 1;
+            text-align: left;
+        }
+
+        .donate-option-price {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--accent-color);
+        }
+
+        .donate-option-desc {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-align: left;
+            line-height: 1.4;
+        }
+
+        .donate-input-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .donate-input-group label {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .donate-input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .donate-price-display {
+            background: var(--bg-secondary);
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 15px;
+            font-weight: 600;
+            color: var(--accent-color);
+            font-size: 1.1rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .donate-buttons-modal {
+            display: flex;
+            gap: 10px;
+        }
+
+        .donate-btn {
+            flex: 1;
+            padding: 14px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .donate-btn.primary {
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-light));
+            color: white;
+        }
+
+        .donate-btn.primary:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .donate-btn.secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .donate-btn.secondary:hover {
+            background: var(--border-color);
+        }
+
+        /* Мини профиль игрока */
+        .mini-profile-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .mini-profile-content {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 25px;
+            max-width: 400px;
+            width: 100%;
+            animation: fadeIn 0.3s ease;
+            border: 2px solid var(--accent-color);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .mini-profile-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .mini-profile-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: var(--bg-secondary);
+            background-size: cover;
+            background-position: center;
+            margin: 0 auto 12px;
+            border: 2px solid var(--accent-color);
+        }
+
+        .mini-profile-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .mini-profile-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .mini-profile-stat {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .mini-profile-stat-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            margin-bottom: 4px;
+        }
+
+        .mini-profile-stat-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .mini-profile-favorite {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .mini-profile-favorite h4 {
+            font-size: 1rem;
+            margin-bottom: 12px;
+            color: var(--accent-color);
+        }
+
+        .favorite-card-display {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .favorite-card-display-image {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            background: var(--bg-primary);
+            background-size: cover;
+            background-position: center;
+            flex-shrink: 0;
+            border: 1px solid var(--border-color);
+        }
+
+        .favorite-card-display-info h5 {
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+
+        .favorite-card-display-rarity {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .mini-profile-close {
+            width: 100%;
+            padding: 12px;
+            border-radius: 12px;
+            border: none;
+            background: var(--accent-color);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .mini-profile-close:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        /* Анимация получения карты */
+        .card-reveal-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 20px;
+            backdrop-filter: blur(10px);
         }
 
         .card-reveal-content {
             width: 100%;
-            max-width: 300px;
+            max-width: 320px;
             text-align: center;
         }
 
         .reveal-card {
             width: 100%;
-            height: 400px;
+            height: 380px;
             perspective: 1000px;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
 
         .reveal-card-inner {
@@ -1694,7 +1743,7 @@
             width: 100%;
             height: 100%;
             backface-visibility: hidden;
-            border-radius: 20px;
+            border-radius: 16px;
             overflow: hidden;
         }
 
@@ -1706,16 +1755,17 @@
             align-items: center;
             color: white;
             animation: pulse 1.5s infinite;
+            border: 3px solid rgba(255, 255, 255, 0.3);
         }
 
         .reveal-card-back-logo {
-            font-size: 4rem;
-            margin-bottom: 20px;
+            font-size: 3rem;
+            margin-bottom: 15px;
             animation: float 2s infinite;
         }
 
         .reveal-card-back-text {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             font-weight: 700;
         }
 
@@ -1724,17 +1774,18 @@
             transform: rotateY(180deg);
             display: flex;
             flex-direction: column;
+            border: 3px solid var(--accent-color);
         }
 
         .reveal-card-image {
-            height: 60%;
+            height: 55%;
             background-size: cover;
             background-position: center;
             background-color: var(--bg-secondary);
         }
 
         .reveal-card-info {
-            padding: 20px;
+            padding: 16px;
             flex: 1;
             display: flex;
             flex-direction: column;
@@ -1742,94 +1793,114 @@
         }
 
         .reveal-card-name {
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             font-weight: 700;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             color: var(--accent-color);
         }
 
         .reveal-card-rarity {
             display: inline-block;
-            padding: 6px 12px;
+            padding: 5px 10px;
             border-radius: 12px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 700;
             color: white;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
         .reveal-rewards {
             display: flex;
             justify-content: space-around;
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 2px solid var(--border-color);
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-color);
         }
 
         .reveal-reward {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 5px;
+            gap: 4px;
         }
 
         .reveal-reward-icon {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             color: var(--accent-color);
         }
 
         .reveal-reward-value {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: 700;
             color: var(--accent-color);
         }
 
         .reveal-reward-label {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: var(--text-secondary);
         }
 
-        /* Анимации для эффектов */
-        .rarity-glow {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
+        /* Нижнее меню */
+        .bottom-nav {
+            position: fixed;
             bottom: 0;
-            border-radius: 15px;
-            pointer-events: none;
-            opacity: 0;
+            left: 0;
+            width: 100%;
+            background: var(--nav-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border-color);
+            z-index: 1000;
+            padding: 8px 16px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            height: 70px;
         }
 
-        .card-item:hover .rarity-glow {
-            opacity: 0.3;
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--nav-inactive);
+            transition: all 0.3s ease;
+            padding: 8px 12px;
+            border-radius: 12px;
+            min-width: 50px;
         }
 
-        .rarity-common .rarity-glow {
-            background: var(--rarity-common);
+        .nav-item:hover {
+            color: var(--nav-active);
+            background: var(--bg-secondary);
         }
 
-        .rarity-rare .rarity-glow {
-            background: var(--rarity-rare);
+        .nav-item.active {
+            color: var(--nav-active);
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(167, 139, 250, 0.1));
         }
 
-        .rarity-epic .rarity-glow {
-            background: var(--rarity-epic);
+        .nav-icon {
+            font-size: 1.2rem;
+            margin-bottom: 4px;
         }
 
-        .rarity-legendary .rarity-glow {
-            background: var(--rarity-legendary);
+        .nav-label {
+            font-size: 0.65rem;
+            font-weight: 600;
         }
 
-        .rarity-mythic .rarity-glow {
-            background: var(--rarity-mythic);
-            animation: rarityGlow 2s infinite;
+        .nav-center {
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-light));
+            color: white;
+            padding: 10px;
+            border-radius: 50%;
+            transform: translateY(-10px);
+            box-shadow: 0 5px 20px rgba(139, 92, 246, 0.4);
         }
 
-        .rarity-secret .rarity-glow {
-            background: var(--rainbow);
-            background-size: 400% 400%;
-            animation: shimmer 3s infinite linear;
+        .nav-center .nav-icon {
+            margin-bottom: 0;
         }
 
         /* Утилиты */
@@ -1897,8 +1968,64 @@
             width: 100%;
         }
 
+        /* Анимация для премиум статуса */
+        .premium-glow {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .premium-glow::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: var(--pepepremium-gradient);
+            border-radius: inherit;
+            z-index: -1;
+            animation: shimmer 2s infinite linear;
+        }
+
+        /* Улучшенные стили для карточек */
+        .card-item.rarity-secret {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-item.rarity-secret::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--rainbow);
+            background-size: 400% 400%;
+            animation: shimmer 3s infinite linear;
+            opacity: 0.3;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .card-item.rarity-secret .card-image {
+            position: relative;
+            z-index: 2;
+        }
+
+        .card-item.rarity-secret .card-info {
+            position: relative;
+            z-index: 2;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+        }
+
+        .card-item.rarity-secret .card-name {
+            color: white;
+        }
+
         /* Адаптивность */
-        @media (max-width: 768px) {
+        @media (max-width: 480px) {
             .cards-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
@@ -1911,21 +2038,12 @@
                 grid-template-columns: repeat(2, 1fr);
             }
             
-            .leaderboard-stat {
-                flex-direction: column;
-                gap: 2px;
-            }
-            
-            .nav-item {
-                padding: 10px;
-            }
-            
-            .nav-label {
-                display: none;
+            .theme-options {
+                grid-template-columns: repeat(3, 1fr);
             }
         }
 
-        @media (max-width: 480px) {
+        @media (max-width: 360px) {
             .cards-grid {
                 grid-template-columns: 1fr;
             }
@@ -1936,12 +2054,15 @@
             
             .leaderboard-stats {
                 flex-direction: column;
-                gap: 5px;
+                gap: 4px;
             }
         }
     </style>
 </head>
 <body>
+    <!-- Снег на фоне -->
+    <div class="snow-container" id="snowContainer"></div>
+
     <!-- Экран загрузки -->
     <div class="loading-screen" id="loadingScreen">
         <div class="loading-logo">🐸</div>
@@ -1974,10 +2095,10 @@
             <div class="coins-display">
                 <i class="fas fa-coins"></i>
                 <span id="headerCoins">0</span>
-                <button class="add-coins-btn" id="addCoinsBtn">
-                    <i class="fas fa-plus"></i>
-                </button>
             </div>
+            <button class="admin-btn hidden" id="adminMenuBtn" style="padding: 6px 12px; font-size: 0.8rem;">
+                <i class="fas fa-shield-alt"></i>
+            </button>
         </div>
     </header>
 
@@ -1987,16 +2108,18 @@
         <div class="page active" id="mainPage">
             <div class="main-page">
                 <div class="greeting">
-                    <h1 id="userGreeting">Привет, Игрок!</h1>
+                    <h1 id="userGreeting">Привет!</h1>
                     <p id="userStatus">Начни собирать коллекцию карт</p>
-                    <div class="user-id" id="userId">#PP0000</div>
+                    <div class="user-id" id="userId">#0</div>
                 </div>
 
                 <div class="cooldown-section">
-                    <div class="cooldown-timer" id="cooldownTimer">40:00</div>
+                    <div class="cooldown-timer" id="cooldownTimer">00:00</div>
                     <div class="cooldown-text">
                         До следующей карты
                         <div class="vip-badge hidden" id="vipBadge">VIP: 20 мин</div>
+                        <div class="premium-badge hidden" id="premiumBadge">PREMIUM: 5 мин</div>
+                        <div class="premium-badge" id="noLimitBadge" style="background: var(--admin-color); display: none;">NO LIMIT ❤️</div>
                     </div>
                 </div>
 
@@ -2009,41 +2132,15 @@
                     <div class="rewards-preview">
                         <div class="reward-item">
                             <div class="reward-icon"><i class="fas fa-coins"></i></div>
-                            <div class="reward-text" id="previewCoins">10-50 монет</div>
+                            <div class="reward-text" id="previewCoins">30-150</div>
                         </div>
                         <div class="reward-item">
                             <div class="reward-icon"><i class="fas fa-star"></i></div>
-                            <div class="reward-text" id="previewExp">5-15 опыта</div>
+                            <div class="reward-text" id="previewExp">30-200</div>
                         </div>
                         <div class="reward-item">
                             <div class="reward-icon"><i class="fas fa-crown"></i></div>
                             <div class="reward-text" id="previewLevel">Уровень</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Админ панель (только для админа) -->
-                <div class="admin-section hidden" id="adminSection">
-                    <h2><i class="fas fa-shield-alt"></i> Админ Панель</h2>
-                    <div class="admin-controls">
-                        <div class="admin-control-group">
-                            <h3>Управление игроками</h3>
-                            <input type="text" class="admin-input" id="adminPlayerId" placeholder="ID игрока (#PP0000)">
-                            <button class="admin-btn" id="adminSearchBtn">Найти</button>
-                        </div>
-                        
-                        <div class="admin-control-group">
-                            <h3>Выдача ресурсов</h3>
-                            <input type="number" class="admin-input" id="adminCoinsAmount" placeholder="Количество монет">
-                            <button class="admin-btn success" id="adminAddCoinsBtn">Выдать монеты</button>
-                            <button class="admin-btn success" id="adminAddVipBtn">Выдать VIP</button>
-                        </div>
-                        
-                        <div class="admin-control-group">
-                            <h3>Администрирование</h3>
-                            <button class="admin-btn" id="adminBanBtn">Забанить</button>
-                            <button class="admin-btn" id="adminResetBtn">Сбросить профиль</button>
-                            <button class="admin-btn" id="adminMaintenanceBtn">Вкл/Выкл техперерыв</button>
                         </div>
                     </div>
                 </div>
@@ -2081,7 +2178,7 @@
                 <button class="shop-tab active" data-tab="packs">Наборы</button>
                 <button class="shop-tab" data-tab="personalization">Персонализация</button>
                 <button class="shop-tab" data-tab="titles">Титулы</button>
-                <button class="shop-tab" data-tab="vip">VIP</button>
+                <button class="shop-tab" data-tab="premium">PepePremium</button>
             </div>
 
             <div class="shop-content">
@@ -2092,7 +2189,7 @@
 
                 <!-- Персонализация -->
                 <div class="shop-items hidden" id="personalizationTab">
-                    <!-- Суффиксы и рамки будут загружены динамически -->
+                    <!-- Рамки будут загружены динамически -->
                 </div>
 
                 <!-- Титулы -->
@@ -2100,9 +2197,9 @@
                     <!-- Титулы будут загружены динамически -->
                 </div>
 
-                <!-- VIP -->
-                <div class="shop-items hidden" id="vipTab">
-                    <!-- VIP товары будут загружены динамически -->
+                <!-- PepePremium -->
+                <div class="shop-items hidden" id="premiumTab">
+                    <!-- Премиум товары будут загружены динамически -->
                 </div>
             </div>
         </div>
@@ -2139,7 +2236,7 @@
                 </div>
                 
                 <div class="profile-title" id="profileTitle">Новичок</div>
-                <div class="profile-id mt-2" id="profileId">#PP0000</div>
+                <div class="profile-id mt-2" id="profileId">#0</div>
             </div>
 
             <div class="profile-stats">
@@ -2182,60 +2279,151 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Кнопки доната -->
+            <div class="donate-buttons">
+                <button class="donate-profile-btn donate-coins-btn" id="profileDonateCoinsBtn">
+                    <i class="fas fa-coins"></i>
+                    Купить PepeCoins
+                </button>
+                <button class="donate-profile-btn donate-premium-btn" id="profileDonatePremiumBtn">
+                    <i class="fas fa-crown"></i>
+                    PepePremium
+                </button>
+            </div>
+
+            <!-- Выбор темы -->
+            <div class="theme-selector">
+                <h3>Выбор темы</h3>
+                <div class="theme-options">
+                    <div class="theme-option active" data-theme="light">
+                        <i class="fas fa-sun"></i>
+                        <span>Светлая</span>
+                    </div>
+                    <div class="theme-option" data-theme="dark-purple">
+                        <i class="fas fa-moon"></i>
+                        <span>Фиолетовая</span>
+                    </div>
+                    <div class="theme-option" data-theme="night">
+                        <i class="fas fa-star"></i>
+                        <span>Ночная</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Админ панель (отдельная страница) -->
+        <div class="page" id="adminPage">
+            <div class="admin-section">
+                <h2><i class="fas fa-shield-alt"></i> Админ Панель</h2>
+                <div class="admin-controls">
+                    <div class="admin-control-group">
+                        <h3>Поиск игрока</h3>
+                        <input type="text" class="admin-input" id="adminPlayerId" placeholder="ID игрока (#123) или TG ID">
+                        <button class="admin-btn" id="adminSearchBtn">Найти игрока</button>
+                    </div>
+                    
+                    <div class="admin-control-group">
+                        <h3>Текущий игрок: <span id="adminCurrentPlayer">Не выбран</span></h3>
+                        <input type="number" class="admin-input" id="adminCoinsAmount" placeholder="Количество монет">
+                        <button class="admin-btn success" id="adminAddCoinsBtn">Выдать монеты</button>
+                        <button class="admin-btn success" id="adminAddPremiumBtn">Выдать Premium</button>
+                        <button class="admin-btn" id="adminAddVipBtn">Выдать VIP</button>
+                    </div>
+                    
+                    <div class="admin-control-group">
+                        <h3>Администрирование</h3>
+                        <button class="admin-btn" id="adminBanBtn">Забанить</button>
+                        <button class="admin-btn" id="adminResetBtn">Сбросить профиль</button>
+                        <button class="admin-btn" id="adminMaintenanceBtn">Вкл/Выкл техперерыв</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
 
-    <!-- Модальное окно доната -->
-    <div class="donate-modal hidden" id="donateModal">
+    <!-- Модальное окно доната (PepeCoins) -->
+    <div class="donate-modal hidden" id="donateCoinsModal">
         <div class="donate-content">
             <div class="donate-icon">💎</div>
-            <h2 class="donate-title">Пополнить баланс</h2>
+            <h2 class="donate-title">Купить PepeCoins</h2>
             <p class="donate-text">
-                Выберите способ пополнения:<br>
-                <small>Рубли дешевле звезд Telegram!</small>
+                Минимальная покупка: 100 PepeCoins (3 звезды)<br>
+                <small>1 PepeCoin = 0.03 звезды</small>
             </p>
             
+            <div class="donate-input-group">
+                <label>Количество PepeCoins:</label>
+                <input type="number" class="donate-input" id="donateCoinsAmount" value="100" min="100" step="100">
+            </div>
+            
+            <div class="donate-price-display" id="donateCoinsPrice">
+                100 PepeCoins = ⭐ 3
+            </div>
+            
             <div class="donate-options">
-                <div class="donate-option" data-amount="100" data-method="stars">
+                <div class="donate-option selected" data-method="stars">
                     <div class="donate-option-header">
                         <div class="donate-option-icon"><i class="fas fa-star"></i></div>
-                        <div class="donate-option-title">100 монет</div>
-                        <div class="donate-option-price">⭐ 10</div>
+                        <div class="donate-option-title">Звезды Telegram</div>
+                        <div class="donate-option-price" id="starsPrice">⭐ 3</div>
                     </div>
-                    <p class="donate-option-desc">Через звезды Telegram</p>
+                    <p class="donate-option-desc">Мгновенная оплата через Telegram Stars</p>
                 </div>
                 
-                <div class="donate-option selected" data-amount="100" data-method="rubles">
+                <div class="donate-option" data-method="rubles">
                     <div class="donate-option-header">
                         <div class="donate-option-icon"><i class="fas fa-ruble-sign"></i></div>
-                        <div class="donate-option-title">100 монет</div>
-                        <div class="donate-option-price">50 ₽</div>
+                        <div class="donate-option-title">Рубли (дешевле)</div>
+                        <div class="donate-option-price" id="rublesPrice">15 ₽</div>
                     </div>
-                    <p class="donate-option-desc">Написать @DefoltPlayer</p>
-                </div>
-                
-                <div class="donate-option" data-amount="500" data-method="rubles">
-                    <div class="donate-option-header">
-                        <div class="donate-option-icon"><i class="fas fa-ruble-sign"></i></div>
-                        <div class="donate-option-title">500 монет</div>
-                        <div class="donate-option-price">200 ₽</div>
-                    </div>
-                    <p class="donate-option-desc">Написать @DefoltPlayer</p>
-                </div>
-                
-                <div class="donate-option" data-amount="1000" data-method="rubles">
-                    <div class="donate-option-header">
-                        <div class="donate-option-icon"><i class="fas fa-ruble-sign"></i></div>
-                        <div class="donate-option-title">1000 монет</div>
-                        <div class="donate-option-price">350 ₽</div>
-                    </div>
-                    <p class="donate-option-desc">Написать @DefoltPlayer</p>
+                    <p class="donate-option-desc">Написать @DefoltPlayer для оплаты</p>
                 </div>
             </div>
 
-            <div class="donate-buttons">
-                <button class="donate-btn secondary" id="donateCloseBtn">Отмена</button>
-                <button class="donate-btn primary" id="donateConfirmBtn">Пополнить</button>
+            <div class="donate-buttons-modal">
+                <button class="donate-btn secondary" id="donateCoinsCloseBtn">Отмена</button>
+                <button class="donate-btn primary" id="donateCoinsConfirmBtn">Купить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно доната (PepePremium) -->
+    <div class="donate-modal hidden" id="donatePremiumModal">
+        <div class="donate-content">
+            <div class="donate-icon">👑</div>
+            <h2 class="donate-title">PepePremium</h2>
+            <p class="donate-text">
+                Премиум статус на 30 дней:<br>
+                • Кулдаун 5 минут<br>
+                • +50% монет и опыта<br>
+                • Особый значок<br>
+                <small>Лучшая инвестиция в вашу коллекцию!</small>
+            </p>
+            
+            <div class="donate-options">
+                <div class="donate-option selected" data-method="stars">
+                    <div class="donate-option-header">
+                        <div class="donate-option-icon"><i class="fas fa-star"></i></div>
+                        <div class="donate-option-title">Звезды Telegram</div>
+                        <div class="donate-option-price">⭐ 200</div>
+                    </div>
+                    <p class="donate-option-desc">Мгновенная оплата через Telegram Stars</p>
+                </div>
+                
+                <div class="donate-option" data-method="rubles">
+                    <div class="donate-option-header">
+                        <div class="donate-option-icon"><i class="fas fa-ruble-sign"></i></div>
+                        <div class="donate-option-title">Рубли (дешевле)</div>
+                        <div class="donate-option-price">1000 ₽</div>
+                    </div>
+                    <p class="donate-option-desc">Написать @DefoltPlayer для оплаты</p>
+                </div>
+            </div>
+
+            <div class="donate-buttons-modal">
+                <button class="donate-btn secondary" id="donatePremiumCloseBtn">Отмена</button>
+                <button class="donate-btn primary" id="donatePremiumConfirmBtn">Купить Premium</button>
             </div>
         </div>
     </div>
@@ -2344,9 +2532,10 @@
             ADMIN_ID: 6392172528,
             COOLDOWN_NORMAL: 2400, // 40 минут в секундах
             COOLDOWN_VIP: 1200, // 20 минут в секундах
+            COOLDOWN_PREMIUM: 300, // 5 минут в секундах
             COOLDOWN_ADMIN: 0, // Админ без кулдауна
             
-            // Карточки из config.py
+            // Карточки с обновленными наградами
             CARDS: {
                 1: {
                     "id": 1,
@@ -2355,10 +2544,10 @@
                     "rarityName": "Обычная",
                     "emoji": "⚪",
                     "chance": 40,
-                    "min_coins": 10,
-                    "max_coins": 50,
-                    "min_exp": 5,
-                    "max_exp": 15,
+                    "min_coins": 30,
+                    "max_coins": 150,
+                    "min_exp": 30,
+                    "max_exp": 200,
                     "image_path": "data/images/test1.jpg",
                     "description": "Стандартный Пепе, с которого начинается каждая коллекция."
                 },
@@ -2369,10 +2558,10 @@
                     "rarityName": "Обычная",
                     "emoji": "⚪",
                     "chance": 40,
-                    "min_coins": 10,
-                    "max_coins": 50,
-                    "min_exp": 5,
-                    "max_exp": 15,
+                    "min_coins": 30,
+                    "max_coins": 150,
+                    "min_exp": 30,
+                    "max_exp": 200,
                     "image_path": "data/images/test2.jpg",
                     "description": "Веселый клоун Пепе, который всегда поднимет настроение."
                 },
@@ -2383,10 +2572,10 @@
                     "rarityName": "Обычная",
                     "emoji": "⚪",
                     "chance": 40,
-                    "min_coins": 10,
-                    "max_coins": 50,
-                    "min_exp": 5,
-                    "max_exp": 15,
+                    "min_coins": 30,
+                    "max_coins": 150,
+                    "min_exp": 30,
+                    "max_exp": 200,
                     "image_path": "data/images/test3.jpg",
                     "description": "Стильный Пепе в теплой кофте для холодных дней."
                 },
@@ -2397,10 +2586,10 @@
                     "rarityName": "Обычная",
                     "emoji": "⚪",
                     "chance": 40,
-                    "min_coins": 10,
-                    "max_coins": 50,
-                    "min_exp": 5,
-                    "max_exp": 15,
+                    "min_coins": 30,
+                    "max_coins": 150,
+                    "min_exp": 30,
+                    "max_exp": 200,
                     "image_path": "data/images/test4.jpg",
                     "description": "Пепе, который не всегда понимает, что происходит вокруг."
                 },
@@ -2411,10 +2600,10 @@
                     "rarityName": "Обычная",
                     "emoji": "⚪",
                     "chance": 40,
-                    "min_coins": 10,
-                    "max_coins": 50,
-                    "min_exp": 5,
-                    "max_exp": 15,
+                    "min_coins": 30,
+                    "max_coins": 150,
+                    "min_exp": 30,
+                    "max_exp": 200,
                     "image_path": "data/images/test5.jpg",
                     "description": "Всегда позитивный Пепе, который видит хорошее во всем."
                 },
@@ -2425,10 +2614,10 @@
                     "rarityName": "Обычная",
                     "emoji": "⚪",
                     "chance": 40,
-                    "min_coins": 10,
-                    "max_coins": 50,
-                    "min_exp": 5,
-                    "max_exp": 15,
+                    "min_coins": 30,
+                    "max_coins": 150,
+                    "min_exp": 30,
+                    "max_exp": 200,
                     "image_path": "data/images/test6.jpg",
                     "description": "Пепе, который переживает не самые лучшие времена."
                 },
@@ -2439,10 +2628,10 @@
                     "rarityName": "Обычная",
                     "emoji": "⚪",
                     "chance": 40,
-                    "min_coins": 10,
-                    "max_coins": 50,
-                    "min_exp": 5,
-                    "max_exp": 15,
+                    "min_coins": 30,
+                    "max_coins": 150,
+                    "min_exp": 30,
+                    "max_exp": 200,
                     "image_path": "data/images/test7.jpg",
                     "description": "Пепе, который не может перестать смеяться над шуткой."
                 },
@@ -2453,10 +2642,10 @@
                     "rarityName": "Обычная",
                     "emoji": "⚪",
                     "chance": 40,
-                    "min_coins": 10,
-                    "max_coins": 50,
-                    "min_exp": 5,
-                    "max_exp": 15,
+                    "min_coins": 30,
+                    "max_coins": 150,
+                    "min_exp": 30,
+                    "max_exp": 200,
                     "image_path": "data/images/test8.jpg",
                     "description": "Пепе с опасными планами (шутка, конечно же)."
                 },
@@ -2467,10 +2656,10 @@
                     "rarityName": "Редкая",
                     "emoji": "🔵",
                     "chance": 30,
-                    "min_coins": 50,
-                    "max_coins": 150,
-                    "min_exp": 15,
-                    "max_exp": 30,
+                    "min_coins": 100,
+                    "max_coins": 300,
+                    "min_exp": 100,
+                    "max_exp": 250,
                     "image_path": "data/images/test9.jpg",
                     "description": "Пепе, который любит расслабиться с сигаретой после тяжелого дня."
                 },
@@ -2481,10 +2670,10 @@
                     "rarityName": "Редкая",
                     "emoji": "🔵",
                     "chance": 30,
-                    "min_coins": 50,
-                    "max_coins": 150,
-                    "min_exp": 15,
-                    "max_exp": 30,
+                    "min_coins": 100,
+                    "max_coins": 300,
+                    "min_exp": 100,
+                    "max_exp": 250,
                     "image_path": "data/images/test10.jpg",
                     "description": "Пепе под воздействием зеленого вещества растительного происхождения."
                 },
@@ -2495,10 +2684,10 @@
                     "rarityName": "Редкая",
                     "emoji": "🔵",
                     "chance": 30,
-                    "min_coins": 50,
-                    "max_coins": 150,
-                    "min_exp": 15,
-                    "max_exp": 30,
+                    "min_coins": 100,
+                    "max_coins": 300,
+                    "min_exp": 100,
+                    "max_exp": 250,
                     "image_path": "data/images/test11.jpg",
                     "description": "Пепе после тяжелого рабочего дня или бессонной ночи."
                 },
@@ -2509,10 +2698,10 @@
                     "rarityName": "Редкая",
                     "emoji": "🔵",
                     "chance": 30,
-                    "min_coins": 50,
-                    "max_coins": 150,
-                    "min_exp": 15,
-                    "max_exp": 30,
+                    "min_coins": 100,
+                    "max_coins": 300,
+                    "min_exp": 100,
+                    "max_exp": 250,
                     "image_path": "data/images/test12.jpg",
                     "description": "Пепе, который совершенно не понимает, что происходит."
                 },
@@ -2523,10 +2712,10 @@
                     "rarityName": "Редкая",
                     "emoji": "🔵",
                     "chance": 30,
-                    "min_coins": 50,
-                    "max_coins": 150,
-                    "min_exp": 15,
-                    "max_exp": 30,
+                    "min_coins": 100,
+                    "max_coins": 300,
+                    "min_exp": 100,
+                    "max_exp": 250,
                     "image_path": "data/images/test13.jpg",
                     "description": "Пепе, который увидел нечто ужасающее."
                 },
@@ -2537,10 +2726,10 @@
                     "rarityName": "Редкая",
                     "emoji": "🔵",
                     "chance": 30,
-                    "min_coins": 50,
-                    "max_coins": 150,
-                    "min_exp": 15,
-                    "max_exp": 30,
+                    "min_coins": 100,
+                    "max_coins": 300,
+                    "min_exp": 100,
+                    "max_exp": 250,
                     "image_path": "data/images/test14.jpg",
                     "description": "Милейший Пепе в костюме акулёнка."
                 },
@@ -2551,10 +2740,10 @@
                     "rarityName": "Эпическая",
                     "emoji": "🟣",
                     "chance": 20,
-                    "min_coins": 150,
-                    "max_coins": 300,
-                    "min_exp": 30,
-                    "max_exp": 60,
+                    "min_coins": 300,
+                    "max_coins": 800,
+                    "min_exp": 300,
+                    "max_exp": 600,
                     "image_path": "data/images/test15.jpg",
                     "description": "Пепе в стиле известных инопланетных существ Пикми."
                 },
@@ -2565,10 +2754,10 @@
                     "rarityName": "Эпическая",
                     "emoji": "🟣",
                     "chance": 20,
-                    "min_coins": 150,
-                    "max_coins": 300,
-                    "min_exp": 30,
-                    "max_exp": 60,
+                    "min_coins": 300,
+                    "max_coins": 800,
+                    "min_exp": 300,
+                    "max_exp": 600,
                     "image_path": "data/images/test16.jpg",
                     "description": "Пепе, который проводит все время за компьютерными играми."
                 },
@@ -2579,10 +2768,10 @@
                     "rarityName": "Эпическая",
                     "emoji": "🟣",
                     "chance": 20,
-                    "min_coins": 150,
-                    "max_coins": 300,
-                    "min_exp": 30,
-                    "max_exp": 60,
+                    "min_coins": 300,
+                    "max_coins": 800,
+                    "min_exp": 300,
+                    "max_exp": 600,
                     "image_path": "data/images/test17.jpg",
                     "description": "Темный рыцарь Пепе, защитник Готэма."
                 },
@@ -2593,10 +2782,10 @@
                     "rarityName": "Эпическая",
                     "emoji": "🟣",
                     "chance": 20,
-                    "min_coins": 150,
-                    "max_coins": 300,
-                    "min_exp": 30,
-                    "max_exp": 60,
+                    "min_coins": 300,
+                    "max_coins": 800,
+                    "min_exp": 300,
+                    "max_exp": 600,
                     "image_path": "data/images/test18.jpg",
                     "description": "Пепе в новогоднем настроении с подарками и гирляндами."
                 },
@@ -2607,10 +2796,10 @@
                     "rarityName": "Легендарная",
                     "emoji": "🟡",
                     "chance": 10,
-                    "min_coins": 300,
-                    "max_coins": 600,
-                    "min_exp": 60,
-                    "max_exp": 120,
+                    "min_coins": 800,
+                    "max_coins": 2000,
+                    "min_exp": 800,
+                    "max_exp": 1500,
                     "image_path": "data/images/test19.jpg",
                     "description": "Пепе - мастер меткой стрельбы, никогда не промахивается."
                 },
@@ -2621,10 +2810,10 @@
                     "rarityName": "Легендарная",
                     "emoji": "🟡",
                     "chance": 10,
-                    "min_coins": 300,
-                    "max_coins": 600,
-                    "min_exp": 60,
-                    "max_exp": 120,
+                    "min_coins": 800,
+                    "max_coins": 2000,
+                    "min_exp": 800,
+                    "max_exp": 1500,
                     "image_path": "data/images/test20.jpg",
                     "description": "Загадочный Пепе, окутанный тайнами и секретами."
                 },
@@ -2635,10 +2824,10 @@
                     "rarityName": "Секретная",
                     "emoji": "👁️",
                     "chance": 0.1,
-                    "min_coins": 10000,
-                    "max_coins": 50000,
-                    "min_exp": 1000,
-                    "max_exp": 5000,
+                    "min_coins": 15000,
+                    "max_coins": 30000,
+                    "min_exp": 5000,
+                    "max_exp": 15000,
                     "image_path": "data/images/secret.jpg",
                     "description": "Секретная карта Пепе, связанная с мессенджером Telegram. Невероятно редкая!",
                     "secret": true
@@ -2650,10 +2839,10 @@
                     "rarityName": "Мифическая",
                     "emoji": "🔴",
                     "chance": 3,
-                    "min_coins": 1000,
-                    "max_coins": 2500,
-                    "min_exp": 200,
-                    "max_exp": 500,
+                    "min_coins": 1500,
+                    "max_coins": 4000,
+                    "min_exp": 1000,
+                    "max_exp": 2500,
                     "image_path": "data/images/test22.jpg",
                     "description": "Мифический Пепе по имени Джорджи, обладающий невероятной силой."
                 },
@@ -2664,10 +2853,10 @@
                     "rarityName": "Мифическая",
                     "emoji": "🔴",
                     "chance": 3,
-                    "min_coins": 1000,
-                    "max_coins": 2500,
-                    "min_exp": 200,
-                    "max_exp": 500,
+                    "min_coins": 1500,
+                    "max_coins": 4000,
+                    "min_exp": 1000,
+                    "max_exp": 2500,
                     "image_path": "data/images/test23.jpg",
                     "description": "Пепе, который вечно хочет спать, но обладает мифической силой сновидений."
                 },
@@ -2678,10 +2867,10 @@
                     "rarityName": "Мифическая",
                     "emoji": "🔴",
                     "chance": 3,
-                    "min_coins": 1000,
-                    "max_coins": 2500,
-                    "min_exp": 200,
-                    "max_exp": 500,
+                    "min_coins": 1500,
+                    "max_coins": 4000,
+                    "min_exp": 1000,
+                    "max_exp": 2500,
                     "image_path": "data/images/test24.jpg",
                     "description": "Пепе-менеджер, который эффективно управляет всеми процессами."
                 },
@@ -2692,10 +2881,10 @@
                     "rarityName": "Мифическая",
                     "emoji": "🔴",
                     "chance": 3,
-                    "min_coins": 1000,
-                    "max_coins": 2500,
-                    "min_exp": 200,
-                    "max_exp": 500,
+                    "min_coins": 1500,
+                    "max_coins": 4000,
+                    "min_exp": 1000,
+                    "max_exp": 2500,
                     "image_path": "data/images/test25.jpg",
                     "description": "Пепе, который выбрался из Матрицы и теперь видит код реальности."
                 }
@@ -2708,7 +2897,7 @@
                         id: 'pack_common',
                         name: 'Обычный набор',
                         description: '3 случайные карты (обычные и выше)',
-                        price: 300,
+                        price: 500,
                         icon: 'fa-box',
                         type: 'pack',
                         data: { cards: 3, minRarity: 'common' }
@@ -2717,7 +2906,7 @@
                         id: 'pack_rare',
                         name: 'Редкий набор',
                         description: '2 карты гарантированно редкие или выше',
-                        price: 500,
+                        price: 800,
                         icon: 'fa-box-open',
                         type: 'pack',
                         data: { cards: 2, minRarity: 'rare' }
@@ -2726,7 +2915,7 @@
                         id: 'pack_epic',
                         name: 'Эпический набор',
                         description: '1 эпическая карта гарантированно',
-                        price: 800,
+                        price: 1500,
                         icon: 'fa-crown',
                         type: 'pack',
                         data: { cards: 1, minRarity: 'epic' }
@@ -2735,7 +2924,7 @@
                         id: 'pack_legendary',
                         name: 'Легендарный набор',
                         description: 'Шанс на легендарную карту',
-                        price: 1500,
+                        price: 3000,
                         icon: 'fa-gem',
                         type: 'pack',
                         data: { cards: 1, minRarity: 'legendary' }
@@ -2744,37 +2933,10 @@
                 
                 personalization: [
                     {
-                        id: 'suffix_pro',
-                        name: 'Суффикс [PRO]',
-                        description: 'Профессиональный суффикс рядом с ником',
-                        price: 500,
-                        icon: 'fa-tag',
-                        type: 'suffix',
-                        data: { text: 'PRO', color: '#3b82f6' }
-                    },
-                    {
-                        id: 'suffix_vip',
-                        name: 'Суффикс [VIP]',
-                        description: 'VIP статус рядом с ником',
-                        price: 1000,
-                        icon: 'fa-crown',
-                        type: 'suffix',
-                        data: { text: 'VIP', color: '#f59e0b' }
-                    },
-                    {
-                        id: 'suffix_legend',
-                        name: 'Суффикс [LEGEND]',
-                        description: 'Легендарный суффикс',
-                        price: 2000,
-                        icon: 'fa-star',
-                        type: 'suffix',
-                        data: { text: 'LEGEND', color: '#8b5cf6' }
-                    },
-                    {
                         id: 'frame_gold',
                         name: 'Золотая рамка',
                         description: 'Золотая рамка для аватара',
-                        price: 800,
+                        price: 1000,
                         icon: 'fa-square',
                         type: 'frame',
                         data: { color: '#f59e0b', width: '3px' }
@@ -2783,10 +2945,19 @@
                         id: 'frame_rainbow',
                         name: 'Радужная рамка',
                         description: 'Радужная анимированная рамка',
-                        price: 1500,
+                        price: 2500,
                         icon: 'fa-rainbow',
                         type: 'frame',
                         data: { gradient: 'linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet)', width: '3px' }
+                    },
+                    {
+                        id: 'frame_premium',
+                        name: 'Премиум рамка',
+                        description: 'Только для PepePremium',
+                        price: 0,
+                        icon: 'fa-crown',
+                        type: 'frame',
+                        data: { color: '#8b5cf6', width: '4px', premium: true }
                     }
                 ],
                 
@@ -2826,36 +2997,27 @@
                         icon: 'fa-gem',
                         type: 'title',
                         data: { requirement: 'coins', value: 10000 }
+                    },
+                    {
+                        id: 'title_premium',
+                        name: 'Premium',
+                        description: 'Только для PepePremium',
+                        price: 0,
+                        icon: 'fa-crown',
+                        type: 'title',
+                        data: { requirement: 'premium', value: true }
                     }
                 ],
                 
-                vip: [
+                premium: [
                     {
-                        id: 'vip_7days',
-                        name: 'VIP на 7 дней',
-                        description: 'Кулдаун 20 минут, особый значок',
-                        price: 1000,
+                        id: 'premium_30days',
+                        name: 'PepePremium 30 дней',
+                        description: 'Кулдаун 5 минут, +50% наград, особый значок',
+                        price: 200, // Звезды
                         icon: 'fa-crown',
-                        type: 'vip',
-                        data: { days: 7 }
-                    },
-                    {
-                        id: 'vip_30days',
-                        name: 'VIP на 30 дней',
-                        description: 'VIP статус на месяц',
-                        price: 3000,
-                        icon: 'fa-crown',
-                        type: 'vip',
+                        type: 'premium',
                         data: { days: 30 }
-                    },
-                    {
-                        id: 'vip_permanent',
-                        name: 'Постоянный VIP',
-                        description: 'Вечный VIP статус',
-                        price: 10000,
-                        icon: 'fa-infinity',
-                        type: 'vip',
-                        data: { days: -1 }
                     }
                 ]
             },
@@ -2897,40 +3059,49 @@
             equippedFrame: null,
             equippedTitle: null,
             
-            // VIP статус
+            // Статусы
             isVIP: false,
             vipUntil: null,
+            isPremium: false,
+            premiumUntil: null,
             
             // Временные метки
             lastCardTime: 0,
             registrationDate: null,
             
             // Админ статус
-            isAdmin: false
+            isAdmin: false,
+            
+            // Тема
+            theme: 'light',
+            
+            // Админ: выбранный игрок
+            adminSelectedPlayer: null
         };
 
         // Глобальные переменные
         let telegram = null;
         let currentPage = 'main';
-        let maintenanceMode = false;
-        let playerPPId = null;
-        let userCount = 0;
+        let maintenanceMode = localStorage.getItem('pepecards_maintenance') === 'true';
+        let userCount = parseInt(localStorage.getItem('pepecards_user_count') || '0');
+        let currentPlayerId = null;
 
         // DOM элементы
         const loadingScreen = document.getElementById('loadingScreen');
         const maintenanceOverlay = document.getElementById('maintenanceOverlay');
         const headerCoins = document.getElementById('headerCoins');
-        const addCoinsBtn = document.getElementById('addCoinsBtn');
         const userGreeting = document.getElementById('userGreeting');
         const userStatus = document.getElementById('userStatus');
         const userId = document.getElementById('userId');
         const cooldownTimer = document.getElementById('cooldownTimer');
         const vipBadge = document.getElementById('vipBadge');
+        const premiumBadge = document.getElementById('premiumBadge');
+        const noLimitBadge = document.getElementById('noLimitBadge');
         const openCardBtn = document.getElementById('openCardBtn');
         const previewCoins = document.getElementById('previewCoins');
         const previewExp = document.getElementById('previewExp');
         const previewLevel = document.getElementById('previewLevel');
-        const adminSection = document.getElementById('adminSection');
+        const adminMenuBtn = document.getElementById('adminMenuBtn');
         
         // Инвентарь
         const totalCards = document.getElementById('totalCards');
@@ -2956,11 +3127,23 @@
         const favoriteCardImage = document.getElementById('favoriteCardImage');
         const favoriteCardName = document.getElementById('favoriteCardName');
         const favoriteCardRarity = document.getElementById('favoriteCardRarity');
+        const profileDonateCoinsBtn = document.getElementById('profileDonateCoinsBtn');
+        const profileDonatePremiumBtn = document.getElementById('profileDonatePremiumBtn');
+        const themeOptions = document.querySelectorAll('.theme-option');
         
         // Модалки
-        const donateModal = document.getElementById('donateModal');
-        const donateCloseBtn = document.getElementById('donateCloseBtn');
-        const donateConfirmBtn = document.getElementById('donateConfirmBtn');
+        const donateCoinsModal = document.getElementById('donateCoinsModal');
+        const donateCoinsCloseBtn = document.getElementById('donateCoinsCloseBtn');
+        const donateCoinsConfirmBtn = document.getElementById('donateCoinsConfirmBtn');
+        const donateCoinsAmount = document.getElementById('donateCoinsAmount');
+        const donateCoinsPrice = document.getElementById('donateCoinsPrice');
+        const starsPrice = document.getElementById('starsPrice');
+        const rublesPrice = document.getElementById('rublesPrice');
+        
+        const donatePremiumModal = document.getElementById('donatePremiumModal');
+        const donatePremiumCloseBtn = document.getElementById('donatePremiumCloseBtn');
+        const donatePremiumConfirmBtn = document.getElementById('donatePremiumConfirmBtn');
+        
         const donateOptions = document.querySelectorAll('.donate-option');
         
         const miniProfileModal = document.getElementById('miniProfileModal');
@@ -2980,8 +3163,10 @@
         // Админ элементы
         const adminPlayerId = document.getElementById('adminPlayerId');
         const adminSearchBtn = document.getElementById('adminSearchBtn');
+        const adminCurrentPlayer = document.getElementById('adminCurrentPlayer');
         const adminCoinsAmount = document.getElementById('adminCoinsAmount');
         const adminAddCoinsBtn = document.getElementById('adminAddCoinsBtn');
+        const adminAddPremiumBtn = document.getElementById('adminAddPremiumBtn');
         const adminAddVipBtn = document.getElementById('adminAddVipBtn');
         const adminBanBtn = document.getElementById('adminBanBtn');
         const adminResetBtn = document.getElementById('adminResetBtn');
@@ -2998,14 +3183,14 @@
                 // Получаем данные пользователя
                 const user = telegram.initDataUnsafe.user;
                 
-                // Генерируем уникальный ID для игрока
-                playerPPId = await generatePlayerId(user.id);
-                
                 // Загружаем или создаем профиль
                 await loadOrCreateProfile(user);
                 
                 // Настройка темы
                 setupTheme();
+                
+                // Создаем снег
+                createSnow();
                 
                 // Настройка обработчиков событий
                 setupEventListeners();
@@ -3018,6 +3203,11 @@
                 // Запускаем таймеры
                 updateCooldown();
                 setInterval(updateCooldown, 1000);
+                
+                // Проверяем технический перерыв
+                if (maintenanceMode && !appState.isAdmin) {
+                    maintenanceOverlay.classList.remove('hidden');
+                }
                 
                 // Скрываем экран загрузки
                 setTimeout(() => {
@@ -3039,20 +3229,34 @@
             }
         }
 
-        // Генерация уникального ID игрока
-        async function generatePlayerId(telegramId) {
-            // Получаем количество зарегистрированных пользователей
-            const count = localStorage.getItem('pepecards_user_count') || '0';
-            userCount = parseInt(count) + 1;
-            localStorage.setItem('pepecords_user_count', userCount.toString());
+        // Создание снега
+        function createSnow() {
+            const snowContainer = document.getElementById('snowContainer');
+            const snowflakeCount = 50;
             
-            // Создаем ID в формате #PP0000
-            return `#PP${userCount.toString().padStart(4, '0')}`;
+            for (let i = 0; i < snowflakeCount; i++) {
+                const snowflake = document.createElement('div');
+                snowflake.className = 'snowflake';
+                
+                const size = Math.random() * 4 + 2;
+                snowflake.style.width = `${size}px`;
+                snowflake.style.height = `${size}px`;
+                snowflake.style.left = `${Math.random() * 100}%`;
+                snowflake.style.animation = `snowFall ${Math.random() * 5 + 5}s linear infinite`;
+                snowflake.style.animationDelay = `${Math.random() * 5}s`;
+                snowflake.style.opacity = Math.random() * 0.5 + 0.3;
+                
+                if (i % 2 === 0) {
+                    snowflake.style.animationName = 'snowFall2';
+                }
+                
+                snowContainer.appendChild(snowflake);
+            }
         }
 
         // Загрузка или создание профиля
         async function loadOrCreateProfile(user) {
-            const userId = `pepecords_user_${user.id}`;
+            const userId = `pepecards_user_${user.id}`;
             const savedProfile = localStorage.getItem(userId);
             
             if (savedProfile) {
@@ -3061,17 +3265,35 @@
                 appState.user = user;
                 appState.telegramData = telegram.initDataUnsafe;
                 
-                // Проверяем актуальность VIP
-                if (appState.vipUntil && new Date(appState.vipUntil) < new Date()) {
+                // Генерируем ID если его нет
+                if (!appState.playerId) {
+                    userCount++;
+                    appState.playerId = userCount;
+                    localStorage.setItem('pepecards_user_count', userCount.toString());
+                }
+                currentPlayerId = appState.playerId;
+                
+                // Проверяем актуальность VIP/Premium
+                const now = new Date();
+                if (appState.vipUntil && new Date(appState.vipUntil) < now) {
                     appState.isVIP = false;
                     appState.vipUntil = null;
                 }
+                if (appState.premiumUntil && new Date(appState.premiumUntil) < now) {
+                    appState.isPremium = false;
+                    appState.premiumUntil = null;
+                }
             } else {
                 // Создаем новый профиль
+                userCount++;
+                currentPlayerId = userCount;
+                localStorage.setItem('pepecards_user_count', userCount.toString());
+                
                 appState = {
                     user: user,
                     telegramData: telegram.initDataUnsafe,
-                    coins: 100, // Стартовые монеты
+                    playerId: currentPlayerId,
+                    coins: 100,
                     exp: 0,
                     level: 1,
                     expToNextLevel: 100,
@@ -3082,10 +3304,19 @@
                     equippedTitle: 'Новичок',
                     isVIP: false,
                     vipUntil: null,
+                    isPremium: false,
+                    premiumUntil: null,
                     lastCardTime: 0,
                     registrationDate: new Date().toISOString(),
-                    isAdmin: user.id === CONFIG.ADMIN_ID
+                    isAdmin: user.id === CONFIG.ADMIN_ID,
+                    theme: 'light'
                 };
+            }
+            
+            // Загружаем сохраненную тему
+            const savedTheme = localStorage.getItem('pepecards_theme');
+            if (savedTheme) {
+                appState.theme = savedTheme;
             }
             
             // Сохраняем профиль
@@ -3096,20 +3327,27 @@
         function saveProfile() {
             if (!appState.user) return;
             
-            const userId = `pepecords_user_${appState.user.id}`;
+            const userId = `pepecards_user_${appState.user.id}`;
             localStorage.setItem(userId, JSON.stringify(appState));
         }
 
-        // Настройка темы Telegram
+        // Настройка темы
         function setupTheme() {
-            if (!telegram) return;
+            // Применяем сохраненную тему
+            document.body.classList.remove('theme-dark-purple', 'theme-night');
+            if (appState.theme === 'dark-purple') {
+                document.body.classList.add('theme-dark-purple');
+            } else if (appState.theme === 'night') {
+                document.body.classList.add('theme-night');
+            }
             
-            document.documentElement.style.setProperty('--bg-primary', telegram.themeParams.bg_color || '#ffffff');
-            document.documentElement.style.setProperty('--text-primary', telegram.themeParams.text_color || '#000000');
-            document.documentElement.style.setProperty('--hint-color', telegram.themeParams.hint_color || '#999999');
-            document.documentElement.style.setProperty('--link-color', telegram.themeParams.link_color || '#2481cc');
-            document.documentElement.style.setProperty('--button-color', telegram.themeParams.button_color || '#40a7e3');
-            document.documentElement.style.setProperty('--button-text-color', telegram.themeParams.button_text_color || '#ffffff');
+            // Обновляем активную опцию
+            themeOptions.forEach(option => {
+                option.classList.remove('active');
+                if (option.dataset.theme === appState.theme) {
+                    option.classList.add('active');
+                }
+            });
         }
 
         // Настройка обработчиков событий
@@ -3125,28 +3363,31 @@
 
             // Кнопка открытия карты
             openCardBtn.addEventListener('click', openRandomCard);
-            openCardBtn.addEventListener('mouseenter', () => {
-                if (!openCardBtn.disabled) {
-                    openCardBtn.style.transform = 'translateY(-2px)';
-                    openCardBtn.style.boxShadow = '0 10px 30px rgba(139, 92, 246, 0.4)';
-                }
+
+            // Кнопки доната в профиле
+            profileDonateCoinsBtn.addEventListener('click', () => {
+                donateCoinsModal.classList.remove('hidden');
+                updateDonatePrices();
             });
-            openCardBtn.addEventListener('mouseleave', () => {
-                openCardBtn.style.transform = '';
-                openCardBtn.style.boxShadow = '';
+            
+            profileDonatePremiumBtn.addEventListener('click', () => {
+                donatePremiumModal.classList.remove('hidden');
             });
 
-            // Кнопка доната
-            addCoinsBtn.addEventListener('click', () => {
-                donateModal.classList.remove('hidden');
+            // Донат модалки
+            donateCoinsCloseBtn.addEventListener('click', () => {
+                donateCoinsModal.classList.add('hidden');
             });
 
-            // Донат модалка
-            donateCloseBtn.addEventListener('click', () => {
-                donateModal.classList.add('hidden');
+            donateCoinsConfirmBtn.addEventListener('click', processCoinsDonation);
+            
+            donateCoinsAmount.addEventListener('input', updateDonatePrices);
+
+            donatePremiumCloseBtn.addEventListener('click', () => {
+                donatePremiumModal.classList.add('hidden');
             });
 
-            donateConfirmBtn.addEventListener('click', processDonation);
+            donatePremiumConfirmBtn.addEventListener('click', processPremiumDonation);
 
             donateOptions.forEach(option => {
                 option.addEventListener('click', () => {
@@ -3178,12 +3419,31 @@
                 }
             });
 
+            // Выбор темы
+            themeOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    appState.theme = option.dataset.theme;
+                    localStorage.setItem('pepecards_theme', appState.theme);
+                    setupTheme();
+                    saveProfile();
+                    showNotification(`Тема изменена на "${option.querySelector('span').textContent}"`);
+                });
+            });
+
+            // Админ меню
+            adminMenuBtn.addEventListener('click', () => {
+                if (appState.isAdmin) {
+                    switchPage('admin');
+                }
+            });
+
             // Админ панель
             if (appState.isAdmin) {
-                adminSection.classList.remove('hidden');
+                adminMenuBtn.classList.remove('hidden');
                 
                 adminSearchBtn.addEventListener('click', searchPlayer);
                 adminAddCoinsBtn.addEventListener('click', addCoinsToPlayer);
+                adminAddPremiumBtn.addEventListener('click', addPremiumToPlayer);
                 adminAddVipBtn.addEventListener('click', addVipToPlayer);
                 adminBanBtn.addEventListener('click', banPlayer);
                 adminResetBtn.addEventListener('click', resetPlayer);
@@ -3192,8 +3452,11 @@
 
             // Обработка клика вне модалок
             document.addEventListener('click', (e) => {
-                if (e.target === donateModal) {
-                    donateModal.classList.add('hidden');
+                if (e.target === donateCoinsModal) {
+                    donateCoinsModal.classList.add('hidden');
+                }
+                if (e.target === donatePremiumModal) {
+                    donatePremiumModal.classList.add('hidden');
                 }
                 if (e.target === miniProfileModal) {
                     miniProfileModal.classList.add('hidden');
@@ -3202,19 +3465,17 @@
                     cardRevealModal.classList.add('hidden');
                 }
             });
+        }
 
-            // Анимация при наведении на кнопки
-            const allButtons = document.querySelectorAll('button');
-            allButtons.forEach(button => {
-                button.addEventListener('mouseenter', () => {
-                    if (!button.disabled) {
-                        button.style.transform = 'translateY(-2px)';
-                    }
-                });
-                button.addEventListener('mouseleave', () => {
-                    button.style.transform = '';
-                });
-            });
+        // Обновление цен доната
+        function updateDonatePrices() {
+            const coins = parseInt(donateCoinsAmount.value) || 100;
+            const stars = Math.ceil(coins * 0.03);
+            const rubles = Math.ceil(coins * 0.15);
+            
+            donateCoinsPrice.textContent = `${coins} PepeCoins = ⭐ ${stars}`;
+            starsPrice.textContent = `⭐ ${stars}`;
+            rublesPrice.textContent = `${rubles} ₽`;
         }
 
         // Переключение страниц
@@ -3250,6 +3511,9 @@
                 case 'profile':
                     updateProfile();
                     break;
+                case 'admin':
+                    updateAdminPanel();
+                    break;
             }
         }
 
@@ -3258,31 +3522,54 @@
             if (!appState.user) return;
             
             // Шапка
-            headerCoins.textContent = appState.coins;
+            headerCoins.textContent = appState.coins.toLocaleString();
             
             // Приветствие
             userGreeting.textContent = `Привет, ${appState.user.first_name}!`;
-            userStatus.textContent = appState.isVIP ? 'VIP статус активен 🎖️' : 'Начни собирать коллекцию карт';
-            userId.textContent = playerPPId;
             
-            // Премиум бейдж
-            if (appState.isVIP) {
+            if (appState.isPremium) {
+                userStatus.textContent = 'PepePremium активен 👑';
+                userStatus.style.color = '#8b5cf6';
+            } else if (appState.isVIP) {
+                userStatus.textContent = 'VIP статус активен 🎖️';
+                userStatus.style.color = '#f59e0b';
+            } else {
+                userStatus.textContent = 'Начни собирать коллекцию карт';
+                userStatus.style.color = '';
+            }
+            
+            userId.textContent = `#${currentPlayerId}`;
+            
+            // Бейджи
+            if (appState.isAdmin) {
+                noLimitBadge.style.display = 'inline-block';
+                vipBadge.classList.add('hidden');
+                premiumBadge.classList.add('hidden');
+            } else if (appState.isPremium) {
+                premiumBadge.classList.remove('hidden');
+                vipBadge.classList.add('hidden');
+                noLimitBadge.style.display = 'none';
+            } else if (appState.isVIP) {
                 vipBadge.classList.remove('hidden');
+                premiumBadge.classList.add('hidden');
+                noLimitBadge.style.display = 'none';
             } else {
                 vipBadge.classList.add('hidden');
+                premiumBadge.classList.add('hidden');
+                noLimitBadge.style.display = 'none';
             }
             
             // Предпросмотр наград
             const randomCard = getRandomCardPreview();
-            previewCoins.textContent = `${randomCard.min_coins}-${randomCard.max_coins} монет`;
-            previewExp.textContent = `${randomCard.min_exp}-${randomCard.max_exp} опыта`;
+            previewCoins.textContent = `${randomCard.min_coins}-${randomCard.max_coins}`;
+            previewExp.textContent = `${randomCard.min_exp}-${randomCard.max_exp}`;
             previewLevel.textContent = `Уровень ${appState.level}`;
         }
 
         // Обновление кулдауна
         function updateCooldown() {
-            if (maintenanceMode) {
-                cooldownTimer.textContent = 'ТЕХНИЧЕСКИЙ ПЕРЕРЫВ';
+            if (maintenanceMode && !appState.isAdmin) {
+                cooldownTimer.textContent = 'ТЕХ. ПЕРЕРЫВ';
                 cooldownTimer.style.color = '#ef4444';
                 openCardBtn.disabled = true;
                 openCardBtn.innerHTML = '<i class="fas fa-tools"></i> Технический перерыв';
@@ -3290,14 +3577,23 @@
             }
             
             if (appState.isAdmin) {
-                cooldownTimer.textContent = 'АДМИН';
+                cooldownTimer.textContent = 'NO LIMIT ❤️';
                 cooldownTimer.style.color = '#dc2626';
                 openCardBtn.disabled = false;
                 return;
             }
             
             const now = Math.floor(Date.now() / 1000);
-            const cooldown = appState.isVIP ? CONFIG.COOLDOWN_VIP : CONFIG.COOLDOWN_NORMAL;
+            let cooldown;
+            
+            if (appState.isPremium) {
+                cooldown = CONFIG.COOLDOWN_PREMIUM;
+            } else if (appState.isVIP) {
+                cooldown = CONFIG.COOLDOWN_VIP;
+            } else {
+                cooldown = CONFIG.COOLDOWN_NORMAL;
+            }
+            
             const timeLeft = Math.max(0, appState.lastCardTime + cooldown - now);
             
             if (timeLeft === 0) {
@@ -3323,26 +3619,32 @@
 
         // Открытие случайной карты
         async function openRandomCard() {
-            if (maintenanceMode) {
+            if (maintenanceMode && !appState.isAdmin) {
                 showNotification('Технический перерыв. Попробуйте позже.');
                 return;
             }
             
-            if (appState.isAdmin) {
-                // Админ может открывать без кулдауна
-                appState.lastCardTime = Math.floor(Date.now() / 1000);
-            } else {
+            const now = Math.floor(Date.now() / 1000);
+            
+            if (!appState.isAdmin) {
                 // Проверка кулдауна для обычных пользователей
-                const now = Math.floor(Date.now() / 1000);
-                const cooldown = appState.isVIP ? CONFIG.COOLDOWN_VIP : CONFIG.COOLDOWN_NORMAL;
+                let cooldown;
+                
+                if (appState.isPremium) {
+                    cooldown = CONFIG.COOLDOWN_PREMIUM;
+                } else if (appState.isVIP) {
+                    cooldown = CONFIG.COOLDOWN_VIP;
+                } else {
+                    cooldown = CONFIG.COOLDOWN_NORMAL;
+                }
                 
                 if (now - appState.lastCardTime < cooldown) {
                     showNotification('Подождите перед открытием следующей карты!');
                     return;
                 }
-                
-                appState.lastCardTime = now;
             }
+            
+            appState.lastCardTime = now;
             
             // Получаем случайную карту
             const card = getRandomCard();
@@ -3351,9 +3653,14 @@
             const cardCopy = { ...card, obtained: new Date().toISOString() };
             appState.cards.push(cardCopy);
             
-            // Добавляем награды
-            const coins = getRandomInt(card.min_coins, card.max_coins);
-            const exp = getRandomInt(card.min_exp, card.max_exp);
+            // Добавляем награды с учетом бонусов
+            let coins = getRandomInt(card.min_coins, card.max_coins);
+            let exp = getRandomInt(card.min_exp, card.max_exp);
+            
+            if (appState.isPremium) {
+                coins = Math.floor(coins * 1.5);
+                exp = Math.floor(exp * 1.5);
+            }
             
             appState.coins += coins;
             appState.exp += exp;
@@ -3372,7 +3679,7 @@
             updateInventory();
             updateProfile();
             
-            // Звуковое уведомление (если поддерживается)
+            // Звуковое уведомление
             if (telegram && telegram.HapticFeedback) {
                 telegram.HapticFeedback.impactOccurred('medium');
             }
@@ -3384,7 +3691,6 @@
             let weightedList = [];
             
             Object.values(CONFIG.CARDS).forEach(card => {
-                // Если карта уже открыта, уменьшаем шанс
                 const openedCount = appState.cards.filter(c => c.id === card.id).length;
                 const chanceMultiplier = openedCount > 0 ? 0.5 : 1;
                 const weight = Math.floor(card.chance * chanceMultiplier);
@@ -3426,13 +3732,6 @@
                     appState.coins += bonusCoins;
                     showNotification(`🎉 Уровень ${appState.level}! +${bonusCoins} монет!`);
                 }
-                
-                // VIP на уровне 15
-                if (appState.level === 15 && !appState.isVIP) {
-                    appState.isVIP = true;
-                    appState.vipUntil = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
-                    showNotification('🎖️ Вы получили VIP статус на 7 дней!');
-                }
             }
             
             return leveledUp;
@@ -3453,7 +3752,6 @@
 
         // Показ анимации получения карты
         function showCardRevealAnimation(card, coins, exp, leveledUp) {
-            // Устанавливаем данные карты
             revealCardImage.style.backgroundImage = `url('${card.image_path}')`;
             revealCardName.textContent = card.name;
             revealCardRarity.textContent = card.rarityName;
@@ -3464,12 +3762,12 @@
             revealRewards.innerHTML = `
                 <div class="reveal-reward">
                     <div class="reveal-reward-icon"><i class="fas fa-coins"></i></div>
-                    <div class="reveal-reward-value">+${coins}</div>
+                    <div class="reveal-reward-value">+${coins.toLocaleString()}</div>
                     <div class="reveal-reward-label">Монеты</div>
                 </div>
                 <div class="reveal-reward">
                     <div class="reveal-reward-icon"><i class="fas fa-star"></i></div>
-                    <div class="reveal-reward-value">+${exp}</div>
+                    <div class="reveal-reward-value">+${exp.toLocaleString()}</div>
                     <div class="reveal-reward-label">Опыт</div>
                 </div>
                 ${leveledUp ? `
@@ -3494,7 +3792,7 @@
                     createConfetti();
                 }
                 
-                // Автоматическое скрытие через 4 секунды
+                // Автоматическое скрытие
                 setTimeout(() => {
                     cardRevealModal.classList.add('hidden');
                     revealCard.classList.remove('flipped');
@@ -3596,7 +3894,6 @@
                 if (isFavorite) cardElement.classList.add('favorite');
                 
                 cardElement.innerHTML = `
-                    <div class="rarity-glow"></div>
                     ${count > 1 ? `<div class="card-count">×${count}</div>` : ''}
                     <button class="favorite-btn ${isFavorite ? 'active' : ''}" data-id="${card.id}">
                         <i class="fas fa-heart"></i>
@@ -3628,7 +3925,6 @@
 
         // Показ деталей карты
         function showCardDetails(card) {
-            // Здесь можно добавить модалку с детальной информацией о карте
             showNotification(`${card.name} - ${card.rarityName}\n${card.description}`);
         }
 
@@ -3649,17 +3945,17 @@
 
         // Показ селектора избранной карты
         function showFavoriteCardSelector() {
-            // Показываем список карт для выбора
             const cardList = document.createElement('div');
             cardList.style.position = 'fixed';
             cardList.style.top = '0';
             cardList.style.left = '0';
             cardList.style.width = '100%';
             cardList.style.height = '100%';
-            cardList.style.background = 'rgba(0,0,0,0.9)';
+            cardList.style.background = 'rgba(0,0,0,0.95)';
             cardList.style.zIndex = '2000';
             cardList.style.padding = '20px';
             cardList.style.overflowY = 'auto';
+            cardList.style.backdropFilter = 'blur(10px)';
             
             // Уникальные карты
             const uniqueCards = [];
@@ -3675,9 +3971,9 @@
             cardList.innerHTML = `
                 <div style="color: white; text-align: center; margin-bottom: 20px;">
                     <h2 style="font-size: 1.5rem; margin-bottom: 10px;">Выберите любимую карту</h2>
-                    <p>${uniqueCards.length} уникальных карт доступно</p>
+                    <p style="color: #a0aec0;">${uniqueCards.length} уникальных карт доступно</p>
                 </div>
-                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
                     ${uniqueCards.map(card => {
                         const isFavorite = appState.favoriteCard && appState.favoriteCard.id === card.id;
                         return `
@@ -3728,19 +4024,22 @@
             // Аватар
             if (appState.user.photo_url) {
                 profileAvatar.style.backgroundImage = `url('${appState.user.photo_url}')`;
+                profileAvatar.innerHTML = '';
             } else {
-                // Генерация градиентного аватара по ID
                 const colors = ['#8B5CF6', '#A78BFA', '#3B82F6', '#10B981', '#F59E0B'];
                 const color = colors[appState.user.id % colors.length];
                 profileAvatar.style.background = `linear-gradient(135deg, ${color}, ${color}80)`;
-                profileAvatar.innerHTML = `<i class="fas fa-user" style="color: white; font-size: 2rem;"></i>`;
+                profileAvatar.innerHTML = `<i class="fas fa-user" style="color: white; font-size: 1.8rem;"></i>`;
             }
             
             // Рамка профиля
             if (appState.equippedFrame) {
-                profileFrame.style.border = `${appState.equippedFrame.data.width} solid ${appState.equippedFrame.data.color}`;
                 if (appState.equippedFrame.data.gradient) {
-                    profileFrame.style.borderImage = `linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet) 1`;
+                    profileFrame.style.border = `${appState.equippedFrame.data.width} solid`;
+                    profileFrame.style.borderImage = appState.equippedFrame.data.gradient;
+                    profileFrame.style.borderImageSlice = 1;
+                } else {
+                    profileFrame.style.border = `${appState.equippedFrame.data.width} solid ${appState.equippedFrame.data.color}`;
                 }
             } else {
                 profileFrame.style.border = 'none';
@@ -3760,12 +4059,12 @@
             profileTitle.textContent = appState.equippedTitle || 'Новичок';
             
             // ID
-            profileId.textContent = playerPPId;
+            profileId.textContent = `#${currentPlayerId}`;
             
             // Статистика
             statLevel.textContent = appState.level;
             statCards.textContent = appState.cards.length;
-            statCoins.textContent = appState.coins;
+            statCoins.textContent = appState.coins.toLocaleString();
             statUnique.textContent = [...new Set(appState.cards.map(c => c.id))].length;
             
             // Прогресс уровня
@@ -3779,13 +4078,14 @@
             // Любимая карта
             if (appState.favoriteCard) {
                 favoriteCardImage.style.backgroundImage = `url('${appState.favoriteCard.image_path}')`;
+                favoriteCardImage.innerHTML = '';
                 favoriteCardName.textContent = appState.favoriteCard.name;
                 favoriteCardRarity.textContent = appState.favoriteCard.rarityName;
                 favoriteCardRarity.className = 'favorite-card-rarity';
                 favoriteCardRarity.classList.add(`rarity-${appState.favoriteCard.rarity}`);
             } else {
                 favoriteCardImage.style.backgroundImage = '';
-                favoriteCardImage.innerHTML = '<i class="fas fa-heart" style="color: var(--text-secondary); font-size: 2rem;"></i>';
+                favoriteCardImage.innerHTML = '<i class="fas fa-heart" style="color: var(--text-secondary); font-size: 1.8rem;"></i>';
                 favoriteCardName.textContent = 'Не выбрана';
                 favoriteCardRarity.textContent = '—';
                 favoriteCardRarity.className = 'favorite-card-rarity';
@@ -3794,220 +4094,12 @@
 
         // Обновление магазина
         function updateShop() {
-            // Реализация магазина будет добавлена
-            // Можно добавить рендеринг товаров из CONFIG.SHOP_ITEMS
-        }
-
-        // Обновление лидерборда
-        function updateLeaderboard() {
-            // Реализация лидерборда будет добавлена
-            // Нужно получить данные всех игроков из localStorage
-        }
-
-        // Показ мини профиля игрока
-        function showMiniProfile(playerData) {
-            // Заполнение данных игрока
-            // ...
-            
-            miniProfileModal.classList.remove('hidden');
-        }
-
-        // Процесс доната
-        function processDonation() {
-            const selectedOption = donateModal.querySelector('.donate-option.selected');
-            if (!selectedOption) return;
-            
-            const amount = parseInt(selectedOption.dataset.amount);
-            const method = selectedOption.dataset.method;
-            
-            if (method === 'stars') {
-                // Покупка через звезды Telegram
-                if (telegram && telegram.showPopup) {
-                    telegram.showPopup({
-                        title: 'Покупка через звезды',
-                        message: `Вы хотите купить ${amount} монет за ⭐ 10?`,
-                        buttons: [
-                            { type: 'ok', text: 'Купить' },
-                            { type: 'cancel', text: 'Отмена' }
-                        ]
-                    }, (buttonId) => {
-                        if (buttonId === 'ok') {
-                            // Здесь интеграция с платежами Telegram
-                            showNotification('Оплата через звезды временно недоступна');
-                        }
-                    });
-                }
-            } else if (method === 'rubles') {
-                        // Продолжение функции processDonation...
-                // Покупка через рублями
-                telegram.showPopup({
-                    title: 'Покупка через рубли',
-                    message: `Напишите @DefoltPlayer для покупки ${amount} монет за ${selectedOption.querySelector('.donate-option-price').textContent}`,
-                    buttons: [
-                        { type: 'default', text: 'Открыть диалог' },
-                        { type: 'cancel', text: 'Отмена' }
-                    ]
-                }, (buttonId) => {
-                    if (buttonId === 'default') {
-                        window.open('https://t.me/DefoltPlayer', '_blank');
-                        showNotification('Напишите @DefoltPlayer для покупки монет');
-                    }
-                });
-            }
-            
-            donateModal.classList.add('hidden');
-        }
-
-        // Показ уведомления
-        function showNotification(message, type = 'info') {
-            // Создаем уведомление
-            const notification = document.createElement('div');
-            notification.className = 'notification';
-            notification.innerHTML = `
-                <i class="fas fa-${type === 'error' ? 'exclamation-circle' : type === 'success' ? 'check-circle' : 'info-circle'}"></i>
-                <span>${message}</span>
-            `;
-            
-            // Стили
-            notification.style.position = 'fixed';
-            notification.style.top = '70px';
-            notification.style.left = '50%';
-            notification.style.transform = 'translateX(-50%)';
-            notification.style.background = 'linear-gradient(135deg, var(--accent-color), var(--accent-light))';
-            notification.style.color = 'white';
-            notification.style.padding = '12px 20px';
-            notification.style.borderRadius = '12px';
-            notification.style.boxShadow = '0 5px 20px rgba(0,0,0,0.3)';
-            notification.style.zIndex = '2002';
-            notification.style.display = 'flex';
-            notification.style.alignItems = 'center';
-            notification.style.gap = '10px';
-            notification.style.maxWidth = '90%';
-            notification.style.animation = 'fadeIn 0.3s ease';
-            
-            document.body.appendChild(notification);
-            
-            // Автоматическое скрытие
-            setTimeout(() => {
-                notification.style.opacity = '0';
-                notification.style.transform = 'translateX(-50%) translateY(-10px)';
-                setTimeout(() => {
-                    document.body.removeChild(notification);
-                }, 300);
-            }, 3000);
-        }
-
-        // Админ функции
-        async function searchPlayer() {
-            const searchId = adminPlayerId.value.trim();
-            if (!searchId) {
-                showNotification('Введите ID игрока', 'error');
-                return;
-            }
-            
-            // Поиск по ID в формате #PP0000
-            if (searchId.startsWith('#PP')) {
-                // Ищем среди всех пользователей
-                showNotification('Функция поиска игрока в разработке', 'info');
-            } else {
-                showNotification('Неверный формат ID. Используйте #PP0000', 'error');
-            }
-        }
-
-        function addCoinsToPlayer() {
-            const amount = parseInt(adminCoinsAmount.value);
-            if (!amount || amount <= 0) {
-                showNotification('Введите корректную сумму', 'error');
-                return;
-            }
-            
-            appState.coins += amount;
-            saveProfile();
-            updateUI();
-            showNotification(`Выдано ${amount} монет`, 'success');
-        }
-
-        function addVipToPlayer() {
-            if (appState.isVIP) {
-                appState.isVIP = false;
-                appState.vipUntil = null;
-                showNotification('VIP статус отключен', 'success');
-            } else {
-                appState.isVIP = true;
-                appState.vipUntil = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
-                showNotification('VIP статус выдан на 30 дней', 'success');
-            }
-            
-            saveProfile();
-            updateUI();
-        }
-
-        function banPlayer() {
-            telegram.showPopup({
-                title: 'Бан игрока',
-                message: 'Вы уверены, что хотите забанить этого игрока?',
-                buttons: [
-                    { type: 'destructive', text: 'Забанить' },
-                    { type: 'cancel', text: 'Отмена' }
-                ]
-            }, (buttonId) => {
-                if (buttonId === 'destructive') {
-                    showNotification('Игрок забанен', 'success');
-                }
-            });
-        }
-
-        function resetPlayer() {
-            telegram.showPopup({
-                title: 'Сброс профиля',
-                message: 'ВСЕ данные игрока будут удалены! Вы уверены?',
-                buttons: [
-                    { type: 'destructive', text: 'Сбросить' },
-                    { type: 'cancel', text: 'Отмена' }
-                ]
-            }, (buttonId) => {
-                if (buttonId === 'destructive') {
-                    // Сброс профиля текущего игрока
-                    appState.coins = 100;
-                    appState.exp = 0;
-                    appState.level = 1;
-                    appState.expToNextLevel = 100;
-                    appState.cards = [];
-                    appState.favoriteCard = null;
-                    appState.isVIP = false;
-                    appState.vipUntil = null;
-                    appState.lastCardTime = 0;
-                    
-                    saveProfile();
-                    updateUI();
-                    updateInventory();
-                    updateProfile();
-                    
-                    showNotification('Профиль сброшен', 'success');
-                }
-            });
-        }
-
-        function toggleMaintenance() {
-            maintenanceMode = !maintenanceMode;
-            
-            if (maintenanceMode) {
-                maintenanceOverlay.classList.remove('hidden');
-                showNotification('Технический перерыв включен', 'success');
-            } else {
-                maintenanceOverlay.classList.add('hidden');
-                showNotification('Технический перерыв выключен', 'success');
-            }
-        }
-
-        // Обновление магазина (реализация)
-        function updateShop() {
             const shopTabs = document.querySelectorAll('.shop-tab');
             const shopContents = {
                 packs: document.getElementById('packsTab'),
                 personalization: document.getElementById('personalizationTab'),
                 titles: document.getElementById('titlesTab'),
-                vip: document.getElementById('vipTab')
+                premium: document.getElementById('premiumTab')
             };
             
             // Обработчики для вкладок магазина
@@ -4040,8 +4132,12 @@
             
             container.innerHTML = items.map(item => {
                 const owned = checkIfOwned(item);
-                const canBuy = appState.coins >= item.price && !owned;
+                const canBuy = (appState.coins >= item.price && !owned && item.price > 0) || (item.price === 0 && owned);
                 const equipped = checkIfEquipped(item);
+                const canEquip = owned && !equipped;
+                
+                // Для Premium товаров показываем цену в звездах
+                const priceDisplay = item.type === 'premium' ? `⭐ ${item.price}` : `${item.price} монет`;
                 
                 return `
                     <div class="shop-item" data-id="${item.id}">
@@ -4056,15 +4152,23 @@
                         </div>
                         
                         <div class="shop-item-price">
-                            <i class="fas fa-coins"></i>
-                            ${item.price} монет
+                            <i class="fas ${item.type === 'premium' ? 'fa-star' : 'fa-coins'}"></i>
+                            ${priceDisplay}
                         </div>
                         
-                        <button class="shop-item-btn ${equipped ? 'equipped' : ''} ${!canBuy ? 'disabled' : ''}" 
-                                ${!canBuy ? 'disabled' : ''}
-                                onclick="buyItem('${item.id}', '${tabName}')">
-                            ${owned ? (equipped ? '✓ Надето' : 'Надеть') : 'Купить'}
-                        </button>
+                        ${item.price === 0 ? `
+                            <button class="shop-item-btn ${equipped ? 'equipped' : ''} ${!canEquip ? 'disabled' : ''}" 
+                                    ${!canEquip ? 'disabled' : ''}
+                                    onclick="buyItem('${item.id}', '${tabName}')">
+                                ${owned ? (equipped ? '✓ Надето' : 'Надеть') : 'Недоступно'}
+                            </button>
+                        ` : `
+                            <button class="shop-item-btn ${equipped ? 'equipped' : ''} ${!canBuy ? 'disabled' : ''}" 
+                                    ${!canBuy ? 'disabled' : ''}
+                                    onclick="buyItem('${item.id}', '${tabName}')">
+                                ${owned ? (equipped ? '✓ Надето' : 'Надеть') : 'Купить'}
+                            </button>
+                        `}
                     </div>
                 `;
             }).join('');
@@ -4072,23 +4176,19 @@
 
         function checkIfOwned(item) {
             switch(item.type) {
-                case 'suffix':
-                    return appState.coins >= item.price * 0.5; // Пример условия
                 case 'frame':
-                    return appState.coins >= item.price * 0.5;
+                    return appState.coins >= item.price * 0.5 || (item.data.premium && appState.isPremium);
                 case 'title':
                     return checkTitleRequirement(item);
-                case 'vip':
-                    return appState.isVIP;
+                case 'premium':
+                    return appState.isPremium;
                 default:
-                    return false;
+                    return appState.coins >= item.price * 0.5;
             }
         }
 
         function checkIfEquipped(item) {
             switch(item.type) {
-                case 'suffix':
-                    return appState.equippedSuffix && appState.equippedSuffix.id === item.id;
                 case 'frame':
                     return appState.equippedFrame && appState.equippedFrame.id === item.id;
                 case 'title':
@@ -4099,22 +4199,167 @@
         }
 
         function checkTitleRequirement(item) {
-            if (!item.data || !item.data.requirement) return true;
+            if (!item.data) return false;
             
             switch(item.data.requirement) {
                 case 'cards':
                     return [...new Set(appState.cards.map(c => c.id))].length >= item.data.value;
                 case 'coins':
                     return appState.coins >= item.data.value;
+                case 'premium':
+                    return appState.isPremium;
                 default:
                     return false;
             }
         }
 
+        // Процесс доната PepeCoins
+        async function processCoinsDonation() {
+            const selectedOption = donateCoinsModal.querySelector('.donate-option.selected');
+            if (!selectedOption) return;
+            
+            const coins = parseInt(donateCoinsAmount.value) || 100;
+            const method = selectedOption.dataset.method;
+            const stars = Math.ceil(coins * 0.03);
+            
+            if (coins < 100) {
+                showNotification('Минимальная покупка: 100 PepeCoins', 'error');
+                return;
+            }
+            
+            if (method === 'stars') {
+                // Покупка через звезды Telegram
+                if (telegram && telegram.showPopup) {
+                    telegram.showPopup({
+                        title: 'Покупка PepeCoins',
+                        message: `Вы хотите купить ${coins} PepeCoins за ⭐ ${stars}?`,
+                        buttons: [
+                            { type: 'ok', text: 'Купить' },
+                            { type: 'cancel', text: 'Отмена' }
+                        ]
+                    }, async (buttonId) => {
+                        if (buttonId === 'ok') {
+                            // Здесь должна быть интеграция с платежами Telegram Stars
+                            // Временно симулируем успешную покупку
+                            appState.coins += coins;
+                            saveProfile();
+                            updateUI();
+                            updateProfile();
+                            showNotification(`Вы успешно купили ${coins} PepeCoins!`, 'success');
+                            donateCoinsModal.classList.add('hidden');
+                            
+                            // В реальном приложении здесь должен быть запрос к боту
+                            // await fetch(`https://api.telegram.org/botYOUR_BOT_TOKEN/sendInvoice?chat_id=${appState.user.id}&...`);
+                        }
+                    });
+                }
+            } else if (method === 'rubles') {
+                // Покупка через рублями
+                telegram.showPopup({
+                    title: 'Покупка через рубли',
+                    message: `Напишите @DefoltPlayer для покупки ${coins} PepeCoins за ${Math.ceil(coins * 0.15)} ₽`,
+                    buttons: [
+                        { type: 'default', text: 'Открыть диалог' },
+                        { type: 'cancel', text: 'Отмена' }
+                    ]
+                }, (buttonId) => {
+                    if (buttonId === 'default') {
+                        window.open('https://t.me/DefoltPlayer', '_blank');
+                        showNotification('Напишите @DefoltPlayer для покупки PepeCoins');
+                    }
+                });
+                donateCoinsModal.classList.add('hidden');
+            }
+        }
+
+        // Процесс доната PepePremium
+        async function processPremiumDonation() {
+            const selectedOption = donatePremiumModal.querySelector('.donate-option.selected');
+            if (!selectedOption) return;
+            
+            const method = selectedOption.dataset.method;
+            
+            if (method === 'stars') {
+                // Покупка через звезды Telegram
+                if (telegram && telegram.showPopup) {
+                    telegram.showPopup({
+                        title: 'Покупка PepePremium',
+                        message: 'Вы хотите купить PepePremium на 30 дней за ⭐ 200?',
+                        buttons: [
+                            { type: 'ok', text: 'Купить' },
+                            { type: 'cancel', text: 'Отмена' }
+                        ]
+                    }, async (buttonId) => {
+                        if (buttonId === 'ok') {
+                            // Здесь должна быть интеграция с платежами Telegram Stars
+                            // Временно симулируем успешную покупку
+                            const until = new Date();
+                            until.setDate(until.getDate() + 30);
+                            appState.isPremium = true;
+                            appState.premiumUntil = until.toISOString();
+                            saveProfile();
+                            updateUI();
+                            updateProfile();
+                            showNotification('Вы успешно приобрели PepePremium на 30 дней! 👑', 'success');
+                            donatePremiumModal.classList.add('hidden');
+                        }
+                    });
+                }
+            } else if (method === 'rubles') {
+                // Покупка через рублями
+                telegram.showPopup({
+                    title: 'Покупка через рубли',
+                    message: 'Напишите @DefoltPlayer для покупки PepePremium за 1000 ₽',
+                    buttons: [
+                        { type: 'default', text: 'Открыть диалог' },
+                        { type: 'cancel', text: 'Отмена' }
+                    ]
+                }, (buttonId) => {
+                    if (buttonId === 'default') {
+                        window.open('https://t.me/DefoltPlayer', '_blank');
+                        showNotification('Напишите @DefoltPlayer для покупки PepePremium');
+                    }
+                });
+                donatePremiumModal.classList.add('hidden');
+            }
+        }
+
+        // Покупка предмета в магазине
         function buyItem(itemId, category) {
             const item = CONFIG.SHOP_ITEMS[category].find(i => i.id === itemId);
             if (!item) return;
             
+            // Проверка для бесплатных предметов (титулы, рамки по условиям)
+            if (item.price === 0) {
+                if (!checkIfOwned(item)) {
+                    showNotification('Не выполнены условия для получения', 'error');
+                    return;
+                }
+                
+                if (checkIfEquipped(item)) {
+                    showNotification('Этот предмет уже надет', 'info');
+                    return;
+                }
+                
+                // Надеваем предмет
+                switch(item.type) {
+                    case 'frame':
+                        appState.equippedFrame = item;
+                        showNotification(`Рамка "${item.name}" надета`, 'success');
+                        break;
+                    case 'title':
+                        appState.equippedTitle = item.name;
+                        showNotification(`Титул "${item.name}" активирован`, 'success');
+                        break;
+                }
+                
+                saveProfile();
+                updateProfile();
+                updateShop();
+                return;
+            }
+            
+            // Проверка для платных предметов
             if (appState.coins < item.price) {
                 showNotification('Недостаточно монет', 'error');
                 return;
@@ -4132,10 +4377,6 @@
                 case 'pack':
                     openShopPack(item);
                     break;
-                case 'suffix':
-                    appState.equippedSuffix = item;
-                    showNotification(`Суффикс "${item.name}" куплен и надет`, 'success');
-                    break;
                 case 'frame':
                     appState.equippedFrame = item;
                     showNotification(`Рамка "${item.name}" куплена и надета`, 'success');
@@ -4143,18 +4384,6 @@
                 case 'title':
                     appState.equippedTitle = item.name;
                     showNotification(`Титул "${item.name}" получен`, 'success');
-                    break;
-                case 'vip':
-                    if (item.data.days === -1) {
-                        appState.isVIP = true;
-                        appState.vipUntil = null; // Навсегда
-                    } else {
-                        const currentDate = appState.vipUntil ? new Date(appState.vipUntil) : new Date();
-                        currentDate.setDate(currentDate.getDate() + item.data.days);
-                        appState.vipUntil = currentDate.toISOString();
-                        appState.isVIP = true;
-                    }
-                    showNotification(`VIP статус активирован на ${item.data.days === -1 ? 'всегда' : item.data.days + ' дней'}`, 'success');
                     break;
             }
             
@@ -4184,8 +4413,13 @@
                 appState.cards.push(cardCopy);
                 
                 // Добавляем награды
-                const coins = getRandomInt(card.min_coins, card.max_coins);
-                const exp = getRandomInt(card.min_exp, card.max_exp);
+                let coins = getRandomInt(card.min_coins, card.max_coins);
+                let exp = getRandomInt(card.min_exp, card.max_exp);
+                
+                if (appState.isPremium) {
+                    coins = Math.floor(coins * 1.5);
+                    exp = Math.floor(exp * 1.5);
+                }
                 
                 appState.coins += coins;
                 appState.exp += exp;
@@ -4194,10 +4428,8 @@
             checkLevelUp();
             saveProfile();
             
-            // Показываем анимацию
             showNotification(`Набор "${packItem.name}" открыт! Получено ${cardsCount} карт`, 'success');
             
-            // Вибрация
             if (telegram && telegram.HapticFeedback) {
                 telegram.HapticFeedback.impactOccurred('heavy');
             }
@@ -4208,13 +4440,9 @@
             const leaderboardList = document.getElementById('leaderboardList');
             if (!leaderboardList) return;
             
-            // Получаем всех пользователей
             const allPlayers = getAllPlayers();
-            
-            // Фильтруем админов
             const players = allPlayers.filter(player => !player.isAdmin);
             
-            // Сортируем по выбранному типу
             players.sort((a, b) => {
                 switch(type) {
                     case 'level':
@@ -4228,16 +4456,14 @@
                 }
             });
             
-            // Ограничиваем топ-20
             const topPlayers = players.slice(0, 20);
             
-            // Рендерим лидерборд
             leaderboardList.innerHTML = topPlayers.map((player, index) => {
                 const rank = index + 1;
                 const uniqueCards = [...new Set(player.cards.map(c => c.id))].length;
                 
                 return `
-                    <div class="leaderboard-item ${rank <= 3 ? 'top-3 rank-' + rank : ''}" onclick="showPlayerMiniProfile('${player.user.id}')">
+                    <div class="leaderboard-item ${rank <= 3 ? 'top-3 rank-' + rank : ''}" onclick="showPlayerMiniProfile(${player.user.id})">
                         <div class="leaderboard-rank">${rank}</div>
                         <div class="leaderboard-avatar" style="background-image: url('${player.user.photo_url || ''}')"></div>
                         <div class="leaderboard-info">
@@ -4258,7 +4484,7 @@
                                 </div>
                                 <div class="leaderboard-stat">
                                     <i class="fas fa-coins"></i>
-                                    <span class="leaderboard-value">${player.coins}</span>
+                                    <span class="leaderboard-value">${player.coins.toLocaleString()}</span>
                                 </div>
                             </div>
                         </div>
@@ -4276,7 +4502,6 @@
                 `;
             }
             
-            // Обработчики для вкладок лидерборда
             document.querySelectorAll('.leaderboard-tab').forEach(tab => {
                 tab.addEventListener('click', () => {
                     document.querySelectorAll('.leaderboard-tab').forEach(t => t.classList.remove('active'));
@@ -4289,10 +4514,9 @@
         function getAllPlayers() {
             const players = [];
             
-            // Проходим по всем ключам localStorage
             for (let i = 0; i < localStorage.length; i++) {
                 const key = localStorage.key(i);
-                if (key.startsWith('pepecords_user_')) {
+                if (key.startsWith('pepecards_user_')) {
                     try {
                         const playerData = JSON.parse(localStorage.getItem(key));
                         if (playerData && playerData.user) {
@@ -4308,7 +4532,7 @@
         }
 
         function showPlayerMiniProfile(userId) {
-            const playerKey = `pepecords_user_${userId}`;
+            const playerKey = `pepecards_user_${userId}`;
             const playerData = JSON.parse(localStorage.getItem(playerKey));
             
             if (!playerData) {
@@ -4316,7 +4540,6 @@
                 return;
             }
             
-            // Заполняем данные мини-профиля
             document.getElementById('miniProfileAvatar').style.backgroundImage = 
                 playerData.user.photo_url ? `url('${playerData.user.photo_url}')` : '';
             
@@ -4333,11 +4556,10 @@
             
             document.getElementById('miniProfileLevel').textContent = playerData.level;
             document.getElementById('miniProfileCards').textContent = playerData.cards.length;
-            document.getElementById('miniProfileCoins').textContent = playerData.coins;
+            document.getElementById('miniProfileCoins').textContent = playerData.coins.toLocaleString();
             document.getElementById('miniProfileUnique').textContent = 
                 [...new Set(playerData.cards.map(c => c.id))].length;
             
-            // Любимая карта
             const favoriteCardImage = document.getElementById('miniFavoriteCardImage');
             const favoriteCardName = document.getElementById('miniFavoriteCardName');
             const favoriteCardRarity = document.getElementById('miniFavoriteCardRarity');
@@ -4356,86 +4578,274 @@
                 favoriteCardRarity.className = 'favorite-card-display-rarity';
             }
             
-            // Показываем модалку
             miniProfileModal.classList.remove('hidden');
         }
 
-        // Добавляем стили для анимаций при наведении
-        const style = document.createElement('style');
-        style.textContent = `
-            .open-card-btn:hover:not(:disabled) {
-                transform: translateY(-5px) scale(1.02);
-                box-shadow: 0 15px 40px rgba(139, 92, 246, 0.4);
+        // Показ уведомления
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            
+            let icon = 'info-circle';
+            if (type === 'error') icon = 'exclamation-circle';
+            if (type === 'success') icon = 'check-circle';
+            
+            notification.innerHTML = `
+                <i class="fas fa-${icon}"></i>
+                <span>${message}</span>
+            `;
+            
+            notification.style.position = 'fixed';
+            notification.style.top = '70px';
+            notification.style.left = '50%';
+            notification.style.transform = 'translateX(-50%)';
+            notification.style.background = type === 'error' ? '#ef4444' : type === 'success' ? '#10b981' : 'linear-gradient(135deg, var(--accent-color), var(--accent-light))';
+            notification.style.color = 'white';
+            notification.style.padding = '12px 20px';
+            notification.style.borderRadius = '12px';
+            notification.style.boxShadow = '0 5px 20px rgba(0,0,0,0.3)';
+            notification.style.zIndex = '2002';
+            notification.style.display = 'flex';
+            notification.style.alignItems = 'center';
+            notification.style.gap = '10px';
+            notification.style.maxWidth = '90%';
+            notification.style.animation = 'fadeIn 0.3s ease';
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(-50%) translateY(-10px)';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        // Админ функции
+        function updateAdminPanel() {
+            if (appState.adminSelectedPlayer) {
+                adminCurrentPlayer.textContent = `#${appState.adminSelectedPlayer.playerId} (${appState.adminSelectedPlayer.user.first_name})`;
+            } else {
+                adminCurrentPlayer.textContent = 'Не выбран';
+            }
+        }
+
+        function searchPlayer() {
+            const searchId = adminPlayerId.value.trim();
+            if (!searchId) {
+                showNotification('Введите ID игрока', 'error');
+                return;
             }
             
-            .open-card-btn:active:not(:disabled) {
-                transform: translateY(0) scale(0.98);
-                box-shadow: 0 5px 20px rgba(139, 92, 246, 0.2);
+            let foundPlayer = null;
+            
+            // Поиск по ID игрока (#123)
+            if (searchId.startsWith('#')) {
+                const playerId = parseInt(searchId.substring(1));
+                foundPlayer = findPlayerById(playerId);
+            }
+            // Поиск по Telegram ID
+            else if (!isNaN(searchId)) {
+                const telegramId = parseInt(searchId);
+                foundPlayer = findPlayerByTelegramId(telegramId);
             }
             
-            .card-item:hover {
-                transform: translateY(-8px) rotateX(5deg);
-                box-shadow: 0 20px 40px var(--shadow-color);
+            if (foundPlayer) {
+                appState.adminSelectedPlayer = foundPlayer;
+                updateAdminPanel();
+                showNotification(`Игрок найден: #${foundPlayer.playerId} (${foundPlayer.user.first_name})`, 'success');
+            } else {
+                showNotification('Игрок не найден', 'error');
+            }
+        }
+
+        function findPlayerById(playerId) {
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key.startsWith('pepecards_user_')) {
+                    try {
+                        const playerData = JSON.parse(localStorage.getItem(key));
+                        if (playerData && playerData.playerId === playerId) {
+                            return playerData;
+                        }
+                    } catch (e) {
+                        console.error('Ошибка загрузки данных игрока:', e);
+                    }
+                }
+            }
+            return null;
+        }
+
+        function findPlayerByTelegramId(telegramId) {
+            const playerKey = `pepecards_user_${telegramId}`;
+            const playerData = JSON.parse(localStorage.getItem(playerKey));
+            return playerData || null;
+        }
+
+        function addCoinsToPlayer() {
+            if (!appState.adminSelectedPlayer) {
+                showNotification('Сначала выберите игрока', 'error');
+                return;
             }
             
-            .card-item:hover::before {
-                opacity: 0.1;
+            const amount = parseInt(adminCoinsAmount.value);
+            if (!amount || amount <= 0) {
+                showNotification('Введите корректную сумму', 'error');
+                return;
             }
             
-            .rarity-common .card-item:hover::before {
-                opacity: 0.05;
+            // Обновляем данные выбранного игрока
+            const playerKey = `pepecards_user_${appState.adminSelectedPlayer.user.id}`;
+            appState.adminSelectedPlayer.coins += amount;
+            localStorage.setItem(playerKey, JSON.stringify(appState.adminSelectedPlayer));
+            
+            // Если это текущий игрок, обновляем состояние
+            if (appState.adminSelectedPlayer.user.id === appState.user.id) {
+                appState.coins += amount;
+                updateUI();
+                updateProfile();
             }
             
-            .rarity-mythic .card-item:hover::before {
-                opacity: 0.4;
-                animation: shimmer 1s infinite linear;
+            showNotification(`Выдано ${amount} монет игроку #${appState.adminSelectedPlayer.playerId}`, 'success');
+        }
+
+        function addPremiumToPlayer() {
+            if (!appState.adminSelectedPlayer) {
+                showNotification('Сначала выберите игрока', 'error');
+                return;
             }
             
-            .rarity-secret .card-item:hover::before {
-                opacity: 0.6;
-                animation: shimmer 0.5s infinite linear;
+            const until = new Date();
+            until.setDate(until.getDate() + 30);
+            
+            const playerKey = `pepecards_user_${appState.adminSelectedPlayer.user.id}`;
+            appState.adminSelectedPlayer.isPremium = true;
+            appState.adminSelectedPlayer.premiumUntil = until.toISOString();
+            localStorage.setItem(playerKey, JSON.stringify(appState.adminSelectedPlayer));
+            
+            if (appState.adminSelectedPlayer.user.id === appState.user.id) {
+                appState.isPremium = true;
+                appState.premiumUntil = until.toISOString();
+                updateUI();
+                updateProfile();
             }
             
-            .coins-display:hover {
-                transform: translateY(-2px) scale(1.05);
-                box-shadow: 0 5px 15px rgba(139, 92, 246, 0.3);
+            showNotification(`PepePremium выдан игроку #${appState.adminSelectedPlayer.playerId} на 30 дней`, 'success');
+        }
+
+        function addVipToPlayer() {
+            if (!appState.adminSelectedPlayer) {
+                showNotification('Сначала выберите игрока', 'error');
+                return;
             }
             
-            .nav-item:hover .nav-icon {
-                transform: translateY(-3px) scale(1.1);
+            const until = new Date();
+            until.setDate(until.getDate() + 30);
+            
+            const playerKey = `pepecards_user_${appState.adminSelectedPlayer.user.id}`;
+            appState.adminSelectedPlayer.isVIP = true;
+            appState.adminSelectedPlayer.vipUntil = until.toISOString();
+            localStorage.setItem(playerKey, JSON.stringify(appState.adminSelectedPlayer));
+            
+            if (appState.adminSelectedPlayer.user.id === appState.user.id) {
+                appState.isVIP = true;
+                appState.vipUntil = until.toISOString();
+                updateUI();
+                updateProfile();
             }
             
-            .nav-item:hover .nav-label {
-                color: var(--accent-color);
+            showNotification(`VIP статус выдан игроку #${appState.adminSelectedPlayer.playerId} на 30 дней`, 'success');
+        }
+
+        function banPlayer() {
+            if (!appState.adminSelectedPlayer) {
+                showNotification('Сначала выберите игрока', 'error');
+                return;
             }
             
-            .filter-btn:hover:not(.active) {
-                background: var(--border-color);
-                transform: translateY(-2px);
+            telegram.showPopup({
+                title: 'Бан игрока',
+                message: `Забанить игрока #${appState.adminSelectedPlayer.playerId} (${appState.adminSelectedPlayer.user.first_name})?`,
+                buttons: [
+                    { type: 'destructive', text: 'Забанить' },
+                    { type: 'cancel', text: 'Отмена' }
+                ]
+            }, (buttonId) => {
+                if (buttonId === 'destructive') {
+                    showNotification('Игрок забанен', 'success');
+                }
+            });
+        }
+
+        function resetPlayer() {
+            if (!appState.adminSelectedPlayer) {
+                showNotification('Сначала выберите игрока', 'error');
+                return;
             }
             
-            .filter-btn.active:hover {
-                transform: translateY(-2px) scale(1.05);
-            }
+            telegram.showPopup({
+                title: 'Сброс профиля',
+                message: `ВСЕ данные игрока #${appState.adminSelectedPlayer.playerId} будут удалены! Вы уверены?`,
+                buttons: [
+                    { type: 'destructive', text: 'Сбросить' },
+                    { type: 'cancel', text: 'Отмена' }
+                ]
+            }, (buttonId) => {
+                if (buttonId === 'destructive') {
+                    const playerKey = `pepecards_user_${appState.adminSelectedPlayer.user.id}`;
+                    const resetData = {
+                        user: appState.adminSelectedPlayer.user,
+                        telegramData: appState.adminSelectedPlayer.telegramData,
+                        playerId: appState.adminSelectedPlayer.playerId,
+                        coins: 100,
+                        exp: 0,
+                        level: 1,
+                        expToNextLevel: 100,
+                        cards: [],
+                        favoriteCard: null,
+                        equippedSuffix: null,
+                        equippedFrame: null,
+                        equippedTitle: 'Новичок',
+                        isVIP: false,
+                        vipUntil: null,
+                        isPremium: false,
+                        premiumUntil: null,
+                        lastCardTime: 0,
+                        registrationDate: new Date().toISOString(),
+                        isAdmin: appState.adminSelectedPlayer.user.id === CONFIG.ADMIN_ID,
+                        theme: 'light'
+                    };
+                    
+                    localStorage.setItem(playerKey, JSON.stringify(resetData));
+                    
+                    if (appState.adminSelectedPlayer.user.id === appState.user.id) {
+                        Object.assign(appState, resetData);
+                        updateUI();
+                        updateInventory();
+                        updateProfile();
+                    }
+                    
+                    appState.adminSelectedPlayer = resetData;
+                    updateAdminPanel();
+                    
+                    showNotification('Профиль сброшен', 'success');
+                }
+            });
+        }
+
+        function toggleMaintenance() {
+            maintenanceMode = !maintenanceMode;
+            localStorage.setItem('pepecards_maintenance', maintenanceMode.toString());
             
-            .level-fill {
-                transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            if (maintenanceMode) {
+                maintenanceOverlay.classList.remove('hidden');
+                showNotification('Технический перерыв включен', 'success');
+            } else {
+                maintenanceOverlay.classList.add('hidden');
+                showNotification('Технический перерыв выключен', 'success');
             }
-            
-            @keyframes rarityPulse {
-                0%, 100% { opacity: 0.1; transform: scale(1); }
-                50% { opacity: 0.3; transform: scale(1.02); }
-            }
-            
-            .rarity-mythic .rarity-glow {
-                animation: rarityPulse 2s infinite;
-            }
-            
-            .rarity-secret .rarity-glow {
-                animation: rarityPulse 1s infinite;
-            }
-        `;
-        document.head.appendChild(style);
+        }
 
         // Инициализация приложения при загрузке DOM
         document.addEventListener('DOMContentLoaded', initApp);
