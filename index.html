@@ -1,0 +1,4448 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PepeCards</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* CSS переменные для тем */
+        :root {
+            --tg-theme-bg-color: #ffffff;
+            --tg-theme-text-color: #000000;
+            --tg-theme-hint-color: #999999;
+            --tg-theme-link-color: #2481cc;
+            --tg-theme-button-color: #40a7e3;
+            --tg-theme-button-text-color: #ffffff;
+            --bg-primary: var(--tg-theme-bg-color, #ffffff);
+            --bg-secondary: #f5f5f5;
+            --bg-card: #ffffff;
+            --text-primary: var(--tg-theme-text-color, #000000);
+            --text-secondary: #666666;
+            --accent-color: #8B5CF6;
+            --accent-light: #A78BFA;
+            --border-color: #e0e0e0;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --card-back: #8B5CF6;
+            --header-bg: rgba(255, 255, 255, 0.98);
+            --footer-bg: #ffffff;
+            --nav-bg: #ffffff;
+            --nav-active: #8B5CF6;
+            --nav-inactive: #888888;
+            --rarity-common: #a0a0a0;
+            --rarity-rare: #3b82f6;
+            --rarity-epic: #8b5cf6;
+            --rarity-legendary: #f59e0b;
+            --rarity-mythic: #ef4444;
+            --rarity-secret: #10b981;
+            --cooldown-normal: #ef4444;
+            --cooldown-vip: #10b981;
+            --vip-gradient: linear-gradient(135deg, #f59e0b, #fbbf24, #fcd34d);
+            --rainbow: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);
+            --admin-color: #dc2626;
+            --premium-color: #f59e0b;
+        }
+
+        /* Анимации */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+
+        @keyframes cardReveal {
+            0% { transform: scale(0.5) rotate(-15deg); opacity: 0; }
+            70% { transform: scale(1.1) rotate(5deg); opacity: 1; }
+            100% { transform: scale(1) rotate(0); opacity: 1; }
+        }
+
+        @keyframes rarityGlow {
+            0%, 100% { box-shadow: 0 0 10px currentColor; }
+            50% { box-shadow: 0 0 20px currentColor; }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-100%); }
+            to { transform: translateX(0); }
+        }
+
+        @keyframes confettiFall {
+            0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+
+        @keyframes progressFill {
+            from { width: 0%; }
+            to { width: var(--progress); }
+        }
+
+        @keyframes maintenancePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Общие стили */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        /* Экран загрузки */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-light));
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .loading-logo {
+            font-size: 4rem;
+            margin-bottom: 2rem;
+            animation: bounce 1s infinite;
+        }
+
+        .loading-text {
+            color: white;
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        /* Технический перерыв */
+        .maintenance-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57, #ff9ff3);
+            background-size: 600% 600%;
+            animation: gradientBG 15s ease infinite;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9998;
+            padding: 20px;
+            text-align: center;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .maintenance-content {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: maintenancePulse 2s infinite;
+            max-width: 90%;
+        }
+
+        .maintenance-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: #ff6b6b;
+        }
+
+        .maintenance-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .maintenance-text {
+            font-size: 1.1rem;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* Шапка */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: var(--header-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 60px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            animation: bounce 2s infinite;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .coins-display {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-light));
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .add-coins-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            border: none;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .add-coins-btn:hover {
+            transform: scale(1.1);
+            background: var(--accent-light);
+        }
+
+        /* Основной контент */
+        .main-content {
+            margin-top: 60px;
+            padding: 20px;
+            animation: fadeIn 0.5s ease;
+            min-height: calc(100vh - 140px);
+        }
+
+        /* Страницы */
+        .page {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Главная страница */
+        .main-page {
+            padding-top: 10px;
+        }
+
+        .greeting {
+            margin-bottom: 25px;
+        }
+
+        .greeting h1 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+            color: var(--accent-color);
+        }
+
+        .greeting p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .user-id {
+            background: var(--bg-secondary);
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 8px;
+            display: inline-block;
+        }
+
+        .cooldown-section {
+            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 25px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cooldown-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-color), var(--accent-light));
+        }
+
+        .cooldown-timer {
+            font-size: 2.5rem;
+            font-weight: 800;
+            text-align: center;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 2px;
+        }
+
+        .cooldown-text {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+        }
+
+        .vip-badge {
+            display: inline-block;
+            background: var(--vip-gradient);
+            color: #fff;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-top: 10px;
+            animation: pulse 2s infinite;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+        }
+
+        .open-card-section {
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .open-card-btn {
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-light));
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 20px;
+            border-radius: 15px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .open-card-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .open-card-btn:hover::before {
+            left: 100%;
+        }
+
+        .open-card-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4);
+        }
+
+        .open-card-btn:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .open-card-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .rewards-preview {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .reward-item {
+            background: var(--bg-primary);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .reward-item:hover {
+            transform: translateY(-3px);
+        }
+
+        .reward-icon {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            color: var(--accent-color);
+        }
+
+        .reward-text {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* Инвентарь */
+        .inventory-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .inventory-header h1 {
+            font-size: 1.8rem;
+            color: var(--accent-color);
+        }
+
+        .total-cards {
+            background: var(--bg-secondary);
+            padding: 8px 15px;
+            border-radius: 15px;
+            font-weight: 600;
+        }
+
+        .filters-container {
+            margin-bottom: 20px;
+        }
+
+        .filters-scroll {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .filter-btn {
+            padding: 10px 18px;
+            border-radius: 20px;
+            border: 2px solid var(--border-color);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            font-weight: 600;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--accent-color);
+        }
+
+        .filter-btn.active {
+            background: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .card-item {
+            position: relative;
+            border-radius: 15px;
+            overflow: hidden;
+            background: var(--bg-card);
+            box-shadow: 0 5px 15px var(--shadow-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .card-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px var(--shadow-color);
+        }
+
+        .card-item.favorite {
+            border-color: #f59e0b;
+        }
+
+        .card-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite linear;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        .card-item.rarity-mythic::before {
+            opacity: 0.3;
+            background: linear-gradient(45deg, transparent 30%, rgba(239, 68, 68, 0.3) 50%, transparent 70%);
+        }
+
+        .card-item.rarity-legendary::before {
+            opacity: 0.3;
+            background: linear-gradient(45deg, transparent 30%, rgba(245, 158, 11, 0.3) 50%, transparent 70%);
+        }
+
+        .card-item.rarity-secret::before {
+            opacity: 0.5;
+            background: var(--rainbow);
+            background-size: 400% 400%;
+            animation: shimmer 3s infinite linear;
+        }
+
+        .card-image {
+            height: 150px;
+            background-size: cover;
+            background-position: center;
+            background-color: var(--bg-secondary);
+        }
+
+        .card-info {
+            padding: 15px;
+            position: relative;
+        }
+
+        .card-name {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .card-rarity {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .rarity-common .card-rarity {
+            background: var(--rarity-common);
+            color: white;
+        }
+
+        .rarity-rare .card-rarity {
+            background: var(--rarity-rare);
+            color: white;
+        }
+
+        .rarity-epic .card-rarity {
+            background: var(--rarity-epic);
+            color: white;
+        }
+
+        .rarity-legendary .card-rarity {
+            background: var(--rarity-legendary);
+            color: white;
+            animation: rarityGlow 2s infinite;
+        }
+
+        .rarity-mythic .card-rarity {
+            background: var(--rarity-mythic);
+            color: white;
+            animation: rarityGlow 1.5s infinite;
+        }
+
+        .rarity-secret .card-rarity {
+            background: var(--rainbow);
+            color: white;
+            animation: rarityGlow 1s infinite;
+        }
+
+        .favorite-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #f59e0b;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+
+        .favorite-btn:hover {
+            transform: scale(1.1);
+            background: white;
+        }
+
+        .favorite-btn.active {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .card-count {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            z-index: 2;
+        }
+
+        /* Магазин */
+        .shop-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+
+        .shop-tab {
+            padding: 12px 20px;
+            border-radius: 15px;
+            background: var(--bg-secondary);
+            border: none;
+            color: var(--text-primary);
+            font-weight: 600;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .shop-tab:hover {
+            background: var(--border-color);
+        }
+
+        .shop-tab.active {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .shop-items {
+            display: grid;
+            gap: 15px;
+        }
+
+        .shop-item {
+            background: var(--bg-card);
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .shop-item:hover {
+            transform: translateY(-3px);
+            border-color: var(--accent-color);
+            box-shadow: 0 10px 20px var(--shadow-color);
+        }
+
+        .shop-item-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .shop-item-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: white;
+        }
+
+        .shop-item-title {
+            flex: 1;
+        }
+
+        .shop-item-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .shop-item-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .shop-item-price {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            margin-bottom: 15px;
+        }
+
+        .shop-item-btn {
+            width: 100%;
+            padding: 12px;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-light));
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .shop-item-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(139, 92, 246, 0.3);
+        }
+
+        .shop-item-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Персонализация */
+        .customization-items {
+            display: grid;
+            gap: 15px;
+        }
+
+        .customization-item {
+            background: var(--bg-card);
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+        }
+
+        .customization-item:hover {
+            border-color: var(--accent-color);
+        }
+
+        .customization-item.equipped {
+            border-color: var(--accent-color);
+            background: linear-gradient(135deg, var(--bg-card), rgba(139, 92, 246, 0.1));
+        }
+
+        .customization-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex: 1;
+        }
+
+        .customization-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--accent-color);
+        }
+
+        .customization-details h4 {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .customization-details p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .customization-price {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            margin-right: 10px;
+        }
+
+        .customization-btn {
+            padding: 8px 15px;
+            border-radius: 10px;
+            border: 2px solid var(--accent-color);
+            background: transparent;
+            color: var(--accent-color);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 90px;
+        }
+
+        .customization-btn:hover {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .customization-btn.equipped {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .customization-btn.buy {
+            border-color: #10b981;
+            color: #10b981;
+        }
+
+        .customization-btn.buy:hover {
+            background: #10b981;
+            color: white;
+        }
+
+        /* Лидерборд */
+        .leaderboard-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .leaderboard-header h1 {
+            font-size: 2rem;
+            color: var(--accent-color);
+            margin-bottom: 10px;
+        }
+
+        .leaderboard-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .leaderboard-tab {
+            padding: 10px 20px;
+            border-radius: 20px;
+            background: var(--bg-secondary);
+            border: 2px solid transparent;
+            color: var(--text-primary);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .leaderboard-tab:hover {
+            border-color: var(--border-color);
+        }
+
+        .leaderboard-tab.active {
+            background: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+        }
+
+        .leaderboard-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .leaderboard-item {
+            background: var(--bg-card);
+            border-radius: 15px;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .leaderboard-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px var(--shadow-color);
+        }
+
+        .leaderboard-item.top-3 {
+            background: linear-gradient(135deg, var(--bg-card), rgba(139, 92, 246, 0.1));
+            border: 2px solid var(--accent-color);
+        }
+
+        .leaderboard-rank {
+            font-size: 1.5rem;
+            font-weight: 800;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .rank-1 .leaderboard-rank {
+            color: #f59e0b;
+        }
+
+        .rank-2 .leaderboard-rank {
+            color: #a0a0a0;
+        }
+
+        .rank-3 .leaderboard-rank {
+            color: #cd7f32;
+        }
+
+        .leaderboard-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--bg-secondary);
+            background-size: cover;
+            background-position: center;
+            flex-shrink: 0;
+        }
+
+        .leaderboard-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .leaderboard-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .username-suffix {
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-light));
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .leaderboard-stats {
+            display: flex;
+            gap: 15px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .leaderboard-stat {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .leaderboard-value {
+            font-weight: 700;
+            color: var(--accent-color);
+        }
+
+        /* Профиль */
+        .profile-header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .profile-avatar-container {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: var(--bg-secondary);
+            background-size: cover;
+            background-position: center;
+            border: 4px solid var(--accent-color);
+            position: relative;
+        }
+
+        .profile-frame {
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            border: 3px solid transparent;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .profile-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .profile-title {
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-light));
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .profile-id {
+            background: var(--bg-secondary);
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .profile-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .profile-stat {
+            background: var(--bg-card);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .profile-stat:hover {
+            transform: translateY(-3px);
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--accent-color);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .level-progress {
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .level-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .level-bar {
+            height: 12px;
+            background: var(--border-color);
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 5px;
+        }
+
+        .level-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-color), var(--accent-light));
+            width: 0%;
+            transition: width 1s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .level-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        .level-exp {
+            text-align: right;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .favorite-card-section {
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .favorite-card-section h3 {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: var(--accent-color);
+        }
+
+        .favorite-card-preview {
+            background: var(--bg-card);
+            border-radius: 15px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .favorite-card-preview:hover {
+            transform: translateY(-3px);
+        }
+
+        .favorite-card-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            background: var(--bg-secondary);
+            background-size: cover;
+            background-position: center;
+            flex-shrink: 0;
+        }
+
+        .favorite-card-info h4 {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .favorite-card-rarity {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        /* Админ панель */
+        .admin-section {
+            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+            border-radius: 20px;
+            padding: 25px;
+            color: white;
+            margin-bottom: 25px;
+        }
+
+        .admin-section h2 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .admin-section h2 i {
+            color: var(--admin-color);
+        }
+
+        .admin-controls {
+            display: grid;
+            gap: 15px;
+        }
+
+        .admin-control-group {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 15px;
+        }
+
+        .admin-control-group h3 {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: white;
+        }
+
+        .admin-input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        .admin-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .admin-btn {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            background: var(--admin-color);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 5px;
+        }
+
+        .admin-btn:hover {
+            background: #b91c1c;
+            transform: translateY(-2px);
+        }
+
+        .admin-btn.success {
+            background: #10b981;
+        }
+
+        .admin-btn.success:hover {
+            background: #0da271;
+        }
+
+        /* Донат модалка */
+        .donate-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+
+        .donate-content {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .donate-icon {
+            font-size: 3rem;
+            color: var(--accent-color);
+            margin-bottom: 20px;
+        }
+
+        .donate-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--accent-color);
+        }
+
+        .donate-text {
+            color: var(--text-secondary);
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .donate-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .donate-option {
+            background: var(--bg-secondary);
+            border-radius: 15px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .donate-option:hover {
+            border-color: var(--accent-color);
+            transform: translateY(-3px);
+        }
+
+        .donate-option.selected {
+            border-color: var(--accent-color);
+            background: linear-gradient(135deg, var(--bg-secondary), rgba(139, 92, 246, 0.1));
+        }
+
+        .donate-option-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .donate-option-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .donate-option-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            flex: 1;
+            text-align: left;
+        }
+
+        .donate-option-price {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--accent-color);
+        }
+
+        .donate-option-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            text-align: left;
+        }
+
+        .donate-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .donate-btn {
+            flex: 1;
+            padding: 15px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .donate-btn.primary {
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-light));
+            color: white;
+        }
+
+        .donate-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(139, 92, 246, 0.3);
+        }
+
+        .donate-btn.secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        .donate-btn.secondary:hover {
+            background: var(--border-color);
+        }
+
+        /* Мини профиль */
+        .mini-profile-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+
+        .mini-profile-content {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 400px;
+            width: 100%;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .mini-profile-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .mini-profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--bg-secondary);
+            background-size: cover;
+            background-position: center;
+            margin: 0 auto 15px;
+            border: 3px solid var(--accent-color);
+        }
+
+        .mini-profile-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .mini-profile-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .mini-profile-stat {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .mini-profile-stat-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            margin-bottom: 5px;
+        }
+
+        .mini-profile-stat-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .mini-profile-favorite {
+            background: var(--bg-secondary);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .mini-profile-favorite h4 {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: var(--accent-color);
+        }
+
+        .favorite-card-display {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .favorite-card-display-image {
+            width: 70px;
+            height: 70px;
+            border-radius: 10px;
+            background: var(--bg-secondary);
+            background-size: cover;
+            background-position: center;
+            flex-shrink: 0;
+        }
+
+        .favorite-card-display-info h5 {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .favorite-card-display-rarity {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .mini-profile-close {
+            width: 100%;
+            padding: 15px;
+            border-radius: 12px;
+            border: none;
+            background: var(--accent-color);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .mini-profile-close:hover {
+            background: var(--accent-light);
+        }
+
+        /* Нижнее меню */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: var(--nav-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border-color);
+            z-index: 1000;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--nav-inactive);
+            transition: all 0.3s ease;
+            padding: 10px 15px;
+            border-radius: 15px;
+            min-width: 60px;
+        }
+
+        .nav-item:hover {
+            color: var(--nav-active);
+            background: var(--bg-secondary);
+        }
+
+        .nav-item.active {
+            color: var(--nav-active);
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(167, 139, 250, 0.1));
+        }
+
+        .nav-icon {
+            font-size: 1.4rem;
+            margin-bottom: 5px;
+        }
+
+        .nav-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .nav-center {
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-light));
+            color: white;
+            padding: 12px;
+            border-radius: 50%;
+            transform: translateY(-10px);
+            box-shadow: 0 5px 20px rgba(139, 92, 246, 0.4);
+        }
+
+        .nav-center .nav-icon {
+            margin-bottom: 0;
+        }
+
+        /* Анимация получения карты */
+        .card-reveal-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+
+        .card-reveal-content {
+            width: 100%;
+            max-width: 300px;
+            text-align: center;
+        }
+
+        .reveal-card {
+            width: 100%;
+            height: 400px;
+            perspective: 1000px;
+            margin-bottom: 30px;
+        }
+
+        .reveal-card-inner {
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 1s;
+            position: relative;
+        }
+
+        .reveal-card.flipped .reveal-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .reveal-card-back, .reveal-card-front {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .reveal-card-back {
+            background: linear-gradient(135deg, var(--card-back), var(--accent-light));
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            animation: pulse 1.5s infinite;
+        }
+
+        .reveal-card-back-logo {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            animation: float 2s infinite;
+        }
+
+        .reveal-card-back-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .reveal-card-front {
+            background: var(--bg-card);
+            transform: rotateY(180deg);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .reveal-card-image {
+            height: 60%;
+            background-size: cover;
+            background-position: center;
+            background-color: var(--bg-secondary);
+        }
+
+        .reveal-card-info {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .reveal-card-name {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--accent-color);
+        }
+
+        .reveal-card-rarity {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .reveal-rewards {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid var(--border-color);
+        }
+
+        .reveal-reward {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .reveal-reward-icon {
+            font-size: 1.5rem;
+            color: var(--accent-color);
+        }
+
+        .reveal-reward-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--accent-color);
+        }
+
+        .reveal-reward-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        /* Анимации для эффектов */
+        .rarity-glow {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 15px;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        .card-item:hover .rarity-glow {
+            opacity: 0.3;
+        }
+
+        .rarity-common .rarity-glow {
+            background: var(--rarity-common);
+        }
+
+        .rarity-rare .rarity-glow {
+            background: var(--rarity-rare);
+        }
+
+        .rarity-epic .rarity-glow {
+            background: var(--rarity-epic);
+        }
+
+        .rarity-legendary .rarity-glow {
+            background: var(--rarity-legendary);
+        }
+
+        .rarity-mythic .rarity-glow {
+            background: var(--rarity-mythic);
+            animation: rarityGlow 2s infinite;
+        }
+
+        .rarity-secret .rarity-glow {
+            background: var(--rainbow);
+            background-size: 400% 400%;
+            animation: shimmer 3s infinite linear;
+        }
+
+        /* Утилиты */
+        .hidden {
+            display: none !important;
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .flex-col {
+            flex-direction: column;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        .justify-center {
+            justify-content: center;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mb-2 {
+            margin-bottom: 10px;
+        }
+
+        .mb-3 {
+            margin-bottom: 15px;
+        }
+
+        .mb-4 {
+            margin-bottom: 20px;
+        }
+
+        .mt-2 {
+            margin-top: 10px;
+        }
+
+        .mt-3 {
+            margin-top: 15px;
+        }
+
+        .mt-4 {
+            margin-top: 20px;
+        }
+
+        .gap-2 {
+            gap: 10px;
+        }
+
+        .gap-3 {
+            gap: 15px;
+        }
+
+        .gap-4 {
+            gap: 20px;
+        }
+
+        .w-full {
+            width: 100%;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .cards-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .rewards-preview {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .profile-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .leaderboard-stat {
+                flex-direction: column;
+                gap: 2px;
+            }
+            
+            .nav-item {
+                padding: 10px;
+            }
+            
+            .nav-label {
+                display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .rewards-preview {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .leaderboard-stats {
+                flex-direction: column;
+                gap: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Экран загрузки -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-logo">🐸</div>
+        <div class="loading-text">Загрузка PepeCards...</div>
+        <div class="loading-spinner"></div>
+    </div>
+
+    <!-- Технический перерыв -->
+    <div class="maintenance-overlay hidden" id="maintenanceOverlay">
+        <div class="maintenance-content">
+            <div class="maintenance-icon">🔧</div>
+            <h2 class="maintenance-title">Технический перерыв</h2>
+            <p class="maintenance-text">
+                Мы улучшаем приложение для вас!<br>
+                Возвращайтесь через несколько минут.<br>
+                Приносим извинения за неудобства.
+            </p>
+        </div>
+    </div>
+
+    <!-- Шапка -->
+    <header class="header">
+        <div class="header-left">
+            <div class="logo">
+                <span class="logo-icon">🐸</span>
+                <span>PepeCards</span>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="coins-display">
+                <i class="fas fa-coins"></i>
+                <span id="headerCoins">0</span>
+                <button class="add-coins-btn" id="addCoinsBtn">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Основной контент -->
+    <main class="main-content">
+        <!-- Главная страница -->
+        <div class="page active" id="mainPage">
+            <div class="main-page">
+                <div class="greeting">
+                    <h1 id="userGreeting">Привет, Игрок!</h1>
+                    <p id="userStatus">Начни собирать коллекцию карт</p>
+                    <div class="user-id" id="userId">#PP0000</div>
+                </div>
+
+                <div class="cooldown-section">
+                    <div class="cooldown-timer" id="cooldownTimer">40:00</div>
+                    <div class="cooldown-text">
+                        До следующей карты
+                        <div class="vip-badge hidden" id="vipBadge">VIP: 20 мин</div>
+                    </div>
+                </div>
+
+                <div class="open-card-section">
+                    <button class="open-card-btn" id="openCardBtn">
+                        <i class="fas fa-gift"></i>
+                        Открыть карту
+                    </button>
+                    
+                    <div class="rewards-preview">
+                        <div class="reward-item">
+                            <div class="reward-icon"><i class="fas fa-coins"></i></div>
+                            <div class="reward-text" id="previewCoins">10-50 монет</div>
+                        </div>
+                        <div class="reward-item">
+                            <div class="reward-icon"><i class="fas fa-star"></i></div>
+                            <div class="reward-text" id="previewExp">5-15 опыта</div>
+                        </div>
+                        <div class="reward-item">
+                            <div class="reward-icon"><i class="fas fa-crown"></i></div>
+                            <div class="reward-text" id="previewLevel">Уровень</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Админ панель (только для админа) -->
+                <div class="admin-section hidden" id="adminSection">
+                    <h2><i class="fas fa-shield-alt"></i> Админ Панель</h2>
+                    <div class="admin-controls">
+                        <div class="admin-control-group">
+                            <h3>Управление игроками</h3>
+                            <input type="text" class="admin-input" id="adminPlayerId" placeholder="ID игрока (#PP0000)">
+                            <button class="admin-btn" id="adminSearchBtn">Найти</button>
+                        </div>
+                        
+                        <div class="admin-control-group">
+                            <h3>Выдача ресурсов</h3>
+                            <input type="number" class="admin-input" id="adminCoinsAmount" placeholder="Количество монет">
+                            <button class="admin-btn success" id="adminAddCoinsBtn">Выдать монеты</button>
+                            <button class="admin-btn success" id="adminAddVipBtn">Выдать VIP</button>
+                        </div>
+                        
+                        <div class="admin-control-group">
+                            <h3>Администрирование</h3>
+                            <button class="admin-btn" id="adminBanBtn">Забанить</button>
+                            <button class="admin-btn" id="adminResetBtn">Сбросить профиль</button>
+                            <button class="admin-btn" id="adminMaintenanceBtn">Вкл/Выкл техперерыв</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Инвентарь -->
+        <div class="page" id="inventoryPage">
+            <div class="inventory-header">
+                <h1>Инвентарь</h1>
+                <div class="total-cards" id="totalCards">0 карт</div>
+            </div>
+
+            <div class="filters-container">
+                <div class="filters-scroll">
+                    <button class="filter-btn active" data-filter="all">Все</button>
+                    <button class="filter-btn" data-filter="common">Обычные</button>
+                    <button class="filter-btn" data-filter="rare">Редкие</button>
+                    <button class="filter-btn" data-filter="epic">Эпические</button>
+                    <button class="filter-btn" data-filter="legendary">Легендарные</button>
+                    <button class="filter-btn" data-filter="mythic">Мифические</button>
+                    <button class="filter-btn" data-filter="secret">Секретные</button>
+                    <button class="filter-btn" data-filter="favorite">Избранные</button>
+                </div>
+            </div>
+
+            <div class="cards-grid" id="cardsGrid">
+                <!-- Карточки будут загружены динамически -->
+            </div>
+        </div>
+
+        <!-- Магазин -->
+        <div class="page" id="shopPage">
+            <div class="shop-tabs">
+                <button class="shop-tab active" data-tab="packs">Наборы</button>
+                <button class="shop-tab" data-tab="personalization">Персонализация</button>
+                <button class="shop-tab" data-tab="titles">Титулы</button>
+                <button class="shop-tab" data-tab="vip">VIP</button>
+            </div>
+
+            <div class="shop-content">
+                <!-- Наборы карт -->
+                <div class="shop-items" id="packsTab">
+                    <!-- Товары будут загружены динамически -->
+                </div>
+
+                <!-- Персонализация -->
+                <div class="shop-items hidden" id="personalizationTab">
+                    <!-- Суффиксы и рамки будут загружены динамически -->
+                </div>
+
+                <!-- Титулы -->
+                <div class="shop-items hidden" id="titlesTab">
+                    <!-- Титулы будут загружены динамически -->
+                </div>
+
+                <!-- VIP -->
+                <div class="shop-items hidden" id="vipTab">
+                    <!-- VIP товары будут загружены динамически -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Лидерборд -->
+        <div class="page" id="leaderboardPage">
+            <div class="leaderboard-header">
+                <h1>Лидерборд</h1>
+                <p>Топ игроков PepeCards</p>
+            </div>
+
+            <div class="leaderboard-tabs">
+                <button class="leaderboard-tab active" data-type="level">По уровню</button>
+                <button class="leaderboard-tab" data-type="cards">По картам</button>
+                <button class="leaderboard-tab" data-type="coins">По монетам</button>
+            </div>
+
+            <div class="leaderboard-list" id="leaderboardList">
+                <!-- Игроки будут загружены динамически -->
+            </div>
+        </div>
+
+        <!-- Профиль -->
+        <div class="page" id="profilePage">
+            <div class="profile-header">
+                <div class="profile-avatar-container">
+                    <div class="profile-avatar" id="profileAvatar"></div>
+                    <div class="profile-frame" id="profileFrame"></div>
+                </div>
+                
+                <div class="profile-name">
+                    <span id="profileName">Игрок</span>
+                    <span class="username-suffix hidden" id="usernameSuffix"></span>
+                </div>
+                
+                <div class="profile-title" id="profileTitle">Новичок</div>
+                <div class="profile-id mt-2" id="profileId">#PP0000</div>
+            </div>
+
+            <div class="profile-stats">
+                <div class="profile-stat">
+                    <div class="stat-value" id="statLevel">1</div>
+                    <div class="stat-label">Уровень</div>
+                </div>
+                <div class="profile-stat">
+                    <div class="stat-value" id="statCards">0</div>
+                    <div class="stat-label">Карт</div>
+                </div>
+                <div class="profile-stat">
+                    <div class="stat-value" id="statCoins">0</div>
+                    <div class="stat-label">Монет</div>
+                </div>
+                <div class="profile-stat">
+                    <div class="stat-value" id="statUnique">0</div>
+                    <div class="stat-label">Уникальных</div>
+                </div>
+            </div>
+
+            <div class="level-progress">
+                <div class="level-info">
+                    <span>Уровень <span id="currentLevel">1</span></span>
+                    <span>До <span id="nextLevel">2</span></span>
+                </div>
+                <div class="level-bar">
+                    <div class="level-fill" id="levelFill"></div>
+                </div>
+                <div class="level-exp" id="levelExp">0/100 опыта</div>
+            </div>
+
+            <div class="favorite-card-section">
+                <h3>Любимая карта</h3>
+                <div class="favorite-card-preview" id="favoriteCardPreview">
+                    <div class="favorite-card-image" id="favoriteCardImage"></div>
+                    <div class="favorite-card-info">
+                        <h4 id="favoriteCardName">Не выбрана</h4>
+                        <div class="favorite-card-rarity" id="favoriteCardRarity"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Модальное окно доната -->
+    <div class="donate-modal hidden" id="donateModal">
+        <div class="donate-content">
+            <div class="donate-icon">💎</div>
+            <h2 class="donate-title">Пополнить баланс</h2>
+            <p class="donate-text">
+                Выберите способ пополнения:<br>
+                <small>Рубли дешевле звезд Telegram!</small>
+            </p>
+            
+            <div class="donate-options">
+                <div class="donate-option" data-amount="100" data-method="stars">
+                    <div class="donate-option-header">
+                        <div class="donate-option-icon"><i class="fas fa-star"></i></div>
+                        <div class="donate-option-title">100 монет</div>
+                        <div class="donate-option-price">⭐ 10</div>
+                    </div>
+                    <p class="donate-option-desc">Через звезды Telegram</p>
+                </div>
+                
+                <div class="donate-option selected" data-amount="100" data-method="rubles">
+                    <div class="donate-option-header">
+                        <div class="donate-option-icon"><i class="fas fa-ruble-sign"></i></div>
+                        <div class="donate-option-title">100 монет</div>
+                        <div class="donate-option-price">50 ₽</div>
+                    </div>
+                    <p class="donate-option-desc">Написать @DefoltPlayer</p>
+                </div>
+                
+                <div class="donate-option" data-amount="500" data-method="rubles">
+                    <div class="donate-option-header">
+                        <div class="donate-option-icon"><i class="fas fa-ruble-sign"></i></div>
+                        <div class="donate-option-title">500 монет</div>
+                        <div class="donate-option-price">200 ₽</div>
+                    </div>
+                    <p class="donate-option-desc">Написать @DefoltPlayer</p>
+                </div>
+                
+                <div class="donate-option" data-amount="1000" data-method="rubles">
+                    <div class="donate-option-header">
+                        <div class="donate-option-icon"><i class="fas fa-ruble-sign"></i></div>
+                        <div class="donate-option-title">1000 монет</div>
+                        <div class="donate-option-price">350 ₽</div>
+                    </div>
+                    <p class="donate-option-desc">Написать @DefoltPlayer</p>
+                </div>
+            </div>
+
+            <div class="donate-buttons">
+                <button class="donate-btn secondary" id="donateCloseBtn">Отмена</button>
+                <button class="donate-btn primary" id="donateConfirmBtn">Пополнить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Мини профиль игрока -->
+    <div class="mini-profile-modal hidden" id="miniProfileModal">
+        <div class="mini-profile-content">
+            <div class="mini-profile-header">
+                <div class="mini-profile-avatar" id="miniProfileAvatar"></div>
+                <div class="mini-profile-name">
+                    <span id="miniProfileName"></span>
+                    <span class="username-suffix hidden" id="miniProfileSuffix"></span>
+                </div>
+            </div>
+            
+            <div class="mini-profile-stats">
+                <div class="mini-profile-stat">
+                    <div class="mini-profile-stat-value" id="miniProfileLevel"></div>
+                    <div class="mini-profile-stat-label">Уровень</div>
+                </div>
+                <div class="mini-profile-stat">
+                    <div class="mini-profile-stat-value" id="miniProfileCards"></div>
+                    <div class="mini-profile-stat-label">Карт</div>
+                </div>
+                <div class="mini-profile-stat">
+                    <div class="mini-profile-stat-value" id="miniProfileCoins"></div>
+                    <div class="mini-profile-stat-label">Монет</div>
+                </div>
+                <div class="mini-profile-stat">
+                    <div class="mini-profile-stat-value" id="miniProfileUnique"></div>
+                    <div class="mini-profile-stat-label">Уникальных</div>
+                </div>
+            </div>
+
+            <div class="mini-profile-favorite">
+                <h4>Любимая карта</h4>
+                <div class="favorite-card-display">
+                    <div class="favorite-card-display-image" id="miniFavoriteCardImage"></div>
+                    <div class="favorite-card-display-info">
+                        <h5 id="miniFavoriteCardName">Не выбрана</h5>
+                        <div class="favorite-card-display-rarity" id="miniFavoriteCardRarity"></div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="mini-profile-close" id="miniProfileCloseBtn">Закрыть</button>
+        </div>
+    </div>
+
+    <!-- Анимация получения карты -->
+    <div class="card-reveal-modal hidden" id="cardRevealModal">
+        <div class="card-reveal-content">
+            <div class="reveal-card" id="revealCard">
+                <div class="reveal-card-inner">
+                    <div class="reveal-card-back">
+                        <div class="reveal-card-back-logo">🐸</div>
+                        <div class="reveal-card-back-text">PepeCards</div>
+                    </div>
+                    <div class="reveal-card-front">
+                        <div class="reveal-card-image" id="revealCardImage"></div>
+                        <div class="reveal-card-info">
+                            <div class="reveal-card-name" id="revealCardName"></div>
+                            <div class="reveal-card-rarity" id="revealCardRarity"></div>
+                            
+                            <div class="reveal-rewards" id="revealRewards">
+                                <!-- Награды будут добавлены динамически -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Нижнее меню -->
+    <nav class="bottom-nav">
+        <a href="#" class="nav-item" data-page="inventory">
+            <div class="nav-icon"><i class="fas fa-box"></i></div>
+            <div class="nav-label">Инвентарь</div>
+        </a>
+        
+        <a href="#" class="nav-item" data-page="shop">
+            <div class="nav-icon"><i class="fas fa-store"></i></div>
+            <div class="nav-label">Магазин</div>
+        </a>
+        
+        <a href="#" class="nav-item nav-center active" data-page="main">
+            <div class="nav-icon"><i class="fas fa-home"></i></div>
+            <div class="nav-label">Главная</div>
+        </a>
+        
+        <a href="#" class="nav-item" data-page="leaderboard">
+            <div class="nav-icon"><i class="fas fa-trophy"></i></div>
+            <div class="nav-label">Топ</div>
+        </a>
+        
+        <a href="#" class="nav-item" data-page="profile">
+            <div class="nav-icon"><i class="fas fa-user"></i></div>
+            <div class="nav-label">Профиль</div>
+        </a>
+    </nav>
+
+    <script>
+        // Конфигурация приложения
+        const CONFIG = {
+            ADMIN_ID: 6392172528,
+            COOLDOWN_NORMAL: 2400, // 40 минут в секундах
+            COOLDOWN_VIP: 1200, // 20 минут в секундах
+            COOLDOWN_ADMIN: 0, // Админ без кулдауна
+            
+            // Карточки из config.py
+            CARDS: {
+                1: {
+                    "id": 1,
+                    "name": "Дефолтная Пепе",
+                    "rarity": "common",
+                    "rarityName": "Обычная",
+                    "emoji": "⚪",
+                    "chance": 40,
+                    "min_coins": 10,
+                    "max_coins": 50,
+                    "min_exp": 5,
+                    "max_exp": 15,
+                    "image_path": "data/images/test1.jpg",
+                    "description": "Стандартный Пепе, с которого начинается каждая коллекция."
+                },
+                2: {
+                    "id": 2,
+                    "name": "Клоун Пепе",
+                    "rarity": "common",
+                    "rarityName": "Обычная",
+                    "emoji": "⚪",
+                    "chance": 40,
+                    "min_coins": 10,
+                    "max_coins": 50,
+                    "min_exp": 5,
+                    "max_exp": 15,
+                    "image_path": "data/images/test2.jpg",
+                    "description": "Веселый клоун Пепе, который всегда поднимет настроение."
+                },
+                3: {
+                    "id": 3,
+                    "name": "Пепе В Кофте",
+                    "rarity": "common",
+                    "rarityName": "Обычная",
+                    "emoji": "⚪",
+                    "chance": 40,
+                    "min_coins": 10,
+                    "max_coins": 50,
+                    "min_exp": 5,
+                    "max_exp": 15,
+                    "image_path": "data/images/test3.jpg",
+                    "description": "Стильный Пепе в теплой кофте для холодных дней."
+                },
+                4: {
+                    "id": 4,
+                    "name": "Тупой Пепе",
+                    "rarity": "common",
+                    "rarityName": "Обычная",
+                    "emoji": "⚪",
+                    "chance": 40,
+                    "min_coins": 10,
+                    "max_coins": 50,
+                    "min_exp": 5,
+                    "max_exp": 15,
+                    "image_path": "data/images/test4.jpg",
+                    "description": "Пепе, который не всегда понимает, что происходит вокруг."
+                },
+                5: {
+                    "id": 5,
+                    "name": "Весёлый Пепе",
+                    "rarity": "common",
+                    "rarityName": "Обычная",
+                    "emoji": "⚪",
+                    "chance": 40,
+                    "min_coins": 10,
+                    "max_coins": 50,
+                    "min_exp": 5,
+                    "max_exp": 15,
+                    "image_path": "data/images/test5.jpg",
+                    "description": "Всегда позитивный Пепе, который видит хорошее во всем."
+                },
+                6: {
+                    "id": 6,
+                    "name": "Грустный Пепе",
+                    "rarity": "common",
+                    "rarityName": "Обычная",
+                    "emoji": "⚪",
+                    "chance": 40,
+                    "min_coins": 10,
+                    "max_coins": 50,
+                    "min_exp": 5,
+                    "max_exp": 15,
+                    "image_path": "data/images/test6.jpg",
+                    "description": "Пепе, который переживает не самые лучшие времена."
+                },
+                7: {
+                    "id": 7,
+                    "name": "Смеющийся Пепе",
+                    "rarity": "common",
+                    "rarityName": "Обычная",
+                    "emoji": "⚪",
+                    "chance": 40,
+                    "min_coins": 10,
+                    "max_coins": 50,
+                    "min_exp": 5,
+                    "max_exp": 15,
+                    "image_path": "data/images/test7.jpg",
+                    "description": "Пепе, который не может перестать смеяться над шуткой."
+                },
+                8: {
+                    "id": 8,
+                    "name": "Террорист Пепе",
+                    "rarity": "common",
+                    "rarityName": "Обычная",
+                    "emoji": "⚪",
+                    "chance": 40,
+                    "min_coins": 10,
+                    "max_coins": 50,
+                    "min_exp": 5,
+                    "max_exp": 15,
+                    "image_path": "data/images/test8.jpg",
+                    "description": "Пепе с опасными планами (шутка, конечно же)."
+                },
+                9: {
+                    "id": 9,
+                    "name": "Курящий Пепе",
+                    "rarity": "rare",
+                    "rarityName": "Редкая",
+                    "emoji": "🔵",
+                    "chance": 30,
+                    "min_coins": 50,
+                    "max_coins": 150,
+                    "min_exp": 15,
+                    "max_exp": 30,
+                    "image_path": "data/images/test9.jpg",
+                    "description": "Пепе, который любит расслабиться с сигаретой после тяжелого дня."
+                },
+                10: {
+                    "id": 10,
+                    "name": "Угашенный Пепе",
+                    "rarity": "rare",
+                    "rarityName": "Редкая",
+                    "emoji": "🔵",
+                    "chance": 30,
+                    "min_coins": 50,
+                    "max_coins": 150,
+                    "min_exp": 15,
+                    "max_exp": 30,
+                    "image_path": "data/images/test10.jpg",
+                    "description": "Пепе под воздействием зеленого вещества растительного происхождения."
+                },
+                11: {
+                    "id": 11,
+                    "name": "Уставший Пепе",
+                    "rarity": "rare",
+                    "rarityName": "Редкая",
+                    "emoji": "🔵",
+                    "chance": 30,
+                    "min_coins": 50,
+                    "max_coins": 150,
+                    "min_exp": 15,
+                    "max_exp": 30,
+                    "image_path": "data/images/test11.jpg",
+                    "description": "Пепе после тяжелого рабочего дня или бессонной ночи."
+                },
+                12: {
+                    "id": 12,
+                    "name": "Непонимающий Пепе",
+                    "rarity": "rare",
+                    "rarityName": "Редкая",
+                    "emoji": "🔵",
+                    "chance": 30,
+                    "min_coins": 50,
+                    "max_coins": 150,
+                    "min_exp": 15,
+                    "max_exp": 30,
+                    "image_path": "data/images/test12.jpg",
+                    "description": "Пепе, который совершенно не понимает, что происходит."
+                },
+                13: {
+                    "id": 13,
+                    "name": "Испуганный Пепе",
+                    "rarity": "rare",
+                    "rarityName": "Редкая",
+                    "emoji": "🔵",
+                    "chance": 30,
+                    "min_coins": 50,
+                    "max_coins": 150,
+                    "min_exp": 15,
+                    "max_exp": 30,
+                    "image_path": "data/images/test13.jpg",
+                    "description": "Пепе, который увидел нечто ужасающее."
+                },
+                14: {
+                    "id": 14,
+                    "name": "Акулёнок Пепе",
+                    "rarity": "rare",
+                    "rarityName": "Редкая",
+                    "emoji": "🔵",
+                    "chance": 30,
+                    "min_coins": 50,
+                    "max_coins": 150,
+                    "min_exp": 15,
+                    "max_exp": 30,
+                    "image_path": "data/images/test14.jpg",
+                    "description": "Милейший Пепе в костюме акулёнка."
+                },
+                15: {
+                    "id": 15,
+                    "name": "Пикми Пепе",
+                    "rarity": "epic",
+                    "rarityName": "Эпическая",
+                    "emoji": "🟣",
+                    "chance": 20,
+                    "min_coins": 150,
+                    "max_coins": 300,
+                    "min_exp": 30,
+                    "max_exp": 60,
+                    "image_path": "data/images/test15.jpg",
+                    "description": "Пепе в стиле известных инопланетных существ Пикми."
+                },
+                16: {
+                    "id": 16,
+                    "name": "Задрот Пепе",
+                    "rarity": "epic",
+                    "rarityName": "Эпическая",
+                    "emoji": "🟣",
+                    "chance": 20,
+                    "min_coins": 150,
+                    "max_coins": 300,
+                    "min_exp": 30,
+                    "max_exp": 60,
+                    "image_path": "data/images/test16.jpg",
+                    "description": "Пепе, который проводит все время за компьютерными играми."
+                },
+                17: {
+                    "id": 17,
+                    "name": "Бэтмэн Пепе",
+                    "rarity": "epic",
+                    "rarityName": "Эпическая",
+                    "emoji": "🟣",
+                    "chance": 20,
+                    "min_coins": 150,
+                    "max_coins": 300,
+                    "min_exp": 30,
+                    "max_exp": 60,
+                    "image_path": "data/images/test17.jpg",
+                    "description": "Темный рыцарь Пепе, защитник Готэма."
+                },
+                18: {
+                    "id": 18,
+                    "name": "Новогодний Пепе",
+                    "rarity": "epic",
+                    "rarityName": "Эпическая",
+                    "emoji": "🟣",
+                    "chance": 20,
+                    "min_coins": 150,
+                    "max_coins": 300,
+                    "min_exp": 30,
+                    "max_exp": 60,
+                    "image_path": "data/images/test18.jpg",
+                    "description": "Пепе в новогоднем настроении с подарками и гирляндами."
+                },
+                19: {
+                    "id": 19,
+                    "name": "Снайпер Пепе",
+                    "rarity": "legendary",
+                    "rarityName": "Легендарная",
+                    "emoji": "🟡",
+                    "chance": 10,
+                    "min_coins": 300,
+                    "max_coins": 600,
+                    "min_exp": 60,
+                    "max_exp": 120,
+                    "image_path": "data/images/test19.jpg",
+                    "description": "Пепе - мастер меткой стрельбы, никогда не промахивается."
+                },
+                20: {
+                    "id": 20,
+                    "name": "Таинственный Пепе",
+                    "rarity": "legendary",
+                    "rarityName": "Легендарная",
+                    "emoji": "🟡",
+                    "chance": 10,
+                    "min_coins": 300,
+                    "max_coins": 600,
+                    "min_exp": 60,
+                    "max_exp": 120,
+                    "image_path": "data/images/test20.jpg",
+                    "description": "Загадочный Пепе, окутанный тайнами и секретами."
+                },
+                21: {
+                    "id": 21,
+                    "name": "Telegram Pepe",
+                    "rarity": "secret",
+                    "rarityName": "Секретная",
+                    "emoji": "👁️",
+                    "chance": 0.1,
+                    "min_coins": 10000,
+                    "max_coins": 50000,
+                    "min_exp": 1000,
+                    "max_exp": 5000,
+                    "image_path": "data/images/secret.jpg",
+                    "description": "Секретная карта Пепе, связанная с мессенджером Telegram. Невероятно редкая!",
+                    "secret": true
+                },
+                22: {
+                    "id": 22,
+                    "name": "Джорджи Пепе",
+                    "rarity": "mythic",
+                    "rarityName": "Мифическая",
+                    "emoji": "🔴",
+                    "chance": 3,
+                    "min_coins": 1000,
+                    "max_coins": 2500,
+                    "min_exp": 200,
+                    "max_exp": 500,
+                    "image_path": "data/images/test22.jpg",
+                    "description": "Мифический Пепе по имени Джорджи, обладающий невероятной силой."
+                },
+                23: {
+                    "id": 23,
+                    "name": "Сонный Пепе",
+                    "rarity": "mythic",
+                    "rarityName": "Мифическая",
+                    "emoji": "🔴",
+                    "chance": 3,
+                    "min_coins": 1000,
+                    "max_coins": 2500,
+                    "min_exp": 200,
+                    "max_exp": 500,
+                    "image_path": "data/images/test23.jpg",
+                    "description": "Пепе, который вечно хочет спать, но обладает мифической силой сновидений."
+                },
+                24: {
+                    "id": 24,
+                    "name": "Менеджер Пепе",
+                    "rarity": "mythic",
+                    "rarityName": "Мифическая",
+                    "emoji": "🔴",
+                    "chance": 3,
+                    "min_coins": 1000,
+                    "max_coins": 2500,
+                    "min_exp": 200,
+                    "max_exp": 500,
+                    "image_path": "data/images/test24.jpg",
+                    "description": "Пепе-менеджер, который эффективно управляет всеми процессами."
+                },
+                25: {
+                    "id": 25,
+                    "name": "Пепе Матрица",
+                    "rarity": "mythic",
+                    "rarityName": "Мифическая",
+                    "emoji": "🔴",
+                    "chance": 3,
+                    "min_coins": 1000,
+                    "max_coins": 2500,
+                    "min_exp": 200,
+                    "max_exp": 500,
+                    "image_path": "data/images/test25.jpg",
+                    "description": "Пепе, который выбрался из Матрицы и теперь видит код реальности."
+                }
+            },
+
+            // Магазин
+            SHOP_ITEMS: {
+                packs: [
+                    {
+                        id: 'pack_common',
+                        name: 'Обычный набор',
+                        description: '3 случайные карты (обычные и выше)',
+                        price: 300,
+                        icon: 'fa-box',
+                        type: 'pack',
+                        data: { cards: 3, minRarity: 'common' }
+                    },
+                    {
+                        id: 'pack_rare',
+                        name: 'Редкий набор',
+                        description: '2 карты гарантированно редкие или выше',
+                        price: 500,
+                        icon: 'fa-box-open',
+                        type: 'pack',
+                        data: { cards: 2, minRarity: 'rare' }
+                    },
+                    {
+                        id: 'pack_epic',
+                        name: 'Эпический набор',
+                        description: '1 эпическая карта гарантированно',
+                        price: 800,
+                        icon: 'fa-crown',
+                        type: 'pack',
+                        data: { cards: 1, minRarity: 'epic' }
+                    },
+                    {
+                        id: 'pack_legendary',
+                        name: 'Легендарный набор',
+                        description: 'Шанс на легендарную карту',
+                        price: 1500,
+                        icon: 'fa-gem',
+                        type: 'pack',
+                        data: { cards: 1, minRarity: 'legendary' }
+                    }
+                ],
+                
+                personalization: [
+                    {
+                        id: 'suffix_pro',
+                        name: 'Суффикс [PRO]',
+                        description: 'Профессиональный суффикс рядом с ником',
+                        price: 500,
+                        icon: 'fa-tag',
+                        type: 'suffix',
+                        data: { text: 'PRO', color: '#3b82f6' }
+                    },
+                    {
+                        id: 'suffix_vip',
+                        name: 'Суффикс [VIP]',
+                        description: 'VIP статус рядом с ником',
+                        price: 1000,
+                        icon: 'fa-crown',
+                        type: 'suffix',
+                        data: { text: 'VIP', color: '#f59e0b' }
+                    },
+                    {
+                        id: 'suffix_legend',
+                        name: 'Суффикс [LEGEND]',
+                        description: 'Легендарный суффикс',
+                        price: 2000,
+                        icon: 'fa-star',
+                        type: 'suffix',
+                        data: { text: 'LEGEND', color: '#8b5cf6' }
+                    },
+                    {
+                        id: 'frame_gold',
+                        name: 'Золотая рамка',
+                        description: 'Золотая рамка для аватара',
+                        price: 800,
+                        icon: 'fa-square',
+                        type: 'frame',
+                        data: { color: '#f59e0b', width: '3px' }
+                    },
+                    {
+                        id: 'frame_rainbow',
+                        name: 'Радужная рамка',
+                        description: 'Радужная анимированная рамка',
+                        price: 1500,
+                        icon: 'fa-rainbow',
+                        type: 'frame',
+                        data: { gradient: 'linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet)', width: '3px' }
+                    }
+                ],
+                
+                titles: [
+                    {
+                        id: 'title_collector',
+                        name: 'Коллекционер',
+                        description: 'За 10 уникальных карт',
+                        price: 0,
+                        icon: 'fa-layer-group',
+                        type: 'title',
+                        data: { requirement: 'cards', value: 10 }
+                    },
+                    {
+                        id: 'title_master',
+                        name: 'Мастер',
+                        description: 'За 25 уникальных карт',
+                        price: 0,
+                        icon: 'fa-crown',
+                        type: 'title',
+                        data: { requirement: 'cards', value: 25 }
+                    },
+                    {
+                        id: 'title_rich',
+                        name: 'Богач',
+                        description: 'За 5000 монет',
+                        price: 0,
+                        icon: 'fa-coins',
+                        type: 'title',
+                        data: { requirement: 'coins', value: 5000 }
+                    },
+                    {
+                        id: 'title_millionaire',
+                        name: 'Миллионер',
+                        description: 'За 10000 монет',
+                        price: 0,
+                        icon: 'fa-gem',
+                        type: 'title',
+                        data: { requirement: 'coins', value: 10000 }
+                    }
+                ],
+                
+                vip: [
+                    {
+                        id: 'vip_7days',
+                        name: 'VIP на 7 дней',
+                        description: 'Кулдаун 20 минут, особый значок',
+                        price: 1000,
+                        icon: 'fa-crown',
+                        type: 'vip',
+                        data: { days: 7 }
+                    },
+                    {
+                        id: 'vip_30days',
+                        name: 'VIP на 30 дней',
+                        description: 'VIP статус на месяц',
+                        price: 3000,
+                        icon: 'fa-crown',
+                        type: 'vip',
+                        data: { days: 30 }
+                    },
+                    {
+                        id: 'vip_permanent',
+                        name: 'Постоянный VIP',
+                        description: 'Вечный VIP статус',
+                        price: 10000,
+                        icon: 'fa-infinity',
+                        type: 'vip',
+                        data: { days: -1 }
+                    }
+                ]
+            },
+
+            // Титулы для уровней
+            LEVEL_TITLES: {
+                1: "Новичок",
+                5: "Коллекционер",
+                10: "Мастер",
+                15: "Эксперт",
+                20: "Профи",
+                25: "Ветеран",
+                30: "Легенда",
+                35: "Магистр",
+                40: "Грандмастер",
+                45: "Чемпион",
+                50: "PepeLegend"
+            }
+        };
+
+        // Состояние приложения
+        let appState = {
+            // Данные текущего пользователя
+            user: null,
+            telegramData: null,
+            
+            // Статистика
+            coins: 0,
+            exp: 0,
+            level: 1,
+            expToNextLevel: 100,
+            
+            // Карты
+            cards: [],
+            favoriteCard: null,
+            
+            // Персонализация
+            equippedSuffix: null,
+            equippedFrame: null,
+            equippedTitle: null,
+            
+            // VIP статус
+            isVIP: false,
+            vipUntil: null,
+            
+            // Временные метки
+            lastCardTime: 0,
+            registrationDate: null,
+            
+            // Админ статус
+            isAdmin: false
+        };
+
+        // Глобальные переменные
+        let telegram = null;
+        let currentPage = 'main';
+        let maintenanceMode = false;
+        let playerPPId = null;
+        let userCount = 0;
+
+        // DOM элементы
+        const loadingScreen = document.getElementById('loadingScreen');
+        const maintenanceOverlay = document.getElementById('maintenanceOverlay');
+        const headerCoins = document.getElementById('headerCoins');
+        const addCoinsBtn = document.getElementById('addCoinsBtn');
+        const userGreeting = document.getElementById('userGreeting');
+        const userStatus = document.getElementById('userStatus');
+        const userId = document.getElementById('userId');
+        const cooldownTimer = document.getElementById('cooldownTimer');
+        const vipBadge = document.getElementById('vipBadge');
+        const openCardBtn = document.getElementById('openCardBtn');
+        const previewCoins = document.getElementById('previewCoins');
+        const previewExp = document.getElementById('previewExp');
+        const previewLevel = document.getElementById('previewLevel');
+        const adminSection = document.getElementById('adminSection');
+        
+        // Инвентарь
+        const totalCards = document.getElementById('totalCards');
+        const cardsGrid = document.getElementById('cardsGrid');
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        
+        // Профиль
+        const profileAvatar = document.getElementById('profileAvatar');
+        const profileFrame = document.getElementById('profileFrame');
+        const profileName = document.getElementById('profileName');
+        const usernameSuffix = document.getElementById('usernameSuffix');
+        const profileTitle = document.getElementById('profileTitle');
+        const profileId = document.getElementById('profileId');
+        const statLevel = document.getElementById('statLevel');
+        const statCards = document.getElementById('statCards');
+        const statCoins = document.getElementById('statCoins');
+        const statUnique = document.getElementById('statUnique');
+        const currentLevel = document.getElementById('currentLevel');
+        const nextLevel = document.getElementById('nextLevel');
+        const levelFill = document.getElementById('levelFill');
+        const levelExp = document.getElementById('levelExp');
+        const favoriteCardPreview = document.getElementById('favoriteCardPreview');
+        const favoriteCardImage = document.getElementById('favoriteCardImage');
+        const favoriteCardName = document.getElementById('favoriteCardName');
+        const favoriteCardRarity = document.getElementById('favoriteCardRarity');
+        
+        // Модалки
+        const donateModal = document.getElementById('donateModal');
+        const donateCloseBtn = document.getElementById('donateCloseBtn');
+        const donateConfirmBtn = document.getElementById('donateConfirmBtn');
+        const donateOptions = document.querySelectorAll('.donate-option');
+        
+        const miniProfileModal = document.getElementById('miniProfileModal');
+        const miniProfileCloseBtn = document.getElementById('miniProfileCloseBtn');
+        
+        const cardRevealModal = document.getElementById('cardRevealModal');
+        const revealCard = document.getElementById('revealCard');
+        const revealCardImage = document.getElementById('revealCardImage');
+        const revealCardName = document.getElementById('revealCardName');
+        const revealCardRarity = document.getElementById('revealCardRarity');
+        const revealRewards = document.getElementById('revealRewards');
+        
+        // Навигация
+        const pages = document.querySelectorAll('.page');
+        const navItems = document.querySelectorAll('.nav-item');
+        
+        // Админ элементы
+        const adminPlayerId = document.getElementById('adminPlayerId');
+        const adminSearchBtn = document.getElementById('adminSearchBtn');
+        const adminCoinsAmount = document.getElementById('adminCoinsAmount');
+        const adminAddCoinsBtn = document.getElementById('adminAddCoinsBtn');
+        const adminAddVipBtn = document.getElementById('adminAddVipBtn');
+        const adminBanBtn = document.getElementById('adminBanBtn');
+        const adminResetBtn = document.getElementById('adminResetBtn');
+        const adminMaintenanceBtn = document.getElementById('adminMaintenanceBtn');
+
+        // Инициализация приложения
+        async function initApp() {
+            try {
+                // Инициализация Telegram Web App
+                telegram = window.Telegram.WebApp;
+                telegram.ready();
+                telegram.expand();
+                
+                // Получаем данные пользователя
+                const user = telegram.initDataUnsafe.user;
+                
+                // Генерируем уникальный ID для игрока
+                playerPPId = await generatePlayerId(user.id);
+                
+                // Загружаем или создаем профиль
+                await loadOrCreateProfile(user);
+                
+                // Настройка темы
+                setupTheme();
+                
+                // Настройка обработчиков событий
+                setupEventListeners();
+                
+                // Обновляем UI
+                updateUI();
+                updateInventory();
+                updateShop();
+                
+                // Запускаем таймеры
+                updateCooldown();
+                setInterval(updateCooldown, 1000);
+                
+                // Скрываем экран загрузки
+                setTimeout(() => {
+                    loadingScreen.style.opacity = '0';
+                    setTimeout(() => {
+                        loadingScreen.classList.add('hidden');
+                    }, 300);
+                }, 1000);
+                
+                // Приветственное сообщение
+                setTimeout(() => {
+                    showNotification(`Добро пожаловать, ${user.first_name}! 🐸`);
+                }, 1500);
+                
+            } catch (error) {
+                console.error('Ошибка инициализации:', error);
+                showNotification('Ошибка загрузки приложения');
+                loadingScreen.querySelector('.loading-text').textContent = 'Ошибка загрузки. Обновите страницу.';
+            }
+        }
+
+        // Генерация уникального ID игрока
+        async function generatePlayerId(telegramId) {
+            // Получаем количество зарегистрированных пользователей
+            const count = localStorage.getItem('pepecards_user_count') || '0';
+            userCount = parseInt(count) + 1;
+            localStorage.setItem('pepecords_user_count', userCount.toString());
+            
+            // Создаем ID в формате #PP0000
+            return `#PP${userCount.toString().padStart(4, '0')}`;
+        }
+
+        // Загрузка или создание профиля
+        async function loadOrCreateProfile(user) {
+            const userId = `pepecords_user_${user.id}`;
+            const savedProfile = localStorage.getItem(userId);
+            
+            if (savedProfile) {
+                // Загружаем существующий профиль
+                appState = JSON.parse(savedProfile);
+                appState.user = user;
+                appState.telegramData = telegram.initDataUnsafe;
+                
+                // Проверяем актуальность VIP
+                if (appState.vipUntil && new Date(appState.vipUntil) < new Date()) {
+                    appState.isVIP = false;
+                    appState.vipUntil = null;
+                }
+            } else {
+                // Создаем новый профиль
+                appState = {
+                    user: user,
+                    telegramData: telegram.initDataUnsafe,
+                    coins: 100, // Стартовые монеты
+                    exp: 0,
+                    level: 1,
+                    expToNextLevel: 100,
+                    cards: [],
+                    favoriteCard: null,
+                    equippedSuffix: null,
+                    equippedFrame: null,
+                    equippedTitle: 'Новичок',
+                    isVIP: false,
+                    vipUntil: null,
+                    lastCardTime: 0,
+                    registrationDate: new Date().toISOString(),
+                    isAdmin: user.id === CONFIG.ADMIN_ID
+                };
+            }
+            
+            // Сохраняем профиль
+            saveProfile();
+        }
+
+        // Сохранение профиля
+        function saveProfile() {
+            if (!appState.user) return;
+            
+            const userId = `pepecords_user_${appState.user.id}`;
+            localStorage.setItem(userId, JSON.stringify(appState));
+        }
+
+        // Настройка темы Telegram
+        function setupTheme() {
+            if (!telegram) return;
+            
+            document.documentElement.style.setProperty('--bg-primary', telegram.themeParams.bg_color || '#ffffff');
+            document.documentElement.style.setProperty('--text-primary', telegram.themeParams.text_color || '#000000');
+            document.documentElement.style.setProperty('--hint-color', telegram.themeParams.hint_color || '#999999');
+            document.documentElement.style.setProperty('--link-color', telegram.themeParams.link_color || '#2481cc');
+            document.documentElement.style.setProperty('--button-color', telegram.themeParams.button_color || '#40a7e3');
+            document.documentElement.style.setProperty('--button-text-color', telegram.themeParams.button_text_color || '#ffffff');
+        }
+
+        // Настройка обработчиков событий
+        function setupEventListeners() {
+            // Навигация
+            navItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const page = item.dataset.page;
+                    switchPage(page);
+                });
+            });
+
+            // Кнопка открытия карты
+            openCardBtn.addEventListener('click', openRandomCard);
+            openCardBtn.addEventListener('mouseenter', () => {
+                if (!openCardBtn.disabled) {
+                    openCardBtn.style.transform = 'translateY(-2px)';
+                    openCardBtn.style.boxShadow = '0 10px 30px rgba(139, 92, 246, 0.4)';
+                }
+            });
+            openCardBtn.addEventListener('mouseleave', () => {
+                openCardBtn.style.transform = '';
+                openCardBtn.style.boxShadow = '';
+            });
+
+            // Кнопка доната
+            addCoinsBtn.addEventListener('click', () => {
+                donateModal.classList.remove('hidden');
+            });
+
+            // Донат модалка
+            donateCloseBtn.addEventListener('click', () => {
+                donateModal.classList.add('hidden');
+            });
+
+            donateConfirmBtn.addEventListener('click', processDonation);
+
+            donateOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    donateOptions.forEach(opt => opt.classList.remove('selected'));
+                    option.classList.add('selected');
+                });
+            });
+
+            // Мини профиль
+            miniProfileCloseBtn.addEventListener('click', () => {
+                miniProfileModal.classList.add('hidden');
+            });
+
+            // Фильтры инвентаря
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    updateInventory(btn.dataset.filter);
+                });
+            });
+
+            // Предпросмотр любимой карты
+            favoriteCardPreview.addEventListener('click', () => {
+                if (appState.cards.length > 0) {
+                    showFavoriteCardSelector();
+                } else {
+                    showNotification('У вас нет карт для выбора');
+                }
+            });
+
+            // Админ панель
+            if (appState.isAdmin) {
+                adminSection.classList.remove('hidden');
+                
+                adminSearchBtn.addEventListener('click', searchPlayer);
+                adminAddCoinsBtn.addEventListener('click', addCoinsToPlayer);
+                adminAddVipBtn.addEventListener('click', addVipToPlayer);
+                adminBanBtn.addEventListener('click', banPlayer);
+                adminResetBtn.addEventListener('click', resetPlayer);
+                adminMaintenanceBtn.addEventListener('click', toggleMaintenance);
+            }
+
+            // Обработка клика вне модалок
+            document.addEventListener('click', (e) => {
+                if (e.target === donateModal) {
+                    donateModal.classList.add('hidden');
+                }
+                if (e.target === miniProfileModal) {
+                    miniProfileModal.classList.add('hidden');
+                }
+                if (e.target === cardRevealModal) {
+                    cardRevealModal.classList.add('hidden');
+                }
+            });
+
+            // Анимация при наведении на кнопки
+            const allButtons = document.querySelectorAll('button');
+            allButtons.forEach(button => {
+                button.addEventListener('mouseenter', () => {
+                    if (!button.disabled) {
+                        button.style.transform = 'translateY(-2px)';
+                    }
+                });
+                button.addEventListener('mouseleave', () => {
+                    button.style.transform = '';
+                });
+            });
+        }
+
+        // Переключение страниц
+        function switchPage(page) {
+            currentPage = page;
+            
+            // Скрываем все страницы
+            pages.forEach(p => p.classList.remove('active'));
+            
+            // Показываем выбранную страницу
+            document.getElementById(page + 'Page').classList.add('active');
+            
+            // Обновляем активную кнопку меню
+            navItems.forEach(item => {
+                if (item.dataset.page === page) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+            
+            // Загружаем контент для страницы
+            switch(page) {
+                case 'inventory':
+                    updateInventory();
+                    break;
+                case 'shop':
+                    updateShop();
+                    break;
+                case 'leaderboard':
+                    updateLeaderboard();
+                    break;
+                case 'profile':
+                    updateProfile();
+                    break;
+            }
+        }
+
+        // Обновление UI
+        function updateUI() {
+            if (!appState.user) return;
+            
+            // Шапка
+            headerCoins.textContent = appState.coins;
+            
+            // Приветствие
+            userGreeting.textContent = `Привет, ${appState.user.first_name}!`;
+            userStatus.textContent = appState.isVIP ? 'VIP статус активен 🎖️' : 'Начни собирать коллекцию карт';
+            userId.textContent = playerPPId;
+            
+            // Премиум бейдж
+            if (appState.isVIP) {
+                vipBadge.classList.remove('hidden');
+            } else {
+                vipBadge.classList.add('hidden');
+            }
+            
+            // Предпросмотр наград
+            const randomCard = getRandomCardPreview();
+            previewCoins.textContent = `${randomCard.min_coins}-${randomCard.max_coins} монет`;
+            previewExp.textContent = `${randomCard.min_exp}-${randomCard.max_exp} опыта`;
+            previewLevel.textContent = `Уровень ${appState.level}`;
+        }
+
+        // Обновление кулдауна
+        function updateCooldown() {
+            if (maintenanceMode) {
+                cooldownTimer.textContent = 'ТЕХНИЧЕСКИЙ ПЕРЕРЫВ';
+                cooldownTimer.style.color = '#ef4444';
+                openCardBtn.disabled = true;
+                openCardBtn.innerHTML = '<i class="fas fa-tools"></i> Технический перерыв';
+                return;
+            }
+            
+            if (appState.isAdmin) {
+                cooldownTimer.textContent = 'АДМИН';
+                cooldownTimer.style.color = '#dc2626';
+                openCardBtn.disabled = false;
+                return;
+            }
+            
+            const now = Math.floor(Date.now() / 1000);
+            const cooldown = appState.isVIP ? CONFIG.COOLDOWN_VIP : CONFIG.COOLDOWN_NORMAL;
+            const timeLeft = Math.max(0, appState.lastCardTime + cooldown - now);
+            
+            if (timeLeft === 0) {
+                cooldownTimer.textContent = 'ГОТОВО!';
+                cooldownTimer.style.color = '#10b981';
+                openCardBtn.disabled = false;
+                openCardBtn.innerHTML = '<i class="fas fa-gift"></i> Открыть карту';
+            } else {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                cooldownTimer.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                cooldownTimer.style.color = timeLeft > 60 ? '#ef4444' : '#f59e0b';
+                openCardBtn.disabled = true;
+                openCardBtn.innerHTML = `<i class="fas fa-clock"></i> ${minutes}:${seconds.toString().padStart(2, '0')}`;
+            }
+        }
+
+        // Получение случайной карты для предпросмотра
+        function getRandomCardPreview() {
+            const cards = Object.values(CONFIG.CARDS);
+            return cards[Math.floor(Math.random() * cards.length)];
+        }
+
+        // Открытие случайной карты
+        async function openRandomCard() {
+            if (maintenanceMode) {
+                showNotification('Технический перерыв. Попробуйте позже.');
+                return;
+            }
+            
+            if (appState.isAdmin) {
+                // Админ может открывать без кулдауна
+                appState.lastCardTime = Math.floor(Date.now() / 1000);
+            } else {
+                // Проверка кулдауна для обычных пользователей
+                const now = Math.floor(Date.now() / 1000);
+                const cooldown = appState.isVIP ? CONFIG.COOLDOWN_VIP : CONFIG.COOLDOWN_NORMAL;
+                
+                if (now - appState.lastCardTime < cooldown) {
+                    showNotification('Подождите перед открытием следующей карты!');
+                    return;
+                }
+                
+                appState.lastCardTime = now;
+            }
+            
+            // Получаем случайную карту
+            const card = getRandomCard();
+            
+            // Добавляем карту в коллекцию
+            const cardCopy = { ...card, obtained: new Date().toISOString() };
+            appState.cards.push(cardCopy);
+            
+            // Добавляем награды
+            const coins = getRandomInt(card.min_coins, card.max_coins);
+            const exp = getRandomInt(card.min_exp, card.max_exp);
+            
+            appState.coins += coins;
+            appState.exp += exp;
+            
+            // Проверяем повышение уровня
+            const leveledUp = checkLevelUp();
+            
+            // Сохраняем изменения
+            saveProfile();
+            
+            // Показываем анимацию
+            showCardRevealAnimation(card, coins, exp, leveledUp);
+            
+            // Обновляем UI
+            updateUI();
+            updateInventory();
+            updateProfile();
+            
+            // Звуковое уведомление (если поддерживается)
+            if (telegram && telegram.HapticFeedback) {
+                telegram.HapticFeedback.impactOccurred('medium');
+            }
+        }
+
+        // Получение случайной карты
+        function getRandomCard() {
+            // Создаем взвешенный список
+            let weightedList = [];
+            
+            Object.values(CONFIG.CARDS).forEach(card => {
+                // Если карта уже открыта, уменьшаем шанс
+                const openedCount = appState.cards.filter(c => c.id === card.id).length;
+                const chanceMultiplier = openedCount > 0 ? 0.5 : 1;
+                const weight = Math.floor(card.chance * chanceMultiplier);
+                
+                for (let i = 0; i < weight; i++) {
+                    weightedList.push(card);
+                }
+            });
+            
+            // Выбираем случайную карту
+            const randomIndex = Math.floor(Math.random() * weightedList.length);
+            return weightedList[randomIndex] || CONFIG.CARDS[1];
+        }
+
+        // Получение случайного числа в диапазоне
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        // Проверка повышения уровня
+        function checkLevelUp() {
+            let leveledUp = false;
+            
+            while (appState.exp >= appState.expToNextLevel) {
+                appState.level++;
+                appState.exp -= appState.expToNextLevel;
+                appState.expToNextLevel = Math.floor(appState.expToNextLevel * 1.5);
+                leveledUp = true;
+                
+                // Обновляем титул
+                const newTitle = getLevelTitle(appState.level);
+                if (newTitle) {
+                    appState.equippedTitle = newTitle;
+                }
+                
+                // Специальная награда за уровень
+                if (appState.level % 5 === 0) {
+                    const bonusCoins = appState.level * 100;
+                    appState.coins += bonusCoins;
+                    showNotification(`🎉 Уровень ${appState.level}! +${bonusCoins} монет!`);
+                }
+                
+                // VIP на уровне 15
+                if (appState.level === 15 && !appState.isVIP) {
+                    appState.isVIP = true;
+                    appState.vipUntil = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+                    showNotification('🎖️ Вы получили VIP статус на 7 дней!');
+                }
+            }
+            
+            return leveledUp;
+        }
+
+        // Получение титула по уровню
+        function getLevelTitle(level) {
+            let title = "Новичок";
+            
+            for (const [lvl, ttl] of Object.entries(CONFIG.LEVEL_TITLES)) {
+                if (level >= parseInt(lvl)) {
+                    title = ttl;
+                }
+            }
+            
+            return title;
+        }
+
+        // Показ анимации получения карты
+        function showCardRevealAnimation(card, coins, exp, leveledUp) {
+            // Устанавливаем данные карты
+            revealCardImage.style.backgroundImage = `url('${card.image_path}')`;
+            revealCardName.textContent = card.name;
+            revealCardRarity.textContent = card.rarityName;
+            revealCardRarity.className = 'reveal-card-rarity';
+            revealCardRarity.classList.add(`rarity-${card.rarity}`);
+            
+            // Создаем отображение наград
+            revealRewards.innerHTML = `
+                <div class="reveal-reward">
+                    <div class="reveal-reward-icon"><i class="fas fa-coins"></i></div>
+                    <div class="reveal-reward-value">+${coins}</div>
+                    <div class="reveal-reward-label">Монеты</div>
+                </div>
+                <div class="reveal-reward">
+                    <div class="reveal-reward-icon"><i class="fas fa-star"></i></div>
+                    <div class="reveal-reward-value">+${exp}</div>
+                    <div class="reveal-reward-label">Опыт</div>
+                </div>
+                ${leveledUp ? `
+                <div class="reveal-reward">
+                    <div class="reveal-reward-icon"><i class="fas fa-level-up-alt"></i></div>
+                    <div class="reveal-reward-value">${appState.level}</div>
+                    <div class="reveal-reward-label">Уровень!</div>
+                </div>
+                ` : ''}
+            `;
+            
+            // Показываем модалку
+            cardRevealModal.classList.remove('hidden');
+            revealCard.classList.remove('flipped');
+            
+            // Запускаем анимацию переворота
+            setTimeout(() => {
+                revealCard.classList.add('flipped');
+                
+                // Создаем конфетти для редких карт
+                if (card.rarity === 'legendary' || card.rarity === 'mythic' || card.rarity === 'secret') {
+                    createConfetti();
+                }
+                
+                // Автоматическое скрытие через 4 секунды
+                setTimeout(() => {
+                    cardRevealModal.classList.add('hidden');
+                    revealCard.classList.remove('flipped');
+                    
+                    // Показываем уведомление о новой карте
+                    if (card.rarity === 'secret') {
+                        showNotification('🎉 НЕВЕРОЯТНО! Вы нашли СЕКРЕТНУЮ карту! 🎉');
+                    } else if (card.rarity === 'mythic') {
+                        showNotification('🔥 Вы получили МИФИЧЕСКУЮ карту!');
+                    } else if (card.rarity === 'legendary') {
+                        showNotification('⭐ Вы получили ЛЕГЕНДАРНУЮ карту!');
+                    } else {
+                        showNotification(`Вы получили карту: ${card.name}`);
+                    }
+                }, 4000);
+            }, 1000);
+        }
+
+        // Создание конфетти
+        function createConfetti() {
+            const colors = ['#8B5CF6', '#A78BFA', '#3B82F6', '#10B981', '#F59E0B', '#EF4444'];
+            
+            for (let i = 0; i < 30; i++) {
+                const confetti = document.createElement('div');
+                confetti.style.position = 'fixed';
+                confetti.style.width = '10px';
+                confetti.style.height = '10px';
+                confetti.style.left = `${Math.random() * 100}%`;
+                confetti.style.top = '-20px';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.borderRadius = '50%';
+                confetti.style.zIndex = '2001';
+                confetti.style.animation = `confettiFall ${Math.random() * 2 + 1}s linear forwards`;
+                confetti.style.animationDelay = `${Math.random() * 0.5}s`;
+                
+                document.body.appendChild(confetti);
+                
+                setTimeout(() => {
+                    confetti.remove();
+                }, 2000);
+            }
+        }
+
+        // Обновление инвентаря
+        function updateInventory(filter = 'all') {
+            if (!cardsGrid) return;
+            
+            // Счетчики
+            const total = appState.cards.length;
+            const unique = [...new Set(appState.cards.map(c => c.id))].length;
+            totalCards.textContent = `${total} карт (${unique} уникальных)`;
+            
+            // Фильтрация карт
+            let filteredCards = [...appState.cards];
+            
+            if (filter !== 'all') {
+                if (filter === 'favorite') {
+                    filteredCards = appState.cards.filter(card => 
+                        appState.favoriteCard && card.id === appState.favoriteCard.id
+                    );
+                } else {
+                    filteredCards = appState.cards.filter(card => card.rarity === filter);
+                }
+            }
+            
+            // Группировка по ID и подсчет количества
+            const cardCounts = {};
+            filteredCards.forEach(card => {
+                if (!cardCounts[card.id]) {
+                    cardCounts[card.id] = {
+                        card: card,
+                        count: 0
+                    };
+                }
+                cardCounts[card.id].count++;
+            });
+            
+            const cardGroups = Object.values(cardCounts);
+            
+            // Очистка и рендеринг
+            cardsGrid.innerHTML = '';
+            
+            if (cardGroups.length === 0) {
+                cardsGrid.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 40px 20px; color: var(--text-secondary);">
+                        <i class="fas fa-box-open" style="font-size: 3rem; margin-bottom: 15px;"></i>
+                        <h3>${filter === 'favorite' ? 'Нет избранных карт' : 'Карточки не найдены'}</h3>
+                        <p>${filter === 'all' ? 'Откройте первую карту!' : 'Нет карт такой редкости'}</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            cardGroups.forEach(({ card, count }) => {
+                const isFavorite = appState.favoriteCard && appState.favoriteCard.id === card.id;
+                
+                const cardElement = document.createElement('div');
+                cardElement.className = `card-item rarity-${card.rarity}`;
+                if (isFavorite) cardElement.classList.add('favorite');
+                
+                cardElement.innerHTML = `
+                    <div class="rarity-glow"></div>
+                    ${count > 1 ? `<div class="card-count">×${count}</div>` : ''}
+                    <button class="favorite-btn ${isFavorite ? 'active' : ''}" data-id="${card.id}">
+                        <i class="fas fa-heart"></i>
+                    </button>
+                    <div class="card-image" style="background-image: url('${card.image_path}')"></div>
+                    <div class="card-info">
+                        <div class="card-name">${card.name}</div>
+                        <div class="card-rarity">${card.rarityName}</div>
+                    </div>
+                `;
+                
+                // Обработчик клика на карточку
+                cardElement.addEventListener('click', (e) => {
+                    if (!e.target.closest('.favorite-btn')) {
+                        showCardDetails(card);
+                    }
+                });
+                
+                // Обработчик для кнопки избранного
+                const favoriteBtn = cardElement.querySelector('.favorite-btn');
+                favoriteBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    toggleFavoriteCard(card);
+                });
+                
+                cardsGrid.appendChild(cardElement);
+            });
+        }
+
+        // Показ деталей карты
+        function showCardDetails(card) {
+            // Здесь можно добавить модалку с детальной информацией о карте
+            showNotification(`${card.name} - ${card.rarityName}\n${card.description}`);
+        }
+
+        // Переключение избранной карты
+        function toggleFavoriteCard(card) {
+            if (appState.favoriteCard && appState.favoriteCard.id === card.id) {
+                appState.favoriteCard = null;
+                showNotification('Карта удалена из избранного');
+            } else {
+                appState.favoriteCard = card;
+                showNotification('Карта добавлена в избранное');
+            }
+            
+            saveProfile();
+            updateInventory();
+            updateProfile();
+        }
+
+        // Показ селектора избранной карты
+        function showFavoriteCardSelector() {
+            // Показываем список карт для выбора
+            const cardList = document.createElement('div');
+            cardList.style.position = 'fixed';
+            cardList.style.top = '0';
+            cardList.style.left = '0';
+            cardList.style.width = '100%';
+            cardList.style.height = '100%';
+            cardList.style.background = 'rgba(0,0,0,0.9)';
+            cardList.style.zIndex = '2000';
+            cardList.style.padding = '20px';
+            cardList.style.overflowY = 'auto';
+            
+            // Уникальные карты
+            const uniqueCards = [];
+            const seenIds = new Set();
+            
+            appState.cards.forEach(card => {
+                if (!seenIds.has(card.id)) {
+                    seenIds.add(card.id);
+                    uniqueCards.push(card);
+                }
+            });
+            
+            cardList.innerHTML = `
+                <div style="color: white; text-align: center; margin-bottom: 20px;">
+                    <h2 style="font-size: 1.5rem; margin-bottom: 10px;">Выберите любимую карту</h2>
+                    <p>${uniqueCards.length} уникальных карт доступно</p>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                    ${uniqueCards.map(card => {
+                        const isFavorite = appState.favoriteCard && appState.favoriteCard.id === card.id;
+                        return `
+                            <div class="card-item rarity-${card.rarity}" 
+                                 style="cursor: pointer; ${isFavorite ? 'border-color: #f59e0b;' : ''}"
+                                 data-id="${card.id}">
+                                <div class="card-image" style="background-image: url('${card.image_path}'); height: 120px;"></div>
+                                <div class="card-info">
+                                    <div class="card-name">${card.name}</div>
+                                    <div class="card-rarity">${card.rarityName}</div>
+                                    ${isFavorite ? '<div style="color: #f59e0b; font-size: 0.8rem; margin-top: 5px;">★ Избранная</div>' : ''}
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+                <button style="width: 100%; padding: 15px; margin-top: 20px; background: #ef4444; color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer;"
+                        id="closeCardSelector">
+                    Закрыть
+                </button>
+            `;
+            
+            document.body.appendChild(cardList);
+            
+            // Обработчики выбора карт
+            cardList.querySelectorAll('.card-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const cardId = parseInt(item.dataset.id);
+                    const selectedCard = uniqueCards.find(c => c.id === cardId);
+                    
+                    if (selectedCard) {
+                        toggleFavoriteCard(selectedCard);
+                        document.body.removeChild(cardList);
+                    }
+                });
+            });
+            
+            // Кнопка закрытия
+            document.getElementById('closeCardSelector').addEventListener('click', () => {
+                document.body.removeChild(cardList);
+            });
+        }
+
+        // Обновление профиля
+        function updateProfile() {
+            if (!appState.user) return;
+            
+            // Аватар
+            if (appState.user.photo_url) {
+                profileAvatar.style.backgroundImage = `url('${appState.user.photo_url}')`;
+            } else {
+                // Генерация градиентного аватара по ID
+                const colors = ['#8B5CF6', '#A78BFA', '#3B82F6', '#10B981', '#F59E0B'];
+                const color = colors[appState.user.id % colors.length];
+                profileAvatar.style.background = `linear-gradient(135deg, ${color}, ${color}80)`;
+                profileAvatar.innerHTML = `<i class="fas fa-user" style="color: white; font-size: 2rem;"></i>`;
+            }
+            
+            // Рамка профиля
+            if (appState.equippedFrame) {
+                profileFrame.style.border = `${appState.equippedFrame.data.width} solid ${appState.equippedFrame.data.color}`;
+                if (appState.equippedFrame.data.gradient) {
+                    profileFrame.style.borderImage = `linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet) 1`;
+                }
+            } else {
+                profileFrame.style.border = 'none';
+            }
+            
+            // Имя и суффикс
+            profileName.textContent = appState.user.first_name;
+            if (appState.equippedSuffix) {
+                usernameSuffix.textContent = appState.equippedSuffix.data.text;
+                usernameSuffix.style.background = appState.equippedSuffix.data.color;
+                usernameSuffix.classList.remove('hidden');
+            } else {
+                usernameSuffix.classList.add('hidden');
+            }
+            
+            // Титул
+            profileTitle.textContent = appState.equippedTitle || 'Новичок';
+            
+            // ID
+            profileId.textContent = playerPPId;
+            
+            // Статистика
+            statLevel.textContent = appState.level;
+            statCards.textContent = appState.cards.length;
+            statCoins.textContent = appState.coins;
+            statUnique.textContent = [...new Set(appState.cards.map(c => c.id))].length;
+            
+            // Прогресс уровня
+            currentLevel.textContent = appState.level;
+            nextLevel.textContent = appState.level + 1;
+            
+            const expPercent = Math.min(100, (appState.exp / appState.expToNextLevel) * 100);
+            levelFill.style.width = `${expPercent}%`;
+            levelExp.textContent = `${appState.exp}/${appState.expToNextLevel} опыта`;
+            
+            // Любимая карта
+            if (appState.favoriteCard) {
+                favoriteCardImage.style.backgroundImage = `url('${appState.favoriteCard.image_path}')`;
+                favoriteCardName.textContent = appState.favoriteCard.name;
+                favoriteCardRarity.textContent = appState.favoriteCard.rarityName;
+                favoriteCardRarity.className = 'favorite-card-rarity';
+                favoriteCardRarity.classList.add(`rarity-${appState.favoriteCard.rarity}`);
+            } else {
+                favoriteCardImage.style.backgroundImage = '';
+                favoriteCardImage.innerHTML = '<i class="fas fa-heart" style="color: var(--text-secondary); font-size: 2rem;"></i>';
+                favoriteCardName.textContent = 'Не выбрана';
+                favoriteCardRarity.textContent = '—';
+                favoriteCardRarity.className = 'favorite-card-rarity';
+            }
+        }
+
+        // Обновление магазина
+        function updateShop() {
+            // Реализация магазина будет добавлена
+            // Можно добавить рендеринг товаров из CONFIG.SHOP_ITEMS
+        }
+
+        // Обновление лидерборда
+        function updateLeaderboard() {
+            // Реализация лидерборда будет добавлена
+            // Нужно получить данные всех игроков из localStorage
+        }
+
+        // Показ мини профиля игрока
+        function showMiniProfile(playerData) {
+            // Заполнение данных игрока
+            // ...
+            
+            miniProfileModal.classList.remove('hidden');
+        }
+
+        // Процесс доната
+        function processDonation() {
+            const selectedOption = donateModal.querySelector('.donate-option.selected');
+            if (!selectedOption) return;
+            
+            const amount = parseInt(selectedOption.dataset.amount);
+            const method = selectedOption.dataset.method;
+            
+            if (method === 'stars') {
+                // Покупка через звезды Telegram
+                if (telegram && telegram.showPopup) {
+                    telegram.showPopup({
+                        title: 'Покупка через звезды',
+                        message: `Вы хотите купить ${amount} монет за ⭐ 10?`,
+                        buttons: [
+                            { type: 'ok', text: 'Купить' },
+                            { type: 'cancel', text: 'Отмена' }
+                        ]
+                    }, (buttonId) => {
+                        if (buttonId === 'ok') {
+                            // Здесь интеграция с платежами Telegram
+                            showNotification('Оплата через звезды временно недоступна');
+                        }
+                    });
+                }
+            } else if (method === 'rubles') {
+                        // Продолжение функции processDonation...
+                // Покупка через рублями
+                telegram.showPopup({
+                    title: 'Покупка через рубли',
+                    message: `Напишите @DefoltPlayer для покупки ${amount} монет за ${selectedOption.querySelector('.donate-option-price').textContent}`,
+                    buttons: [
+                        { type: 'default', text: 'Открыть диалог' },
+                        { type: 'cancel', text: 'Отмена' }
+                    ]
+                }, (buttonId) => {
+                    if (buttonId === 'default') {
+                        window.open('https://t.me/DefoltPlayer', '_blank');
+                        showNotification('Напишите @DefoltPlayer для покупки монет');
+                    }
+                });
+            }
+            
+            donateModal.classList.add('hidden');
+        }
+
+        // Показ уведомления
+        function showNotification(message, type = 'info') {
+            // Создаем уведомление
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'error' ? 'exclamation-circle' : type === 'success' ? 'check-circle' : 'info-circle'}"></i>
+                <span>${message}</span>
+            `;
+            
+            // Стили
+            notification.style.position = 'fixed';
+            notification.style.top = '70px';
+            notification.style.left = '50%';
+            notification.style.transform = 'translateX(-50%)';
+            notification.style.background = 'linear-gradient(135deg, var(--accent-color), var(--accent-light))';
+            notification.style.color = 'white';
+            notification.style.padding = '12px 20px';
+            notification.style.borderRadius = '12px';
+            notification.style.boxShadow = '0 5px 20px rgba(0,0,0,0.3)';
+            notification.style.zIndex = '2002';
+            notification.style.display = 'flex';
+            notification.style.alignItems = 'center';
+            notification.style.gap = '10px';
+            notification.style.maxWidth = '90%';
+            notification.style.animation = 'fadeIn 0.3s ease';
+            
+            document.body.appendChild(notification);
+            
+            // Автоматическое скрытие
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(-50%) translateY(-10px)';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        // Админ функции
+        async function searchPlayer() {
+            const searchId = adminPlayerId.value.trim();
+            if (!searchId) {
+                showNotification('Введите ID игрока', 'error');
+                return;
+            }
+            
+            // Поиск по ID в формате #PP0000
+            if (searchId.startsWith('#PP')) {
+                // Ищем среди всех пользователей
+                showNotification('Функция поиска игрока в разработке', 'info');
+            } else {
+                showNotification('Неверный формат ID. Используйте #PP0000', 'error');
+            }
+        }
+
+        function addCoinsToPlayer() {
+            const amount = parseInt(adminCoinsAmount.value);
+            if (!amount || amount <= 0) {
+                showNotification('Введите корректную сумму', 'error');
+                return;
+            }
+            
+            appState.coins += amount;
+            saveProfile();
+            updateUI();
+            showNotification(`Выдано ${amount} монет`, 'success');
+        }
+
+        function addVipToPlayer() {
+            if (appState.isVIP) {
+                appState.isVIP = false;
+                appState.vipUntil = null;
+                showNotification('VIP статус отключен', 'success');
+            } else {
+                appState.isVIP = true;
+                appState.vipUntil = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+                showNotification('VIP статус выдан на 30 дней', 'success');
+            }
+            
+            saveProfile();
+            updateUI();
+        }
+
+        function banPlayer() {
+            telegram.showPopup({
+                title: 'Бан игрока',
+                message: 'Вы уверены, что хотите забанить этого игрока?',
+                buttons: [
+                    { type: 'destructive', text: 'Забанить' },
+                    { type: 'cancel', text: 'Отмена' }
+                ]
+            }, (buttonId) => {
+                if (buttonId === 'destructive') {
+                    showNotification('Игрок забанен', 'success');
+                }
+            });
+        }
+
+        function resetPlayer() {
+            telegram.showPopup({
+                title: 'Сброс профиля',
+                message: 'ВСЕ данные игрока будут удалены! Вы уверены?',
+                buttons: [
+                    { type: 'destructive', text: 'Сбросить' },
+                    { type: 'cancel', text: 'Отмена' }
+                ]
+            }, (buttonId) => {
+                if (buttonId === 'destructive') {
+                    // Сброс профиля текущего игрока
+                    appState.coins = 100;
+                    appState.exp = 0;
+                    appState.level = 1;
+                    appState.expToNextLevel = 100;
+                    appState.cards = [];
+                    appState.favoriteCard = null;
+                    appState.isVIP = false;
+                    appState.vipUntil = null;
+                    appState.lastCardTime = 0;
+                    
+                    saveProfile();
+                    updateUI();
+                    updateInventory();
+                    updateProfile();
+                    
+                    showNotification('Профиль сброшен', 'success');
+                }
+            });
+        }
+
+        function toggleMaintenance() {
+            maintenanceMode = !maintenanceMode;
+            
+            if (maintenanceMode) {
+                maintenanceOverlay.classList.remove('hidden');
+                showNotification('Технический перерыв включен', 'success');
+            } else {
+                maintenanceOverlay.classList.add('hidden');
+                showNotification('Технический перерыв выключен', 'success');
+            }
+        }
+
+        // Обновление магазина (реализация)
+        function updateShop() {
+            const shopTabs = document.querySelectorAll('.shop-tab');
+            const shopContents = {
+                packs: document.getElementById('packsTab'),
+                personalization: document.getElementById('personalizationTab'),
+                titles: document.getElementById('titlesTab'),
+                vip: document.getElementById('vipTab')
+            };
+            
+            // Обработчики для вкладок магазина
+            shopTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    shopTabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    Object.values(shopContents).forEach(content => {
+                        content.classList.add('hidden');
+                    });
+                    
+                    const tabId = tab.dataset.tab + 'Tab';
+                    if (shopContents[tab.dataset.tab]) {
+                        shopContents[tab.dataset.tab].classList.remove('hidden');
+                        renderShopTab(tab.dataset.tab);
+                    }
+                });
+            });
+            
+            // Рендерим первую вкладку
+            renderShopTab('packs');
+        }
+
+        function renderShopTab(tabName) {
+            const items = CONFIG.SHOP_ITEMS[tabName];
+            const container = document.getElementById(tabName + 'Tab');
+            
+            if (!items || !container) return;
+            
+            container.innerHTML = items.map(item => {
+                const owned = checkIfOwned(item);
+                const canBuy = appState.coins >= item.price && !owned;
+                const equipped = checkIfEquipped(item);
+                
+                return `
+                    <div class="shop-item" data-id="${item.id}">
+                        <div class="shop-item-header">
+                            <div class="shop-item-icon">
+                                <i class="fas ${item.icon}"></i>
+                            </div>
+                            <div class="shop-item-title">
+                                <div class="shop-item-name">${item.name}</div>
+                                <div class="shop-item-desc">${item.description}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="shop-item-price">
+                            <i class="fas fa-coins"></i>
+                            ${item.price} монет
+                        </div>
+                        
+                        <button class="shop-item-btn ${equipped ? 'equipped' : ''} ${!canBuy ? 'disabled' : ''}" 
+                                ${!canBuy ? 'disabled' : ''}
+                                onclick="buyItem('${item.id}', '${tabName}')">
+                            ${owned ? (equipped ? '✓ Надето' : 'Надеть') : 'Купить'}
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function checkIfOwned(item) {
+            switch(item.type) {
+                case 'suffix':
+                    return appState.coins >= item.price * 0.5; // Пример условия
+                case 'frame':
+                    return appState.coins >= item.price * 0.5;
+                case 'title':
+                    return checkTitleRequirement(item);
+                case 'vip':
+                    return appState.isVIP;
+                default:
+                    return false;
+            }
+        }
+
+        function checkIfEquipped(item) {
+            switch(item.type) {
+                case 'suffix':
+                    return appState.equippedSuffix && appState.equippedSuffix.id === item.id;
+                case 'frame':
+                    return appState.equippedFrame && appState.equippedFrame.id === item.id;
+                case 'title':
+                    return appState.equippedTitle === item.name;
+                default:
+                    return false;
+            }
+        }
+
+        function checkTitleRequirement(item) {
+            if (!item.data || !item.data.requirement) return true;
+            
+            switch(item.data.requirement) {
+                case 'cards':
+                    return [...new Set(appState.cards.map(c => c.id))].length >= item.data.value;
+                case 'coins':
+                    return appState.coins >= item.data.value;
+                default:
+                    return false;
+            }
+        }
+
+        function buyItem(itemId, category) {
+            const item = CONFIG.SHOP_ITEMS[category].find(i => i.id === itemId);
+            if (!item) return;
+            
+            if (appState.coins < item.price) {
+                showNotification('Недостаточно монет', 'error');
+                return;
+            }
+            
+            if (item.type === 'title' && !checkTitleRequirement(item)) {
+                showNotification('Не выполнены требования для титула', 'error');
+                return;
+            }
+            
+            // Покупка предмета
+            appState.coins -= item.price;
+            
+            switch(item.type) {
+                case 'pack':
+                    openShopPack(item);
+                    break;
+                case 'suffix':
+                    appState.equippedSuffix = item;
+                    showNotification(`Суффикс "${item.name}" куплен и надет`, 'success');
+                    break;
+                case 'frame':
+                    appState.equippedFrame = item;
+                    showNotification(`Рамка "${item.name}" куплена и надета`, 'success');
+                    break;
+                case 'title':
+                    appState.equippedTitle = item.name;
+                    showNotification(`Титул "${item.name}" получен`, 'success');
+                    break;
+                case 'vip':
+                    if (item.data.days === -1) {
+                        appState.isVIP = true;
+                        appState.vipUntil = null; // Навсегда
+                    } else {
+                        const currentDate = appState.vipUntil ? new Date(appState.vipUntil) : new Date();
+                        currentDate.setDate(currentDate.getDate() + item.data.days);
+                        appState.vipUntil = currentDate.toISOString();
+                        appState.isVIP = true;
+                    }
+                    showNotification(`VIP статус активирован на ${item.data.days === -1 ? 'всегда' : item.data.days + ' дней'}`, 'success');
+                    break;
+            }
+            
+            saveProfile();
+            updateUI();
+            updateShop();
+            updateProfile();
+        }
+
+        function openShopPack(packItem) {
+            const cardsCount = packItem.data.cards;
+            const minRarity = packItem.data.minRarity;
+            
+            const rarityOrder = { 'common': 1, 'rare': 2, 'epic': 3, 'legendary': 4, 'mythic': 5, 'secret': 6 };
+            const minRarityValue = rarityOrder[minRarity];
+            
+            const availableCards = Object.values(CONFIG.CARDS).filter(card => 
+                rarityOrder[card.rarity] >= minRarityValue
+            );
+            
+            // Открываем карты
+            for (let i = 0; i < cardsCount; i++) {
+                const randomIndex = Math.floor(Math.random() * availableCards.length);
+                const card = availableCards[randomIndex];
+                
+                const cardCopy = { ...card, obtained: new Date().toISOString() };
+                appState.cards.push(cardCopy);
+                
+                // Добавляем награды
+                const coins = getRandomInt(card.min_coins, card.max_coins);
+                const exp = getRandomInt(card.min_exp, card.max_exp);
+                
+                appState.coins += coins;
+                appState.exp += exp;
+            }
+            
+            checkLevelUp();
+            saveProfile();
+            
+            // Показываем анимацию
+            showNotification(`Набор "${packItem.name}" открыт! Получено ${cardsCount} карт`, 'success');
+            
+            // Вибрация
+            if (telegram && telegram.HapticFeedback) {
+                telegram.HapticFeedback.impactOccurred('heavy');
+            }
+        }
+
+        // Обновление лидерборда
+        function updateLeaderboard(type = 'level') {
+            const leaderboardList = document.getElementById('leaderboardList');
+            if (!leaderboardList) return;
+            
+            // Получаем всех пользователей
+            const allPlayers = getAllPlayers();
+            
+            // Фильтруем админов
+            const players = allPlayers.filter(player => !player.isAdmin);
+            
+            // Сортируем по выбранному типу
+            players.sort((a, b) => {
+                switch(type) {
+                    case 'level':
+                        return b.level - a.level;
+                    case 'cards':
+                        return b.cards.length - a.cards.length;
+                    case 'coins':
+                        return b.coins - a.coins;
+                    default:
+                        return b.level - a.level;
+                }
+            });
+            
+            // Ограничиваем топ-20
+            const topPlayers = players.slice(0, 20);
+            
+            // Рендерим лидерборд
+            leaderboardList.innerHTML = topPlayers.map((player, index) => {
+                const rank = index + 1;
+                const uniqueCards = [...new Set(player.cards.map(c => c.id))].length;
+                
+                return `
+                    <div class="leaderboard-item ${rank <= 3 ? 'top-3 rank-' + rank : ''}" onclick="showPlayerMiniProfile('${player.user.id}')">
+                        <div class="leaderboard-rank">${rank}</div>
+                        <div class="leaderboard-avatar" style="background-image: url('${player.user.photo_url || ''}')"></div>
+                        <div class="leaderboard-info">
+                            <div class="leaderboard-name">
+                                ${player.user.first_name}
+                                ${player.equippedSuffix ? `<span class="username-suffix" style="background: ${player.equippedSuffix.data.color}">${player.equippedSuffix.data.text}</span>` : ''}
+                            </div>
+                            <div class="leaderboard-stats">
+                                <div class="leaderboard-stat">
+                                    <i class="fas fa-star"></i>
+                                    <span class="leaderboard-value">${player.level}</span>
+                                    <span>ур.</span>
+                                </div>
+                                <div class="leaderboard-stat">
+                                    <i class="fas fa-layer-group"></i>
+                                    <span class="leaderboard-value">${uniqueCards}</span>
+                                    <span>карт</span>
+                                </div>
+                                <div class="leaderboard-stat">
+                                    <i class="fas fa-coins"></i>
+                                    <span class="leaderboard-value">${player.coins}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            if (topPlayers.length === 0) {
+                leaderboardList.innerHTML = `
+                    <div style="text-align: center; padding: 40px 20px; color: var(--text-secondary);">
+                        <i class="fas fa-trophy" style="font-size: 3rem; margin-bottom: 15px;"></i>
+                        <h3>Лидерборд пуст</h3>
+                        <p>Будьте первым в рейтинге!</p>
+                    </div>
+                `;
+            }
+            
+            // Обработчики для вкладок лидерборда
+            document.querySelectorAll('.leaderboard-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.leaderboard-tab').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    updateLeaderboard(tab.dataset.type);
+                });
+            });
+        }
+
+        function getAllPlayers() {
+            const players = [];
+            
+            // Проходим по всем ключам localStorage
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key.startsWith('pepecords_user_')) {
+                    try {
+                        const playerData = JSON.parse(localStorage.getItem(key));
+                        if (playerData && playerData.user) {
+                            players.push(playerData);
+                        }
+                    } catch (e) {
+                        console.error('Ошибка загрузки данных игрока:', e);
+                    }
+                }
+            }
+            
+            return players;
+        }
+
+        function showPlayerMiniProfile(userId) {
+            const playerKey = `pepecords_user_${userId}`;
+            const playerData = JSON.parse(localStorage.getItem(playerKey));
+            
+            if (!playerData) {
+                showNotification('Профиль игрока не найден', 'error');
+                return;
+            }
+            
+            // Заполняем данные мини-профиля
+            document.getElementById('miniProfileAvatar').style.backgroundImage = 
+                playerData.user.photo_url ? `url('${playerData.user.photo_url}')` : '';
+            
+            document.getElementById('miniProfileName').textContent = playerData.user.first_name;
+            
+            const suffixElement = document.getElementById('miniProfileSuffix');
+            if (playerData.equippedSuffix) {
+                suffixElement.textContent = playerData.equippedSuffix.data.text;
+                suffixElement.style.background = playerData.equippedSuffix.data.color;
+                suffixElement.classList.remove('hidden');
+            } else {
+                suffixElement.classList.add('hidden');
+            }
+            
+            document.getElementById('miniProfileLevel').textContent = playerData.level;
+            document.getElementById('miniProfileCards').textContent = playerData.cards.length;
+            document.getElementById('miniProfileCoins').textContent = playerData.coins;
+            document.getElementById('miniProfileUnique').textContent = 
+                [...new Set(playerData.cards.map(c => c.id))].length;
+            
+            // Любимая карта
+            const favoriteCardImage = document.getElementById('miniFavoriteCardImage');
+            const favoriteCardName = document.getElementById('miniFavoriteCardName');
+            const favoriteCardRarity = document.getElementById('miniFavoriteCardRarity');
+            
+            if (playerData.favoriteCard) {
+                favoriteCardImage.style.backgroundImage = `url('${playerData.favoriteCard.image_path}')`;
+                favoriteCardName.textContent = playerData.favoriteCard.name;
+                favoriteCardRarity.textContent = playerData.favoriteCard.rarityName;
+                favoriteCardRarity.className = 'favorite-card-display-rarity';
+                favoriteCardRarity.classList.add(`rarity-${playerData.favoriteCard.rarity}`);
+            } else {
+                favoriteCardImage.style.backgroundImage = '';
+                favoriteCardImage.innerHTML = '<i class="fas fa-heart" style="color: var(--text-secondary); font-size: 1.5rem;"></i>';
+                favoriteCardName.textContent = 'Не выбрана';
+                favoriteCardRarity.textContent = '—';
+                favoriteCardRarity.className = 'favorite-card-display-rarity';
+            }
+            
+            // Показываем модалку
+            miniProfileModal.classList.remove('hidden');
+        }
+
+        // Добавляем стили для анимаций при наведении
+        const style = document.createElement('style');
+        style.textContent = `
+            .open-card-btn:hover:not(:disabled) {
+                transform: translateY(-5px) scale(1.02);
+                box-shadow: 0 15px 40px rgba(139, 92, 246, 0.4);
+            }
+            
+            .open-card-btn:active:not(:disabled) {
+                transform: translateY(0) scale(0.98);
+                box-shadow: 0 5px 20px rgba(139, 92, 246, 0.2);
+            }
+            
+            .card-item:hover {
+                transform: translateY(-8px) rotateX(5deg);
+                box-shadow: 0 20px 40px var(--shadow-color);
+            }
+            
+            .card-item:hover::before {
+                opacity: 0.1;
+            }
+            
+            .rarity-common .card-item:hover::before {
+                opacity: 0.05;
+            }
+            
+            .rarity-mythic .card-item:hover::before {
+                opacity: 0.4;
+                animation: shimmer 1s infinite linear;
+            }
+            
+            .rarity-secret .card-item:hover::before {
+                opacity: 0.6;
+                animation: shimmer 0.5s infinite linear;
+            }
+            
+            .coins-display:hover {
+                transform: translateY(-2px) scale(1.05);
+                box-shadow: 0 5px 15px rgba(139, 92, 246, 0.3);
+            }
+            
+            .nav-item:hover .nav-icon {
+                transform: translateY(-3px) scale(1.1);
+            }
+            
+            .nav-item:hover .nav-label {
+                color: var(--accent-color);
+            }
+            
+            .filter-btn:hover:not(.active) {
+                background: var(--border-color);
+                transform: translateY(-2px);
+            }
+            
+            .filter-btn.active:hover {
+                transform: translateY(-2px) scale(1.05);
+            }
+            
+            .level-fill {
+                transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            }
+            
+            @keyframes rarityPulse {
+                0%, 100% { opacity: 0.1; transform: scale(1); }
+                50% { opacity: 0.3; transform: scale(1.02); }
+            }
+            
+            .rarity-mythic .rarity-glow {
+                animation: rarityPulse 2s infinite;
+            }
+            
+            .rarity-secret .rarity-glow {
+                animation: rarityPulse 1s infinite;
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Инициализация приложения при загрузке DOM
+        document.addEventListener('DOMContentLoaded', initApp);
+
+        // Глобальные функции для использования в HTML
+        window.buyItem = buyItem;
+        window.showPlayerMiniProfile = showPlayerMiniProfile;
+    </script>
+</body>
+</html>
