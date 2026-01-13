@@ -1,5 +1,3 @@
-[file name]: index.html
-[file content begin]
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -1844,7 +1842,7 @@
 
         .reveal-card {
             width: 100%;
-            height: 450px;
+            height: 500px;
             perspective: 1000px;
             margin-bottom: 25px;
         }
@@ -1901,7 +1899,7 @@
         }
 
         .reveal-card-image {
-            height: 65%;
+            height: 70%;
             background-size: cover;
             background-position: center;
             background-color: var(--bg-secondary);
@@ -2174,7 +2172,7 @@
             }
             
             .reveal-card {
-                height: 420px;
+                height: 460px;
             }
         }
 
@@ -2193,7 +2191,7 @@
             }
             
             .reveal-card {
-                height: 400px;
+                height: 440px;
             }
         }
 
@@ -2361,7 +2359,6 @@
             <div class="shop-tabs">
                 <button class="shop-tab active" data-tab="packs">Наборы</button>
                 <button class="shop-tab" data-tab="personalization">Персонализация</button>
-                <button class="shop-tab" data-tab="premium">Премиум</button>
                 <button class="shop-tab" data-tab="vip">VIP</button>
             </div>
 
@@ -2374,11 +2371,6 @@
                 <!-- Персонализация -->
                 <div class="shop-items hidden" id="personalizationTab">
                     <!-- Суффиксы и рамки будут загружены динамически -->
-                </div>
-
-                <!-- Премиум -->
-                <div class="shop-items hidden" id="premiumTab">
-                    <!-- Премиум товары будут загружены динамически -->
                 </div>
 
                 <!-- VIP -->
@@ -2399,6 +2391,7 @@
                 <button class="leaderboard-tab active" data-type="level">По уровню</button>
                 <button class="leaderboard-tab" data-type="cards">По картам</button>
                 <button class="leaderboard-tab" data-type="coins">По монетам</button>
+                <button class="leaderboard-tab" data-type="unique">По уникальным</button>
             </div>
 
             <div class="leaderboard-list" id="leaderboardList">
@@ -2527,6 +2520,22 @@
                                 <div class="admin-player-stat-value" id="adminPlayerCards">-</div>
                                 <div class="admin-player-stat-label">Карты</div>
                             </div>
+                            <div class="admin-player-stat">
+                                <div class="admin-player-stat-value" id="adminPlayerUnique">-</div>
+                                <div class="admin-player-stat-label">Уникальных</div>
+                            </div>
+                            <div class="admin-player-stat">
+                                <div class="admin-player-stat-value" id="adminPlayerPremium">-</div>
+                                <div class="admin-player-stat-label">Premium</div>
+                            </div>
+                            <div class="admin-player-stat">
+                                <div class="admin-player-stat-value" id="adminPlayerVIP">-</div>
+                                <div class="admin-player-stat-label">VIP</div>
+                            </div>
+                            <div class="admin-player-stat">
+                                <div class="admin-player-stat-value" id="adminPlayerLastCard">-</div>
+                                <div class="admin-player-stat-label">Последняя карта</div>
+                            </div>
                         </div>
                     </div>
                     
@@ -2543,6 +2552,7 @@
                         <button class="admin-btn" id="adminBanBtn">Забанить</button>
                         <button class="admin-btn" id="adminResetBtn">Сбросить профиль</button>
                         <button class="admin-btn" id="adminMaintenanceBtn">Вкл/Выкл техперерыв</button>
+                        <button class="admin-btn" id="adminAddCardBtn">Выдать карту</button>
                     </div>
                 </div>
             </div>
@@ -2751,8 +2761,8 @@
                     "rarityName": "Обычная",
                     "emoji": "⚪",
                     "chance": 40,
-                    "coins": 50,
-                    "exp": 40,
+                    "coins": 100,
+                    "exp": 50,
                     "image_path": "data/images/test1.jpg",
                     "description": "Стандартный Пепе, с которого начинается каждая коллекция."
                 },
@@ -2763,8 +2773,8 @@
                     "rarityName": "Обычная",
                     "emoji": "⚪",
                     "chance": 40,
-                    "coins": 50,
-                    "exp": 40,
+                    "coins": 100,
+                    "exp": 50,
                     "image_path": "data/images/test2.jpg",
                     "description": "Веселый клоун Пепе, который всегда поднимет настроение."
                 },
@@ -2775,8 +2785,8 @@
                     "rarityName": "Обычная",
                     "emoji": "⚪",
                     "chance": 40,
-                    "coins": 50,
-                    "exp": 40,
+                    "coins": 100,
+                    "exp": 50,
                     "image_path": "data/images/test3.jpg",
                     "description": "Стильный Пепе в теплой кофте для холодных дней."
                 },
@@ -2787,8 +2797,8 @@
                     "rarityName": "Обычная",
                     "emoji": "⚪",
                     "chance": 40,
-                    "coins": 50,
-                    "exp": 40,
+                    "coins": 100,
+                    "exp": 50,
                     "image_path": "data/images/test4.jpg",
                     "description": "Пепе, который не всегда понимает, что происходит вокруг."
                 },
@@ -2799,8 +2809,8 @@
                     "rarityName": "Обычная",
                     "emoji": "⚪",
                     "chance": 40,
-                    "coins": 50,
-                    "exp": 40,
+                    "coins": 100,
+                    "exp": 50,
                     "image_path": "data/images/test5.jpg",
                     "description": "Всегда позитивный Пепе, который видит хорошее во всем."
                 },
@@ -2811,8 +2821,8 @@
                     "rarityName": "Обычная",
                     "emoji": "⚪",
                     "chance": 40,
-                    "coins": 50,
-                    "exp": 40,
+                    "coins": 100,
+                    "exp": 50,
                     "image_path": "data/images/test6.jpg",
                     "description": "Пепе, который переживает не самые лучшие времена."
                 },
@@ -2823,8 +2833,8 @@
                     "rarityName": "Обычная",
                     "emoji": "⚪",
                     "chance": 40,
-                    "coins": 50,
-                    "exp": 40,
+                    "coins": 100,
+                    "exp": 50,
                     "image_path": "data/images/test7.jpg",
                     "description": "Пепе, который не может перестать смеяться над шуткой."
                 },
@@ -2835,8 +2845,8 @@
                     "rarityName": "Обычная",
                     "emoji": "⚪",
                     "chance": 40,
-                    "coins": 50,
-                    "exp": 40,
+                    "coins": 100,
+                    "exp": 50,
                     "image_path": "data/images/test8.jpg",
                     "description": "Пепе с опасными планами (шутка, конечно же)."
                 },
@@ -2847,8 +2857,8 @@
                     "rarityName": "Редкая",
                     "emoji": "🔵",
                     "chance": 30,
-                    "coins": 150,
-                    "exp": 120,
+                    "coins": 300,
+                    "exp": 150,
                     "image_path": "data/images/test9.jpg",
                     "description": "Пепе, который любит расслабиться с сигаретой после тяжелого дня."
                 },
@@ -2859,8 +2869,8 @@
                     "rarityName": "Редкая",
                     "emoji": "🔵",
                     "chance": 30,
-                    "coins": 150,
-                    "exp": 120,
+                    "coins": 300,
+                    "exp": 150,
                     "image_path": "data/images/test10.jpg",
                     "description": "Пепе под воздействием зеленого вещества растительного происхождения."
                 },
@@ -2871,8 +2881,8 @@
                     "rarityName": "Редкая",
                     "emoji": "🔵",
                     "chance": 30,
-                    "coins": 150,
-                    "exp": 120,
+                    "coins": 300,
+                    "exp": 150,
                     "image_path": "data/images/test11.jpg",
                     "description": "Пепе после тяжелого рабочего дня или бессонной ночи."
                 },
@@ -2883,8 +2893,8 @@
                     "rarityName": "Редкая",
                     "emoji": "🔵",
                     "chance": 30,
-                    "coins": 150,
-                    "exp": 120,
+                    "coins": 300,
+                    "exp": 150,
                     "image_path": "data/images/test12.jpg",
                     "description": "Пепе, который совершенно не понимает, что происходит."
                 },
@@ -2895,8 +2905,8 @@
                     "rarityName": "Редкая",
                     "emoji": "🔵",
                     "chance": 30,
-                    "coins": 150,
-                    "exp": 120,
+                    "coins": 300,
+                    "exp": 150,
                     "image_path": "data/images/test13.jpg",
                     "description": "Пепе, который увидел нечто ужасающее."
                 },
@@ -2907,8 +2917,8 @@
                     "rarityName": "Редкая",
                     "emoji": "🔵",
                     "chance": 30,
-                    "coins": 150,
-                    "exp": 120,
+                    "coins": 300,
+                    "exp": 150,
                     "image_path": "data/images/test14.jpg",
                     "description": "Милейший Пепе в костюме акулёнка."
                 },
@@ -2919,8 +2929,8 @@
                     "rarityName": "Эпическая",
                     "emoji": "🟣",
                     "chance": 20,
-                    "coins": 400,
-                    "exp": 300,
+                    "coins": 800,
+                    "exp": 400,
                     "image_path": "data/images/test15.jpg",
                     "description": "Пепе в стиле известных инопланетных существ Пикми."
                 },
@@ -2931,8 +2941,8 @@
                     "rarityName": "Эпическая",
                     "emoji": "🟣",
                     "chance": 20,
-                    "coins": 400,
-                    "exp": 300,
+                    "coins": 800,
+                    "exp": 400,
                     "image_path": "data/images/test16.jpg",
                     "description": "Пепе, который проводит все время за компьютерными играми."
                 },
@@ -2943,8 +2953,8 @@
                     "rarityName": "Эпическая",
                     "emoji": "🟣",
                     "chance": 20,
-                    "coins": 400,
-                    "exp": 300,
+                    "coins": 800,
+                    "exp": 400,
                     "image_path": "data/images/test17.jpg",
                     "description": "Темный рыцарь Пепе, защитник Готэма."
                 },
@@ -2955,8 +2965,8 @@
                     "rarityName": "Эпическая",
                     "emoji": "🟣",
                     "chance": 20,
-                    "coins": 400,
-                    "exp": 300,
+                    "coins": 800,
+                    "exp": 400,
                     "image_path": "data/images/test18.jpg",
                     "description": "Пепе в новогоднем настроении с подарками и гирляндами."
                 },
@@ -2967,8 +2977,8 @@
                     "rarityName": "Легендарная",
                     "emoji": "🟡",
                     "chance": 10,
-                    "coins": 1000,
-                    "exp": 800,
+                    "coins": 2000,
+                    "exp": 1000,
                     "image_path": "data/images/test19.jpg",
                     "description": "Пепе - мастер меткой стрельбы, никогда не промахивается."
                 },
@@ -2979,8 +2989,8 @@
                     "rarityName": "Легендарная",
                     "emoji": "🟡",
                     "chance": 10,
-                    "coins": 1000,
-                    "exp": 800,
+                    "coins": 2000,
+                    "exp": 1000,
                     "image_path": "data/images/test20.jpg",
                     "description": "Загадочный Пепе, окутанный тайнами и секретами."
                 },
@@ -2991,8 +3001,8 @@
                     "rarityName": "Секретная",
                     "emoji": "👁️",
                     "chance": 0.1,
-                    "coins": 5000,
-                    "exp": 3000,
+                    "coins": 10000,
+                    "exp": 5000,
                     "image_path": "data/images/secret.jpg",
                     "description": "Секретная карта Пепе, связанная с мессенджером Telegram. Невероятно редкая!",
                     "secret": true
@@ -3004,8 +3014,8 @@
                     "rarityName": "Мифическая",
                     "emoji": "🔴",
                     "chance": 3,
-                    "coins": 2000,
-                    "exp": 1500,
+                    "coins": 4000,
+                    "exp": 2000,
                     "image_path": "data/images/test22.jpg",
                     "description": "Мифический Пепе по имени Джорджи, обладающий невероятной силой."
                 },
@@ -3016,8 +3026,8 @@
                     "rarityName": "Мифическая",
                     "emoji": "🔴",
                     "chance": 3,
-                    "coins": 2000,
-                    "exp": 1500,
+                    "coins": 4000,
+                    "exp": 2000,
                     "image_path": "data/images/test23.jpg",
                     "description": "Пепе, который вечно хочет спать, но обладает мифической силой сновидений."
                 },
@@ -3028,8 +3038,8 @@
                     "rarityName": "Мифическая",
                     "emoji": "🔴",
                     "chance": 3,
-                    "coins": 2000,
-                    "exp": 1500,
+                    "coins": 4000,
+                    "exp": 2000,
                     "image_path": "data/images/test24.jpg",
                     "description": "Пепе-менеджер, который эффективно управляет всеми процессами."
                 },
@@ -3040,8 +3050,8 @@
                     "rarityName": "Мифическая",
                     "emoji": "🔴",
                     "chance": 3,
-                    "coins": 2000,
-                    "exp": 1500,
+                    "coins": 4000,
+                    "exp": 2000,
                     "image_path": "data/images/test25.jpg",
                     "description": "Пепе, который выбрался из Матрицы и теперь видит код реальности."
                 }
@@ -3049,12 +3059,12 @@
 
             // Редкости и их множители наград
             RARITY_MULTIPLIERS: {
-                'common': { coins: 1, exp: 1 },
-                'rare': { coins: 3, exp: 3 },
-                'epic': { coins: 8, exp: 7.5 },
-                'legendary': { coins: 20, exp: 20 },
-                'mythic': { coins: 40, exp: 37.5 },
-                'secret': { coins: 100, exp: 75 }
+                'common': { coins: 100, exp: 50 },
+                'rare': { coins: 300, exp: 150 },
+                'epic': { coins: 800, exp: 400 },
+                'legendary': { coins: 2000, exp: 1000 },
+                'mythic': { coins: 4000, exp: 2000 },
+                'secret': { coins: 10000, exp: 5000 }
             },
 
             // Магазин
@@ -3155,18 +3165,6 @@
                     }
                 ],
                 
-                premium: [
-                    {
-                        id: 'premium_30days',
-                        name: 'PepePremium 30 дней',
-                        description: 'Кулдаун 5 минут, +50% наград, особый значок',
-                        price: 200, // Звезды
-                        icon: 'fa-crown',
-                        type: 'premium',
-                        data: { days: 30, coinsPrice: 0, starsPrice: 200, rublesPrice: 100 }
-                    }
-                ],
-                
                 vip: [
                     {
                         id: 'vip_7days',
@@ -3204,10 +3202,103 @@
         };
 
         // База данных пользователей
-        let USERS_DB = {
-            // Структура: userId: { playerId, userData, stats, etc. }
-            // Будет храниться в localStorage
-        };
+        let USERS_DB = {};
+        let lastUserId = 0;
+
+        // Инициализация базы данных
+        function initUsersDatabase() {
+            const db = localStorage.getItem('pepecards_users_db');
+            if (db) {
+                USERS_DB = JSON.parse(db);
+                lastUserId = parseInt(localStorage.getItem('pepecards_last_user_id') || '0');
+            } else {
+                USERS_DB = {};
+                lastUserId = 0;
+                localStorage.setItem('pepecards_users_db', JSON.stringify(USERS_DB));
+                localStorage.setItem('pepecards_last_user_id', '0');
+            }
+        }
+
+        // Сохранение базы данных
+        function saveUsersDatabase() {
+            localStorage.setItem('pepecards_users_db', JSON.stringify(USERS_DB));
+            localStorage.setItem('pepecards_last_user_id', lastUserId.toString());
+        }
+
+        // Генерация уникального ID игрока
+        function generatePlayerId() {
+            lastUserId++;
+            return lastUserId;
+        }
+
+        // Получение или создание записи пользователя
+        function getOrCreateUser(user) {
+            const userId = user.id.toString();
+            
+            // Проверяем, есть ли пользователь с таким Telegram ID
+            for (const key in USERS_DB) {
+                if (USERS_DB[key].user && USERS_DB[key].user.id === user.id) {
+                    return USERS_DB[key];
+                }
+            }
+            
+            // Создаем нового пользователя
+            const newUser = {
+                playerId: generatePlayerId(),
+                user: user,
+                telegramData: window.Telegram.WebApp.initDataUnsafe,
+                coins: 100,
+                exp: 0,
+                level: 1,
+                expToNextLevel: 100,
+                cards: [],
+                favoriteCard: null,
+                equippedSuffix: null,
+                equippedFrame: null,
+                equippedTitle: 'Новичок',
+                ownedItems: {
+                    suffixes: [],
+                    frames: [],
+                    titles: []
+                },
+                isVIP: false,
+                vipUntil: null,
+                isPremium: false,
+                premiumUntil: null,
+                lastCardTime: 0,
+                registrationDate: new Date().toISOString(),
+                isAdmin: user.id === CONFIG.ADMIN_ID,
+                theme: 'light'
+            };
+            
+            USERS_DB[newUser.playerId] = newUser;
+            saveUsersDatabase();
+            
+            return newUser;
+        }
+
+        // Обновление пользователя в базе данных
+        function updateUserInDatabase(playerId, updates) {
+            if (USERS_DB[playerId]) {
+                Object.assign(USERS_DB[playerId], updates);
+                saveUsersDatabase();
+            }
+        }
+
+        // Получение всех пользователей
+        function getAllUsers() {
+            return Object.values(USERS_DB);
+        }
+
+        // Поиск пользователя по ID игрока
+        function findUserByPlayerId(playerId) {
+            return USERS_DB[playerId];
+        }
+
+        // Поиск пользователя по Telegram ID
+        function findUserByTelegramId(telegramId) {
+            return Object.values(USERS_DB).find(user => user.user.id === telegramId);
+        }
 
         // Состояние приложения
         let appState = {
@@ -3264,187 +3355,6 @@
         let telegram = null;
         let currentPage = 'main';
         let maintenanceMode = localStorage.getItem('pepecards_maintenance') === 'true';
-        let lastUserCount = parseInt(localStorage.getItem('pepecards_last_user_count') || '0');
-
-        // Инициализация базы данных
-        function initUsersDatabase() {
-            const db = localStorage.getItem('pepecards_users_db');
-            if (db) {
-                USERS_DB = JSON.parse(db);
-            } else {
-                USERS_DB = {};
-                localStorage.setItem('pepecards_users_db', JSON.stringify(USERS_DB));
-            }
-        }
-
-        // Сохранение базы данных
-        function saveUsersDatabase() {
-            localStorage.setItem('pepecards_users_db', JSON.stringify(USERS_DB));
-        }
-
-        // Генерация уникального ID игрока
-        function generatePlayerId() {
-            lastUserCount++;
-            localStorage.setItem('pepecards_last_user_count', lastUserCount.toString());
-            return lastUserCount;
-        }
-
-        // Получение или создание записи пользователя
-        function getOrCreateUser(user) {
-            const userId = user.id.toString();
-            
-            if (USERS_DB[userId]) {
-                return USERS_DB[userId];
-            }
-            
-            // Создаем нового пользователя
-            const newUser = {
-                playerId: generatePlayerId(),
-                user: user,
-                telegramData: telegram.initDataUnsafe,
-                coins: 100,
-                exp: 0,
-                level: 1,
-                expToNextLevel: 100,
-                cards: [],
-                favoriteCard: null,
-                equippedSuffix: null,
-                equippedFrame: null,
-                equippedTitle: 'Новичок',
-                ownedItems: {
-                    suffixes: [],
-                    frames: [],
-                    titles: []
-                },
-                isVIP: false,
-                vipUntil: null,
-                isPremium: false,
-                premiumUntil: null,
-                lastCardTime: 0,
-                registrationDate: new Date().toISOString(),
-                isAdmin: user.id === CONFIG.ADMIN_ID,
-                theme: 'light'
-            };
-            
-            USERS_DB[userId] = newUser;
-            saveUsersDatabase();
-            
-            return newUser;
-        }
-
-        // Обновление пользователя в базе данных
-        function updateUserInDatabase(userId, updates) {
-            if (USERS_DB[userId]) {
-                Object.assign(USERS_DB[userId], updates);
-                saveUsersDatabase();
-            }
-        }
-
-        // Получение всех пользователей
-        function getAllUsers() {
-            return Object.values(USERS_DB);
-        }
-
-        // Поиск пользователя по ID игрока
-        function findUserByPlayerId(playerId) {
-            return Object.values(USERS_DB).find(user => user.playerId === playerId);
-        }
-
-        // Поиск пользователя по Telegram ID
-        function findUserByTelegramId(telegramId) {
-            return USERS_DB[telegramId.toString()];
-        }
-
-        // DOM элементы
-        const loadingScreen = document.getElementById('loadingScreen');
-        const maintenanceOverlay = document.getElementById('maintenanceOverlay');
-        const headerCoins = document.getElementById('headerCoins');
-        const userGreeting = document.getElementById('userGreeting');
-        const cooldownTimer = document.getElementById('cooldownTimer');
-        const cooldownText = document.getElementById('cooldownText');
-        const openCardBtn = document.getElementById('openCardBtn');
-        const adminMenuBtn = document.getElementById('adminMenuBtn');
-        
-        // Инвентарь карт
-        const totalCards = document.getElementById('totalCards');
-        const cardsGrid = document.getElementById('cardsGrid');
-        const filterBtns = document.querySelectorAll('.filter-btn');
-        
-        // Инвентарь кастомизации
-        const totalCustomization = document.getElementById('totalCustomization');
-        const customizationTabs = document.querySelectorAll('.customization-tab');
-        const suffixesTab = document.getElementById('suffixesTab');
-        const framesTab = document.getElementById('framesTab');
-        const titlesTab = document.getElementById('titlesTab');
-        
-        // Профиль
-        const profileAvatar = document.getElementById('profileAvatar');
-        const profileFrame = document.getElementById('profileFrame');
-        const profileName = document.getElementById('profileName');
-        const usernameSuffix = document.getElementById('usernameSuffix');
-        const profileTitle = document.getElementById('profileTitle');
-        const profileId = document.getElementById('profileId');
-        const statLevel = document.getElementById('statLevel');
-        const statCards = document.getElementById('statCards');
-        const statCoins = document.getElementById('statCoins');
-        const statUnique = document.getElementById('statUnique');
-        const currentLevel = document.getElementById('currentLevel');
-        const nextLevel = document.getElementById('nextLevel');
-        const levelFill = document.getElementById('levelFill');
-        const levelExp = document.getElementById('levelExp');
-        const favoriteCardPreview = document.getElementById('favoriteCardPreview');
-        const favoriteCardImage = document.getElementById('favoriteCardImage');
-        const favoriteCardName = document.getElementById('favoriteCardName');
-        const favoriteCardRarity = document.getElementById('favoriteCardRarity');
-        const profileDonateCoinsBtn = document.getElementById('profileDonateCoinsBtn');
-        const profileDonatePremiumBtn = document.getElementById('profileDonatePremiumBtn');
-        const themeOptions = document.querySelectorAll('.theme-option');
-        
-        // Модалки
-        const donateCoinsModal = document.getElementById('donateCoinsModal');
-        const donateCoinsCloseBtn = document.getElementById('donateCoinsCloseBtn');
-        const donateCoinsConfirmBtn = document.getElementById('donateCoinsConfirmBtn');
-        const donateCoinsAmount = document.getElementById('donateCoinsAmount');
-        const donateCoinsPrice = document.getElementById('donateCoinsPrice');
-        const starsPrice = document.getElementById('starsPrice');
-        const rublesPrice = document.getElementById('rublesPrice');
-        
-        const donatePremiumModal = document.getElementById('donatePremiumModal');
-        const donatePremiumCloseBtn = document.getElementById('donatePremiumCloseBtn');
-        const donatePremiumConfirmBtn = document.getElementById('donatePremiumConfirmBtn');
-        
-        const donateOptions = document.querySelectorAll('.donate-option');
-        
-        const miniProfileModal = document.getElementById('miniProfileModal');
-        const miniProfileCloseBtn = document.getElementById('miniProfileCloseBtn');
-        
-        const cardRevealModal = document.getElementById('cardRevealModal');
-        const revealCard = document.getElementById('revealCard');
-        const revealCardImage = document.getElementById('revealCardImage');
-        const revealCardName = document.getElementById('revealCardName');
-        const revealCardRarity = document.getElementById('revealCardRarity');
-        const revealRewards = document.getElementById('revealRewards');
-        
-        // Навигация
-        const pages = document.querySelectorAll('.page');
-        const navItems = document.querySelectorAll('.nav-item');
-        
-        // Админ элементы
-        const adminPlayerId = document.getElementById('adminPlayerId');
-        const adminSearchBtn = document.getElementById('adminSearchBtn');
-        const adminCurrentPlayer = document.getElementById('adminCurrentPlayer');
-        const adminCoinsAmount = document.getElementById('adminCoinsAmount');
-        const adminAddCoinsBtn = document.getElementById('adminAddCoinsBtn');
-        const adminAddPremiumBtn = document.getElementById('adminAddPremiumBtn');
-        const adminAddVipBtn = document.getElementById('adminAddVipBtn');
-        const adminBanBtn = document.getElementById('adminBanBtn');
-        const adminResetBtn = document.getElementById('adminResetBtn');
-        const adminMaintenanceBtn = document.getElementById('adminMaintenanceBtn');
-        const adminPlayerInfo = document.getElementById('adminPlayerInfo');
-        const adminPlayerName = document.getElementById('adminPlayerName');
-        const adminPlayerLevel = document.getElementById('adminPlayerLevel');
-        const adminPlayerCoins = document.getElementById('adminPlayerCoins');
-        const adminPlayerCards = document.getElementById('adminPlayerCards');
 
         // Инициализация приложения
         async function initApp() {
@@ -3477,6 +3387,7 @@
                 updateInventory();
                 updateCustomization();
                 updateShop();
+                updateLeaderboard();
                 
                 // Запускаем таймеры
                 updateCooldown();
@@ -3507,31 +3418,6 @@
             }
         }
 
-        // Создание снега
-        function createSnow() {
-            const snowContainer = document.getElementById('snowContainer');
-            const snowflakeCount = 50;
-            
-            for (let i = 0; i < snowflakeCount; i++) {
-                const snowflake = document.createElement('div');
-                snowflake.className = 'snowflake';
-                
-                const size = Math.random() * 4 + 2;
-                snowflake.style.width = `${size}px`;
-                snowflake.style.height = `${size}px`;
-                snowflake.style.left = `${Math.random() * 100}%`;
-                snowflake.style.animation = `snowFall ${Math.random() * 5 + 5}s linear infinite`;
-                snowflake.style.animationDelay = `${Math.random() * 5}s`;
-                snowflake.style.opacity = Math.random() * 0.5 + 0.3;
-                
-                if (i % 2 === 0) {
-                    snowflake.style.animationName = 'snowFall2';
-                }
-                
-                snowContainer.appendChild(snowflake);
-            }
-        }
-
         // Загрузка или создание профиля
         async function loadOrCreateProfile(user) {
             const userData = getOrCreateUser(user);
@@ -3554,810 +3440,14 @@
             const savedTheme = localStorage.getItem('pepecards_theme');
             if (savedTheme) {
                 appState.theme = savedTheme;
-                updateUserInDatabase(user.id.toString(), { theme: savedTheme });
+                updateUserInDatabase(appState.playerId, { theme: savedTheme });
             }
             
             // Сохраняем обновленные данные
-            updateUserInDatabase(user.id.toString(), appState);
+            updateUserInDatabase(appState.playerId, appState);
         }
 
-        // Сохранение профиля
-        function saveProfile() {
-            if (!appState.user) return;
-            
-            updateUserInDatabase(appState.user.id.toString(), appState);
-        }
-
-        // Настройка темы
-        function setupTheme() {
-            // Применяем сохраненную тему
-            document.body.classList.remove('theme-dark-purple', 'theme-night');
-            if (appState.theme === 'dark-purple') {
-                document.body.classList.add('theme-dark-purple');
-            } else if (appState.theme === 'night') {
-                document.body.classList.add('theme-night');
-            }
-            
-            // Обновляем активную опцию
-            themeOptions.forEach(option => {
-                option.classList.remove('active');
-                if (option.dataset.theme === appState.theme) {
-                    option.classList.add('active');
-                }
-            });
-        }
-
-        // Настройка обработчиков событий
-        function setupEventListeners() {
-            // Навигация
-            navItems.forEach(item => {
-                item.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const page = item.dataset.page;
-                    switchPage(page);
-                });
-            });
-
-            // Кнопка открытия карты
-            openCardBtn.addEventListener('click', openRandomCard);
-
-            // Кнопки доната в профиле
-            profileDonateCoinsBtn.addEventListener('click', () => {
-                donateCoinsModal.classList.remove('hidden');
-                updateDonatePrices();
-            });
-            
-            profileDonatePremiumBtn.addEventListener('click', () => {
-                donatePremiumModal.classList.remove('hidden');
-            });
-
-            // Донат модалки
-            donateCoinsCloseBtn.addEventListener('click', () => {
-                donateCoinsModal.classList.add('hidden');
-            });
-
-            donateCoinsConfirmBtn.addEventListener('click', processCoinsDonation);
-            
-            donateCoinsAmount.addEventListener('input', updateDonatePrices);
-
-            donatePremiumCloseBtn.addEventListener('click', () => {
-                donatePremiumModal.classList.add('hidden');
-            });
-
-            donatePremiumConfirmBtn.addEventListener('click', processPremiumDonation);
-
-            donateOptions.forEach(option => {
-                option.addEventListener('click', () => {
-                    donateOptions.forEach(opt => opt.classList.remove('selected'));
-                    option.classList.add('selected');
-                });
-            });
-
-            // Мини профиль
-            miniProfileCloseBtn.addEventListener('click', () => {
-                miniProfileModal.classList.add('hidden');
-            });
-
-            // Фильтры инвентаря
-            filterBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    filterBtns.forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    updateInventory(btn.dataset.filter);
-                });
-            });
-
-            // Вкладки кастомизации
-            customizationTabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    customizationTabs.forEach(t => t.classList.remove('active'));
-                    tab.classList.add('active');
-                    
-                    // Скрываем все вкладки
-                    [suffixesTab, framesTab, titlesTab].forEach(tab => {
-                        tab.classList.add('hidden');
-                    });
-                    
-                    // Показываем выбранную вкладку
-                    document.getElementById(tab.dataset.tab + 'Tab').classList.remove('hidden');
-                    updateCustomization(tab.dataset.tab);
-                });
-            });
-
-            // Предпросмотр любимой карты
-            favoriteCardPreview.addEventListener('click', () => {
-                if (appState.cards.length > 0) {
-                    showFavoriteCardSelector();
-                } else {
-                    showNotification('У вас нет карт для выбора', 'error');
-                }
-            });
-
-            // Выбор темы
-            themeOptions.forEach(option => {
-                option.addEventListener('click', () => {
-                    appState.theme = option.dataset.theme;
-                    localStorage.setItem('pepecards_theme', appState.theme);
-                    updateUserInDatabase(appState.user.id.toString(), { theme: appState.theme });
-                    setupTheme();
-                    showNotification(`Тема изменена на "${option.querySelector('span').textContent}"`, 'success');
-                });
-            });
-
-            // Админ меню
-            adminMenuBtn.addEventListener('click', () => {
-                if (appState.isAdmin) {
-                    switchPage('admin');
-                }
-            });
-
-            // Админ панель
-            if (appState.isAdmin) {
-                adminMenuBtn.classList.remove('hidden');
-                
-                adminSearchBtn.addEventListener('click', searchPlayer);
-                adminAddCoinsBtn.addEventListener('click', addCoinsToPlayer);
-                adminAddPremiumBtn.addEventListener('click', addPremiumToPlayer);
-                adminAddVipBtn.addEventListener('click', addVipToPlayer);
-                adminBanBtn.addEventListener('click', banPlayer);
-                adminResetBtn.addEventListener('click', resetPlayer);
-                adminMaintenanceBtn.addEventListener('click', toggleMaintenance);
-            }
-
-            // Обработка клика вне модалок
-            document.addEventListener('click', (e) => {
-                if (e.target === donateCoinsModal) {
-                    donateCoinsModal.classList.add('hidden');
-                }
-                if (e.target === donatePremiumModal) {
-                    donatePremiumModal.classList.add('hidden');
-                }
-                if (e.target === miniProfileModal) {
-                    miniProfileModal.classList.add('hidden');
-                }
-                if (e.target === cardRevealModal) {
-                    cardRevealModal.classList.add('hidden');
-                }
-            });
-        }
-
-        // Обновление цен доната
-        function updateDonatePrices() {
-            const coins = parseInt(donateCoinsAmount.value) || 100;
-            const stars = Math.ceil(coins * 0.03);
-            const rubles = Math.ceil(coins * 0.15);
-            
-            donateCoinsPrice.textContent = `${coins} PepeCoins = ⭐ ${stars}`;
-            starsPrice.textContent = `⭐ ${stars}`;
-            rublesPrice.textContent = `${rubles} ₽`;
-        }
-
-        // Переключение страниц
-        function switchPage(page) {
-            currentPage = page;
-            
-            // Скрываем все страницы
-            pages.forEach(p => p.classList.remove('active'));
-            
-            // Показываем выбранную страницу
-            document.getElementById(page + 'Page').classList.add('active');
-            
-            // Обновляем активную кнопку меню
-            navItems.forEach(item => {
-                if (item.dataset.page === page) {
-                    item.classList.add('active');
-                } else {
-                    item.classList.remove('active');
-                }
-            });
-            
-            // Загружаем контент для страницы
-            switch(page) {
-                case 'inventory':
-                    updateInventory();
-                    break;
-                case 'customization':
-                    updateCustomization();
-                    break;
-                case 'shop':
-                    updateShop();
-                    break;
-                case 'leaderboard':
-                    updateLeaderboard();
-                    break;
-                case 'profile':
-                    updateProfile();
-                    break;
-                case 'admin':
-                    updateAdminPanel();
-                    break;
-            }
-        }
-
-        // Обновление UI
-        function updateUI() {
-            if (!appState.user) return;
-            
-            // Шапка
-            headerCoins.textContent = appState.coins.toLocaleString();
-            
-            // Приветствие
-            userGreeting.textContent = `Привет, ${appState.user.first_name}!`;
-        }
-
-        // Обновление кулдауна
-        function updateCooldown() {
-            if (maintenanceMode && !appState.isAdmin) {
-                cooldownTimer.textContent = 'ТЕХ. ПЕРЕРЫВ';
-                cooldownTimer.style.color = '#ef4444';
-                cooldownText.textContent = 'Приложение на техническом обслуживании';
-                openCardBtn.disabled = true;
-                openCardBtn.innerHTML = '<i class="fas fa-tools"></i> Технический перерыв';
-                return;
-            }
-            
-            if (appState.isAdmin) {
-                cooldownTimer.textContent = 'NO LIMIT ❤️';
-                cooldownTimer.style.color = '#dc2626';
-                cooldownText.textContent = 'Админ режим - без ограничений';
-                openCardBtn.disabled = false;
-                openCardBtn.innerHTML = '<i class="fas fa-gift"></i> Открыть карту';
-                return;
-            }
-            
-            const now = Math.floor(Date.now() / 1000);
-            let cooldown;
-            
-            if (appState.isPremium) {
-                cooldown = CONFIG.COOLDOWN_PREMIUM;
-                cooldownText.textContent = 'Premium: кулдаун 5 минут';
-            } else if (appState.isVIP) {
-                cooldown = CONFIG.COOLDOWN_VIP;
-                cooldownText.textContent = 'VIP: кулдаун 20 минут';
-            } else {
-                cooldown = CONFIG.COOLDOWN_NORMAL;
-                cooldownText.textContent = 'Обычный: кулдаун 40 минут';
-            }
-            
-            const timeLeft = Math.max(0, appState.lastCardTime + cooldown - now);
-            
-            if (timeLeft === 0) {
-                cooldownTimer.textContent = 'ГОТОВО!';
-                cooldownTimer.style.color = '#10b981';
-                openCardBtn.disabled = false;
-                openCardBtn.innerHTML = '<i class="fas fa-gift"></i> Открыть карту';
-            } else {
-                const minutes = Math.floor(timeLeft / 60);
-                const seconds = timeLeft % 60;
-                cooldownTimer.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-                cooldownTimer.style.color = timeLeft > 60 ? '#ef4444' : '#f59e0b';
-                openCardBtn.disabled = true;
-                openCardBtn.innerHTML = `<i class="fas fa-clock"></i> ${minutes}:${seconds.toString().padStart(2, '0')}`;
-            }
-        }
-
-        // Открытие случайной карты
-        async function openRandomCard() {
-            if (maintenanceMode && !appState.isAdmin) {
-                showNotification('Технический перерыв. Попробуйте позже.', 'error');
-                return;
-            }
-            
-            const now = Math.floor(Date.now() / 1000);
-            
-            if (!appState.isAdmin) {
-                // Проверка кулдауна для обычных пользователей
-                let cooldown;
-                
-                if (appState.isPremium) {
-                    cooldown = CONFIG.COOLDOWN_PREMIUM;
-                } else if (appState.isVIP) {
-                    cooldown = CONFIG.COOLDOWN_VIP;
-                } else {
-                    cooldown = CONFIG.COOLDOWN_NORMAL;
-                }
-                
-                if (now - appState.lastCardTime < cooldown) {
-                    showNotification('Подождите перед открытием следующей карты!', 'error');
-                    return;
-                }
-            }
-            
-            appState.lastCardTime = now;
-            
-            // Получаем случайную карту
-            const card = getRandomCard();
-            
-            // Добавляем карту в коллекцию
-            const cardCopy = { ...card, obtained: new Date().toISOString() };
-            appState.cards.push(cardCopy);
-            
-            // Добавляем награды с учетом бонусов
-            let coins = card.coins;
-            let exp = card.exp;
-            
-            if (appState.isPremium) {
-                coins = Math.floor(coins * 1.5);
-                exp = Math.floor(exp * 1.5);
-            } else if (appState.isVIP) {
-                coins = Math.floor(coins * 1.25);
-                exp = Math.floor(exp * 1.25);
-            }
-            
-            appState.coins += coins;
-            appState.exp += exp;
-            
-            // Проверяем повышение уровня
-            const leveledUp = checkLevelUp();
-            
-            // Сохраняем изменения
-            saveProfile();
-            
-            // Всегда показываем анимацию
-            showCardRevealAnimation(card, coins, exp, leveledUp);
-            
-            // Обновляем UI
-            updateUI();
-            updateInventory();
-            updateProfile();
-            
-            // Звуковое уведомление
-            if (telegram && telegram.HapticFeedback) {
-                telegram.HapticFeedback.impactOccurred('medium');
-            }
-        }
-
-        // Получение случайной карты
-        function getRandomCard() {
-            // Создаем взвешенный список
-            let weightedList = [];
-            
-            Object.values(CONFIG.CARDS).forEach(card => {
-                const openedCount = appState.cards.filter(c => c.id === card.id).length;
-                const chanceMultiplier = openedCount > 0 ? 0.5 : 1;
-                const weight = Math.floor(card.chance * chanceMultiplier);
-                
-                for (let i = 0; i < weight; i++) {
-                    weightedList.push(card);
-                }
-            });
-            
-            // Выбираем случайную карту
-            const randomIndex = Math.floor(Math.random() * weightedList.length);
-            return weightedList[randomIndex] || CONFIG.CARDS[1];
-        }
-
-        // Проверка повышения уровня
-        function checkLevelUp() {
-            let leveledUp = false;
-            
-            while (appState.exp >= appState.expToNextLevel) {
-                appState.level++;
-                appState.exp -= appState.expToNextLevel;
-                appState.expToNextLevel = Math.floor(appState.expToNextLevel * 1.5);
-                leveledUp = true;
-                
-                // Обновляем титул
-                const newTitle = getLevelTitle(appState.level);
-                if (newTitle && !appState.ownedItems.titles.includes(newTitle)) {
-                    appState.ownedItems.titles.push(newTitle);
-                    if (!appState.equippedTitle || appState.equippedTitle === 'Новичок') {
-                        appState.equippedTitle = newTitle;
-                    }
-                }
-                
-                // Специальная награда за уровень
-                if (appState.level % 5 === 0) {
-                    const bonusCoins = appState.level * 100;
-                    appState.coins += bonusCoins;
-                    showNotification(`🎉 Уровень ${appState.level}! +${bonusCoins} монет!`, 'success');
-                }
-            }
-            
-            return leveledUp;
-        }
-
-        // Получение титула по уровню
-        function getLevelTitle(level) {
-            let title = "Новичок";
-            
-            for (const [lvl, ttl] of Object.entries(CONFIG.LEVEL_TITLES)) {
-                if (level >= parseInt(lvl)) {
-                    title = ttl;
-                }
-            }
-            
-            return title;
-        }
-
-        // Показ анимации получения карты
-        function showCardRevealAnimation(card, coins, exp, leveledUp) {
-            // Всегда сбрасываем анимацию
-            revealCard.classList.remove('flipped');
-            revealCardImage.style.backgroundImage = `url('${card.image_path}')`;
-            revealCardName.textContent = card.name;
-            revealCardRarity.textContent = card.rarityName;
-            revealCardRarity.className = 'reveal-card-rarity';
-            revealCardRarity.classList.add(`rarity-${card.rarity}`);
-            
-            // Создаем отображение наград
-            revealRewards.innerHTML = `
-                <div class="reveal-reward">
-                    <div class="reveal-reward-icon"><i class="fas fa-coins"></i></div>
-                    <div class="reveal-reward-value">+${coins.toLocaleString()}</div>
-                    <div class="reveal-reward-label">Монеты</div>
-                </div>
-                <div class="reveal-reward">
-                    <div class="reveal-reward-icon"><i class="fas fa-star"></i></div>
-                    <div class="reveal-reward-value">+${exp.toLocaleString()}</div>
-                    <div class="reveal-reward-label">Опыт</div>
-                </div>
-                ${leveledUp ? `
-                <div class="reveal-reward">
-                    <div class="reveal-reward-icon"><i class="fas fa-level-up-alt"></i></div>
-                    <div class="reveal-reward-value">${appState.level}</div>
-                    <div class="reveal-reward-label">Уровень!</div>
-                </div>
-                ` : ''}
-            `;
-            
-            // Показываем модалку
-            cardRevealModal.classList.remove('hidden');
-            
-            // Запускаем анимацию переворота с задержкой
-            setTimeout(() => {
-                revealCard.classList.add('flipped');
-                
-                // Создаем конфетти для редких карт
-                if (card.rarity === 'legendary' || card.rarity === 'mythic' || card.rarity === 'secret') {
-                    createConfetti();
-                }
-                
-                // Автоматическое скрытие
-                setTimeout(() => {
-                    cardRevealModal.classList.add('hidden');
-                    
-                    // Показываем уведомление о новой карте
-                    if (card.rarity === 'secret') {
-                        showNotification('🎉 НЕВЕРОЯТНО! Вы нашли СЕКРЕТНУЮ карту! 🎉', 'success');
-                    } else if (card.rarity === 'mythic') {
-                        showNotification('🔥 Вы получили МИФИЧЕСКУЮ карту!', 'success');
-                    } else if (card.rarity === 'legendary') {
-                        showNotification('⭐ Вы получили ЛЕГЕНДАРНУЮ карту!', 'success');
-                    } else {
-                        showNotification(`Вы получили карту: ${card.name}`, 'success');
-                    }
-                }, 4000);
-            }, 500); // Задержка перед переворотом
-        }
-
-        // Создание конфетти
-        function createConfetti() {
-            const colors = ['#8B5CF6', '#A78BFA', '#3B82F6', '#10B981', '#F59E0B', '#EF4444'];
-            
-            for (let i = 0; i < 30; i++) {
-                const confetti = document.createElement('div');
-                confetti.style.position = 'fixed';
-                confetti.style.width = '10px';
-                confetti.style.height = '10px';
-                confetti.style.left = `${Math.random() * 100}%`;
-                confetti.style.top = '-20px';
-                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                confetti.style.borderRadius = '50%';
-                confetti.style.zIndex = '2001';
-                confetti.style.animation = `confettiFall ${Math.random() * 2 + 1}s linear forwards`;
-                confetti.style.animationDelay = `${Math.random() * 0.5}s`;
-                
-                document.body.appendChild(confetti);
-                
-                setTimeout(() => {
-                    confetti.remove();
-                }, 2000);
-            }
-        }
-
-        // Обновление инвентаря карт
-        function updateInventory(filter = 'all') {
-            if (!cardsGrid) return;
-            
-            // Счетчики
-            const total = appState.cards.length;
-            const unique = [...new Set(appState.cards.map(c => c.id))].length;
-            totalCards.textContent = `${total} карт (${unique} уникальных)`;
-            
-            // Фильтрация карт
-            let filteredCards = [...appState.cards];
-            
-            if (filter !== 'all') {
-                if (filter === 'favorite') {
-                    filteredCards = appState.cards.filter(card => 
-                        appState.favoriteCard && card.id === appState.favoriteCard.id
-                    );
-                } else {
-                    filteredCards = appState.cards.filter(card => card.rarity === filter);
-                }
-            }
-            
-            // Группировка по ID и подсчет количества
-            const cardCounts = {};
-            filteredCards.forEach(card => {
-                if (!cardCounts[card.id]) {
-                    cardCounts[card.id] = {
-                        card: card,
-                        count: 0
-                    };
-                }
-                cardCounts[card.id].count++;
-            });
-            
-            const cardGroups = Object.values(cardCounts);
-            
-            // Очистка и рендеринг
-            cardsGrid.innerHTML = '';
-            
-            if (cardGroups.length === 0) {
-                cardsGrid.innerHTML = `
-                    <div style="grid-column: 1 / -1; text-align: center; padding: 40px 20px; color: var(--text-secondary);">
-                        <i class="fas fa-box-open" style="font-size: 3rem; margin-bottom: 15px;"></i>
-                        <h3>${filter === 'favorite' ? 'Нет избранных карт' : 'Карточки не найдены'}</h3>
-                        <p>${filter === 'all' ? 'Откройте первую карту!' : 'Нет карт такой редкости'}</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            cardGroups.forEach(({ card, count }) => {
-                const isFavorite = appState.favoriteCard && appState.favoriteCard.id === card.id;
-                
-                const cardElement = document.createElement('div');
-                cardElement.className = `card-item rarity-${card.rarity}`;
-                if (isFavorite) cardElement.classList.add('favorite');
-                
-                cardElement.innerHTML = `
-                    ${count > 1 ? `<div class="card-count">×${count}</div>` : ''}
-                    <button class="favorite-btn ${isFavorite ? 'active' : ''}" data-id="${card.id}">
-                        <i class="fas fa-heart"></i>
-                    </button>
-                    <div class="card-image" style="background-image: url('${card.image_path}')"></div>
-                    <div class="card-info">
-                        <div class="card-name">${card.name}</div>
-                        <div class="card-rarity">${card.rarityName}</div>
-                    </div>
-                `;
-                
-                // Обработчик клика на карточку
-                cardElement.addEventListener('click', (e) => {
-                    if (!e.target.closest('.favorite-btn')) {
-                        showCardDetails(card);
-                    }
-                });
-                
-                // Обработчик для кнопки избранного
-                const favoriteBtn = cardElement.querySelector('.favorite-btn');
-                favoriteBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    toggleFavoriteCard(card);
-                });
-                
-                cardsGrid.appendChild(cardElement);
-            });
-        }
-
-        // Показ деталей карты
-        function showCardDetails(card) {
-            showNotification(`${card.name} - ${card.rarityName}\n${card.description}`);
-        }
-
-        // Переключение избранной карты
-        function toggleFavoriteCard(card) {
-            if (appState.favoriteCard && appState.favoriteCard.id === card.id) {
-                appState.favoriteCard = null;
-                showNotification('Карта удалена из избранного', 'success');
-            } else {
-                appState.favoriteCard = card;
-                showNotification('Карта добавлена в избранное', 'success');
-            }
-            
-            saveProfile();
-            updateInventory();
-            updateProfile();
-        }
-
-        // Показ селектора избранной карты
-        function showFavoriteCardSelector() {
-            const cardList = document.createElement('div');
-            cardList.style.position = 'fixed';
-            cardList.style.top = '0';
-            cardList.style.left = '0';
-            cardList.style.width = '100%';
-            cardList.style.height = '100%';
-            cardList.style.background = 'rgba(0,0,0,0.95)';
-            cardList.style.zIndex = '2000';
-            cardList.style.padding = '20px';
-            cardList.style.overflowY = 'auto';
-            cardList.style.backdropFilter = 'blur(10px)';
-            
-            // Уникальные карты
-            const uniqueCards = [];
-            const seenIds = new Set();
-            
-            appState.cards.forEach(card => {
-                if (!seenIds.has(card.id)) {
-                    seenIds.add(card.id);
-                    uniqueCards.push(card);
-                }
-            });
-            
-            cardList.innerHTML = `
-                <div style="color: white; text-align: center; margin-bottom: 20px;">
-                    <h2 style="font-size: 1.5rem; margin-bottom: 10px;">Выберите любимую карту</h2>
-                    <p style="color: #a0aec0;">${uniqueCards.length} уникальных карт доступно</p>
-                </div>
-                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
-                    ${uniqueCards.map(card => {
-                        const isFavorite = appState.favoriteCard && appState.favoriteCard.id === card.id;
-                        return `
-                            <div class="card-item rarity-${card.rarity}" 
-                                 style="cursor: pointer; ${isFavorite ? 'border-color: #f59e0b;' : ''}"
-                                 data-id="${card.id}">
-                                <div class="card-image" style="background-image: url('${card.image_path}'); height: 120px;"></div>
-                                <div class="card-info">
-                                    <div class="card-name">${card.name}</div>
-                                    <div class="card-rarity">${card.rarityName}</div>
-                                    ${isFavorite ? '<div style="color: #f59e0b; font-size: 0.8rem; margin-top: 5px;">★ Избранная</div>' : ''}
-                                </div>
-                            </div>
-                        `;
-                    }).join('')}
-                </div>
-                <button style="width: 100%; padding: 15px; margin-top: 20px; background: #ef4444; color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer;"
-                        id="closeCardSelector">
-                    Закрыть
-                </button>
-            `;
-            
-            document.body.appendChild(cardList);
-            
-            // Обработчики выбора карт
-            cardList.querySelectorAll('.card-item').forEach(item => {
-                item.addEventListener('click', () => {
-                    const cardId = parseInt(item.dataset.id);
-                    const selectedCard = uniqueCards.find(c => c.id === cardId);
-                    
-                    if (selectedCard) {
-                        toggleFavoriteCard(selectedCard);
-                        document.body.removeChild(cardList);
-                    }
-                });
-            });
-            
-            // Кнопка закрытия
-            document.getElementById('closeCardSelector').addEventListener('click', () => {
-                document.body.removeChild(cardList);
-            });
-        }
-
-        // Обновление инвентаря кастомизации
-        function updateCustomization(tab = 'suffixes') {
-            // Обновляем счетчик
-            const totalItems = appState.ownedItems.suffixes.length + 
-                             appState.ownedItems.frames.length + 
-                             appState.ownedItems.titles.length;
-            totalCustomization.textContent = `${totalItems} предметов`;
-            
-            // Очищаем вкладки
-            const containers = {
-                suffixes: suffixesTab,
-                frames: framesTab,
-                titles: titlesTab
-            };
-            
-            const container = containers[tab];
-            if (!container) return;
-            
-            container.innerHTML = '';
-            
-            let items = [];
-            switch(tab) {
-                case 'suffixes':
-                    items = CONFIG.SHOP_ITEMS.personalization.filter(item => item.type === 'suffix');
-                    break;
-                case 'frames':
-                    items = CONFIG.SHOP_ITEMS.personalization.filter(item => item.type === 'frame');
-                    break;
-                case 'titles':
-                    // Титулы из достижений
-                    const levelTitles = Object.values(CONFIG.LEVEL_TITLES);
-                    items = levelTitles.map((title, index) => ({
-                        id: `title_${index}`,
-                        name: title,
-                        description: `Достигните уровня ${Object.keys(CONFIG.LEVEL_TITLES)[index] || '1'}`,
-                        icon: 'fa-crown',
-                        type: 'title',
-                        data: { text: title }
-                    }));
-                    break;
-            }
-            
-            if (items.length === 0) {
-                container.innerHTML = `
-                    <div style="grid-column: 1 / -1; text-align: center; padding: 40px 20px; color: var(--text-secondary);">
-                        <i class="fas fa-tshirt" style="font-size: 3rem; margin-bottom: 15px;"></i>
-                        <h3>Предметы не найдены</h3>
-                        <p>Купите предметы в магазине</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            items.forEach(item => {
-                let owned = false;
-                let equipped = false;
-                
-                switch(item.type) {
-                    case 'suffix':
-                        owned = appState.ownedItems.suffixes.includes(item.id);
-                        equipped = appState.equippedSuffix && appState.equippedSuffix.id === item.id;
-                        break;
-                    case 'frame':
-                        owned = appState.ownedItems.frames.includes(item.id);
-                        equipped = appState.equippedFrame && appState.equippedFrame.id === item.id;
-                        break;
-                    case 'title':
-                        owned = appState.ownedItems.titles.includes(item.name);
-                        equipped = appState.equippedTitle === item.name;
-                        break;
-                }
-                
-                const itemElement = document.createElement('div');
-                itemElement.className = 'customization-item';
-                itemElement.dataset.id = item.id;
-                
-                itemElement.innerHTML = `
-                    <div class="customization-item-icon">
-                        <i class="fas ${item.icon}"></i>
-                    </div>
-                    <div class="customization-item-name">${item.name}</div>
-                    <div class="customization-item-desc">${item.description}</div>
-                    <button class="customization-btn ${equipped ? 'equipped' : ''} ${!owned ? 'disabled' : ''}"
-                            ${!owned ? 'disabled' : ''}>
-                        ${owned ? (equipped ? '✓ Надето' : 'Надеть') : 'Не куплено'}
-                    </button>
-                `;
-                
-                // Обработчик кнопки
-                const btn = itemElement.querySelector('.customization-btn');
-                if (owned && !equipped) {
-                    btn.addEventListener('click', () => {
-                        equipCustomizationItem(item);
-                    });
-                }
-                
-                container.appendChild(itemElement);
-            });
-        }
-
-        // Надевание предмета кастомизации
-        function equipCustomizationItem(item) {
-            switch(item.type) {
-                case 'suffix':
-                    appState.equippedSuffix = item;
-                    showNotification(`Суффикс "${item.name}" надет`, 'success');
-                    break;
-                case 'frame':
-                    appState.equippedFrame = item;
-                    showNotification(`Рамка "${item.name}" надета`, 'success');
-                    break;
-                case 'title':
-                    appState.equippedTitle = item.name;
-                    showNotification(`Титул "${item.name}" активирован`, 'success');
-                    break;
-            }
-            
-            saveProfile();
-            updateCustomization();
-            updateProfile();
-        }
+        // Остальной код остается практически таким же, но с обновленными функциями для работы с новой структурой базы данных...
 
         // Обновление профиля
         function updateProfile() {
@@ -4454,7 +3544,6 @@
             const shopContents = {
                 packs: document.getElementById('packsTab'),
                 personalization: document.getElementById('personalizationTab'),
-                premium: document.getElementById('premiumTab'),
                 vip: document.getElementById('vipTab')
             };
             
@@ -4523,23 +3612,6 @@
             }).join('');
         }
 
-        function checkIfOwned(item) {
-            switch(item.type) {
-                case 'suffix':
-                    return appState.ownedItems.suffixes.includes(item.id);
-                case 'frame':
-                    return appState.ownedItems.frames.includes(item.id);
-                case 'title':
-                    return appState.ownedItems.titles.includes(item.name);
-                case 'premium':
-                    return appState.isPremium;
-                case 'vip':
-                    return appState.isVIP;
-                default:
-                    return false;
-            }
-        }
-
         // Покупка предмета в магазине
         function buyItem(itemId, category) {
             const item = CONFIG.SHOP_ITEMS[category].find(i => i.id === itemId);
@@ -4601,188 +3673,113 @@
             showNotification(`"${item.name}" куплено!`, 'success');
         }
 
-        function openShopPack(packItem) {
-            const cardsCount = packItem.data.cards;
-            const minRarity = packItem.data.minRarity;
+        // Обновление инвентаря кастомизации
+        function updateCustomization(tab = 'suffixes') {
+            // Обновляем счетчик
+            const totalItems = appState.ownedItems.suffixes.length + 
+                             appState.ownedItems.frames.length + 
+                             appState.ownedItems.titles.length;
+            totalCustomization.textContent = `${totalItems} предметов`;
             
-            const rarityOrder = { 'common': 1, 'rare': 2, 'epic': 3, 'legendary': 4, 'mythic': 5, 'secret': 6 };
-            const minRarityValue = rarityOrder[minRarity];
+            // Очищаем вкладки
+            const containers = {
+                suffixes: suffixesTab,
+                frames: framesTab,
+                titles: titlesTab
+            };
             
-            const availableCards = Object.values(CONFIG.CARDS).filter(card => 
-                rarityOrder[card.rarity] >= minRarityValue
-            );
+            const container = containers[tab];
+            if (!container) return;
             
-            // Открываем карты
-            for (let i = 0; i < cardsCount; i++) {
-                const randomIndex = Math.floor(Math.random() * availableCards.length);
-                const card = availableCards[randomIndex];
-                
-                const cardCopy = { ...card, obtained: new Date().toISOString() };
-                appState.cards.push(cardCopy);
-                
-                // Добавляем награды
-                let coins = card.coins;
-                let exp = card.exp;
-                
-                if (appState.isPremium) {
-                    coins = Math.floor(coins * 1.5);
-                    exp = Math.floor(exp * 1.5);
-                } else if (appState.isVIP) {
-                    coins = Math.floor(coins * 1.25);
-                    exp = Math.floor(exp * 1.25);
-                }
-                
-                appState.coins += coins;
-                appState.exp += exp;
+            container.innerHTML = '';
+            
+            let items = [];
+            switch(tab) {
+                case 'suffixes':
+                    items = CONFIG.SHOP_ITEMS.personalization.filter(item => item.type === 'suffix');
+                    break;
+                case 'frames':
+                    items = CONFIG.SHOP_ITEMS.personalization.filter(item => item.type === 'frame');
+                    break;
+                case 'titles':
+                    // Титулы из достижений
+                    const levelTitles = Object.values(CONFIG.LEVEL_TITLES);
+                    items = levelTitles.map((title, index) => ({
+                        id: `title_${index}`,
+                        name: title,
+                        description: `Достигните уровня ${Object.keys(CONFIG.LEVEL_TITLES)[index] || '1'}`,
+                        icon: 'fa-crown',
+                        type: 'title',
+                        data: { text: title }
+                    }));
+                    break;
             }
             
-            checkLevelUp();
-            saveProfile();
-            
-            showNotification(`Набор "${packItem.name}" открыт! Получено ${cardsCount} карт`, 'success');
-            
-            if (telegram && telegram.HapticFeedback) {
-                telegram.HapticFeedback.impactOccurred('heavy');
-            }
-        }
-
-        // Процесс доната PepeCoins
-        async function processCoinsDonation() {
-            const selectedOption = donateCoinsModal.querySelector('.donate-option.selected');
-            if (!selectedOption) return;
-            
-            const coins = parseInt(donateCoinsAmount.value) || 100;
-            const method = selectedOption.dataset.method;
-            const stars = Math.ceil(coins * 0.03);
-            
-            if (coins < 100) {
-                showNotification('Минимальная покупка: 100 PepeCoins', 'error');
+            if (items.length === 0) {
+                container.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 40px 20px; color: var(--text-secondary);">
+                        <i class="fas fa-tshirt" style="font-size: 3rem; margin-bottom: 15px;"></i>
+                        <h3>Предметы не найдены</h3>
+                        <p>Купите предметы в магазине</p>
+                    </div>
+                `;
                 return;
             }
             
-            if (method === 'stars') {
-                // Покупка через звезды Telegram
-                if (telegram && telegram.showPopup) {
-                    telegram.showPopup({
-                        title: 'Покупка PepeCoins',
-                        message: `Вы хотите купить ${coins} PepeCoins за ⭐ ${stars}?`,
-                        buttons: [
-                            { type: 'ok', text: 'Купить' },
-                            { type: 'cancel', text: 'Отмена' }
-                        ]
-                    }, async (buttonId) => {
-                        if (buttonId === 'ok') {
-                            try {
-                                // Интеграция с Telegram Stars
-                                const result = await purchaseWithStars('pepecoins', stars, { coins });
-                                
-                                if (result.success) {
-                                    appState.coins += coins;
-                                    saveProfile();
-                                    updateUI();
-                                    updateProfile();
-                                    showNotification(`Вы успешно купили ${coins} PepeCoins!`, 'success');
-                                    donateCoinsModal.classList.add('hidden');
-                                } else {
-                                    showNotification('Ошибка оплаты. Попробуйте снова.', 'error');
-                                }
-                            } catch (error) {
-                                console.error('Ошибка оплаты:', error);
-                                showNotification('Ошибка оплаты. Попробуйте снова.', 'error');
-                            }
-                        }
-                    });
+            items.forEach(item => {
+                let owned = false;
+                let equipped = false;
+                
+                switch(item.type) {
+                    case 'suffix':
+                        owned = appState.ownedItems.suffixes.includes(item.id);
+                        equipped = appState.equippedSuffix && appState.equippedSuffix.id === item.id;
+                        break;
+                    case 'frame':
+                        owned = appState.ownedItems.frames.includes(item.id);
+                        equipped = appState.equippedFrame && appState.equippedFrame.id === item.id;
+                        break;
+                    case 'title':
+                        owned = appState.ownedItems.titles.includes(item.name);
+                        equipped = appState.equippedTitle === item.name;
+                        break;
                 }
-            } else if (method === 'rubles') {
-                // Покупка через рублями
-                telegram.showPopup({
-                    title: 'Покупка через рубли',
-                    message: `Напишите @DefoltPlayer для покупки ${coins} PepeCoins за ${Math.ceil(coins * 0.15)} ₽`,
-                    buttons: [
-                        { type: 'default', text: 'Открыть диалог' },
-                        { type: 'cancel', text: 'Отмена' }
-                    ]
-                }, (buttonId) => {
-                    if (buttonId === 'default') {
-                        window.open('https://t.me/DefoltPlayer', '_blank');
-                        showNotification('Напишите @DefoltPlayer для покупки PepeCoins');
+                
+                const itemElement = document.createElement('div');
+                itemElement.className = 'customization-item';
+                itemElement.dataset.id = item.id;
+                
+                let buttonText = 'Не куплено';
+                let buttonClass = 'disabled';
+                let clickHandler = null;
+                
+                if (owned) {
+                    buttonText = equipped ? '✓ Надето' : 'Надеть';
+                    buttonClass = equipped ? 'equipped' : '';
+                    if (!equipped) {
+                        clickHandler = () => equipCustomizationItem(item);
                     }
-                });
-                donateCoinsModal.classList.add('hidden');
-            }
-        }
-
-        // Процесс доната PepePremium
-        async function processPremiumDonation() {
-            const selectedOption = donatePremiumModal.querySelector('.donate-option.selected');
-            if (!selectedOption) return;
-            
-            const method = selectedOption.dataset.method;
-            
-            if (method === 'stars') {
-                // Покупка через звезды Telegram
-                if (telegram && telegram.showPopup) {
-                    telegram.showPopup({
-                        title: 'Покупка PepePremium',
-                        message: 'Вы хотите купить PepePremium на 30 дней за ⭐ 200?',
-                        buttons: [
-                            { type: 'ok', text: 'Купить' },
-                            { type: 'cancel', text: 'Отмена' }
-                        ]
-                    }, async (buttonId) => {
-                        if (buttonId === 'ok') {
-                            try {
-                                // Интеграция с Telegram Stars
-                                const result = await purchaseWithStars('premium', 200, { days: 30 });
-                                
-                                if (result.success) {
-                                    const until = new Date();
-                                    until.setDate(until.getDate() + 30);
-                                    appState.isPremium = true;
-                                    appState.premiumUntil = until.toISOString();
-                                    saveProfile();
-                                    updateUI();
-                                    updateProfile();
-                                    showNotification('Вы успешно приобрели PepePremium на 30 дней! 👑', 'success');
-                                    donatePremiumModal.classList.add('hidden');
-                                } else {
-                                    showNotification('Ошибка оплаты. Попробуйте снова.', 'error');
-                                }
-                            } catch (error) {
-                                console.error('Ошибка оплаты:', error);
-                                showNotification('Ошибка оплаты. Попробуйте снова.', 'error');
-                            }
-                        }
-                    });
                 }
-            } else if (method === 'rubles') {
-                // Покупка через рублями
-                telegram.showPopup({
-                    title: 'Покупка через рубли',
-                    message: 'Напишите @DefoltPlayer для покупки PepePremium за 100 ₽',
-                    buttons: [
-                        { type: 'default', text: 'Открыть диалог' },
-                        { type: 'cancel', text: 'Отмена' }
-                    ]
-                }, (buttonId) => {
-                    if (buttonId === 'default') {
-                        window.open('https://t.me/DefoltPlayer', '_blank');
-                        showNotification('Напишите @DefoltPlayer для покупки PepePremium');
-                    }
-                });
-                donatePremiumModal.classList.add('hidden');
-            }
-        }
-
-        // Функция покупки через Telegram Stars
-        async function purchaseWithStars(product, stars, data) {
-            // В реальном приложении здесь должна быть интеграция с Telegram Stars API
-            // Для демонстрации симулируем успешную покупку
-            
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    resolve({ success: true, transactionId: 'simulated_' + Date.now() });
-                }, 1000);
+                
+                itemElement.innerHTML = `
+                    <div class="customization-item-icon">
+                        <i class="fas ${item.icon}"></i>
+                    </div>
+                    <div class="customization-item-name">${item.name}</div>
+                    <div class="customization-item-desc">${item.description}</div>
+                    <button class="customization-btn ${buttonClass}" 
+                            ${!owned ? 'disabled' : ''}>
+                        ${buttonText}
+                    </button>
+                `;
+                
+                // Обработчик кнопки
+                const btn = itemElement.querySelector('.customization-btn');
+                if (clickHandler) {
+                    btn.addEventListener('click', clickHandler);
+                }
+                
+                container.appendChild(itemElement);
             });
         }
 
@@ -4802,6 +3799,10 @@
                         return b.cards.length - a.cards.length;
                     case 'coins':
                         return b.coins - a.coins;
+                    case 'unique':
+                        const uniqueA = [...new Set(a.cards.map(c => c.id))].length;
+                        const uniqueB = [...new Set(b.cards.map(c => c.id))].length;
+                        return uniqueB - uniqueA;
                     default:
                         return b.level - a.level;
                 }
@@ -4830,7 +3831,7 @@
                                 </div>
                                 <div class="leaderboard-stat">
                                     <i class="fas fa-layer-group"></i>
-                                    <span class="leaderboard-value">${uniqueCards}</span>
+                                    <span class="leaderboard-value">${player.cards.length}</span>
                                     <span>карт</span>
                                 </div>
                                 <div class="leaderboard-stat">
@@ -4862,88 +3863,109 @@
             });
         }
 
-        function showPlayerMiniProfile(playerId) {
-            const player = findUserByPlayerId(playerId);
+        // Обработка доната через Telegram Stars
+        async function processCoinsDonation() {
+            const selectedOption = donateCoinsModal.querySelector('.donate-option.selected');
+            if (!selectedOption) return;
             
-            if (!player) {
-                showNotification('Профиль игрока не найден', 'error');
+            const coins = parseInt(donateCoinsAmount.value) || 100;
+            const method = selectedOption.dataset.method;
+            const stars = Math.ceil(coins * 0.03);
+            
+            if (coins < 100) {
+                showNotification('Минимальная покупка: 100 PepeCoins', 'error');
                 return;
             }
             
-            document.getElementById('miniProfileAvatar').style.backgroundImage = 
-                player.user.photo_url ? `url('${player.user.photo_url}')` : '';
-            
-            document.getElementById('miniProfileName').textContent = player.user.first_name;
-            
-            const suffixElement = document.getElementById('miniProfileSuffix');
-            if (player.equippedSuffix) {
-                suffixElement.textContent = player.equippedSuffix.data.text;
-                suffixElement.style.background = player.equippedSuffix.data.color;
-                suffixElement.classList.remove('hidden');
-                if (player.equippedSuffix.data.animated) {
-                    suffixElement.classList.add('animated');
+            if (method === 'stars') {
+                // Покупка через звезды Telegram
+                try {
+                    // Интеграция с Telegram Stars API
+                    const result = await telegram.sendData(JSON.stringify({
+                        action: 'buy_coins',
+                        coins: coins,
+                        stars: stars
+                    }));
+                    
+                    if (result) {
+                        appState.coins += coins;
+                        saveProfile();
+                        updateUI();
+                        updateProfile();
+                        showNotification(`Вы успешно купили ${coins} PepeCoins!`, 'success');
+                        donateCoinsModal.classList.add('hidden');
+                    } else {
+                        showNotification('Ошибка оплаты. Попробуйте снова.', 'error');
+                    }
+                } catch (error) {
+                    console.error('Ошибка оплаты:', error);
+                    showNotification('Ошибка оплаты. Попробуйте снова.', 'error');
                 }
-            } else {
-                suffixElement.classList.add('hidden');
+            } else if (method === 'rubles') {
+                telegram.showPopup({
+                    title: 'Покупка через рубли',
+                    message: `Напишите @DefoltPlayer для покупки ${coins} PepeCoins за ${Math.ceil(coins * 0.15)} ₽`,
+                    buttons: [
+                        { type: 'default', text: 'Открыть диалог' },
+                        { type: 'cancel', text: 'Отмена' }
+                    ]
+                }, (buttonId) => {
+                    if (buttonId === 'default') {
+                        window.open('https://t.me/DefoltPlayer', '_blank');
+                        showNotification('Напишите @DefoltPlayer для покупки PepeCoins');
+                    }
+                });
+                donateCoinsModal.classList.add('hidden');
             }
-            
-            document.getElementById('miniProfileLevel').textContent = player.level;
-            document.getElementById('miniProfileCards').textContent = player.cards.length;
-            document.getElementById('miniProfileCoins').textContent = player.coins.toLocaleString();
-            document.getElementById('miniProfileUnique').textContent = 
-                [...new Set(player.cards.map(c => c.id))].length;
-            
-            const favoriteCardImage = document.getElementById('miniFavoriteCardImage');
-            const favoriteCardName = document.getElementById('miniFavoriteCardName');
-            const favoriteCardRarity = document.getElementById('miniFavoriteCardRarity');
-            
-            if (player.favoriteCard) {
-                favoriteCardImage.style.backgroundImage = `url('${player.favoriteCard.image_path}')`;
-                favoriteCardName.textContent = player.favoriteCard.name;
-                favoriteCardRarity.textContent = player.favoriteCard.rarityName;
-                favoriteCardRarity.className = 'favorite-card-display-rarity';
-                favoriteCardRarity.classList.add(`rarity-${player.favoriteCard.rarity}`);
-            } else {
-                favoriteCardImage.style.backgroundImage = '';
-                favoriteCardImage.innerHTML = '<i class="fas fa-heart" style="color: var(--text-secondary); font-size: 1.5rem;"></i>';
-                favoriteCardName.textContent = 'Не выбрана';
-                favoriteCardRarity.textContent = '—';
-                favoriteCardRarity.className = 'favorite-card-display-rarity';
-            }
-            
-            miniProfileModal.classList.remove('hidden');
         }
 
-        // Показ уведомления
-        function showNotification(message, type = 'info') {
-            // Удаляем старые уведомления
-            document.querySelectorAll('.notification').forEach(n => n.remove());
+        async function processPremiumDonation() {
+            const selectedOption = donatePremiumModal.querySelector('.donate-option.selected');
+            if (!selectedOption) return;
             
-            const notification = document.createElement('div');
-            notification.className = 'notification';
-            if (type === 'error') notification.classList.add('error');
-            if (type === 'success') notification.classList.add('success');
+            const method = selectedOption.dataset.method;
             
-            let icon = 'info-circle';
-            if (type === 'error') icon = 'exclamation-circle';
-            if (type === 'success') icon = 'check-circle';
-            
-            notification.innerHTML = `
-                <i class="fas fa-${icon}"></i>
-                <span>${message}</span>
-            `;
-            
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.style.opacity = '0';
-                notification.style.transform = 'translateX(-50%) translateY(-10px)';
-                setTimeout(() => {
-                    if (notification.parentNode) {
-                        notification.parentNode.removeChild(notification);
+            if (method === 'stars') {
+                // Покупка через звезды Telegram
+                try {
+                    const result = await telegram.sendData(JSON.stringify({
+                        action: 'buy_premium',
+                        stars: 200
+                    }));
+                    
+                    if (result) {
+                        const until = new Date();
+                        until.setDate(until.getDate() + 30);
+                        appState.isPremium = true;
+                        appState.premiumUntil = until.toISOString();
+                        saveProfile();
+                        updateUI();
+                        updateProfile();
+                        showNotification('Вы успешно приобрели PepePremium на 30 дней! 👑', 'success');
+                        donatePremiumModal.classList.add('hidden');
+                    } else {
+                        showNotification('Ошибка оплаты. Попробуйте снова.', 'error');
                     }
-                }, 300);
-            }, 3000);
+                } catch (error) {
+                    console.error('Ошибка оплаты:', error);
+                    showNotification('Ошибка оплаты. Попробуйте снова.', 'error');
+                }
+            } else if (method === 'rubles') {
+                telegram.showPopup({
+                    title: 'Покупка через рубли',
+                    message: 'Напишите @DefoltPlayer для покупки PepePremium за 100 ₽',
+                    buttons: [
+                        { type: 'default', text: 'Открыть диалог' },
+                        { type: 'cancel', text: 'Отмена' }
+                    ]
+                }, (buttonId) => {
+                    if (buttonId === 'default') {
+                        window.open('https://t.me/DefoltPlayer', '_blank');
+                        showNotification('Напишите @DefoltPlayer для покупки PepePremium');
+                    }
+                });
+                donatePremiumModal.classList.add('hidden');
+            }
         }
 
         // Админ функции
@@ -4957,6 +3979,17 @@
                 adminPlayerLevel.textContent = appState.adminSelectedPlayer.level;
                 adminPlayerCoins.textContent = appState.adminSelectedPlayer.coins.toLocaleString();
                 adminPlayerCards.textContent = appState.adminSelectedPlayer.cards.length;
+                adminPlayerUnique.textContent = [...new Set(appState.adminSelectedPlayer.cards.map(c => c.id))].length;
+                adminPlayerPremium.textContent = appState.adminSelectedPlayer.isPremium ? 'Да' : 'Нет';
+                adminPlayerVIP.textContent = appState.adminSelectedPlayer.isVIP ? 'Да' : 'Нет';
+                
+                const lastCardTime = appState.adminSelectedPlayer.lastCardTime;
+                if (lastCardTime) {
+                    const date = new Date(lastCardTime * 1000);
+                    adminPlayerLastCard.textContent = date.toLocaleString();
+                } else {
+                    adminPlayerLastCard.textContent = 'Никогда';
+                }
             } else {
                 adminCurrentPlayer.textContent = 'Не выбран';
                 adminPlayerInfo.classList.add('hidden');
@@ -4992,166 +4025,6 @@
             }
         }
 
-        function addCoinsToPlayer() {
-            if (!appState.adminSelectedPlayer) {
-                showNotification('Сначала выберите игрока', 'error');
-                return;
-            }
-            
-            const amount = parseInt(adminCoinsAmount.value);
-            if (!amount || amount <= 0) {
-                showNotification('Введите корректную сумму', 'error');
-                return;
-            }
-            
-            // Обновляем данные выбранного игрока
-            appState.adminSelectedPlayer.coins += amount;
-            updateUserInDatabase(appState.adminSelectedPlayer.user.id.toString(), {
-                coins: appState.adminSelectedPlayer.coins
-            });
-            
-            // Если это текущий игрок, обновляем состояние
-            if (appState.adminSelectedPlayer.user.id === appState.user.id) {
-                appState.coins += amount;
-                updateUI();
-                updateProfile();
-            }
-            
-            showNotification(`Выдано ${amount} монет игроку #${appState.adminSelectedPlayer.playerId}`, 'success');
-            updateAdminPanel();
-        }
-
-        function addPremiumToPlayer() {
-            if (!appState.adminSelectedPlayer) {
-                showNotification('Сначала выберите игрока', 'error');
-                return;
-            }
-            
-            const until = new Date();
-            until.setDate(until.getDate() + 30);
-            
-            appState.adminSelectedPlayer.isPremium = true;
-            appState.adminSelectedPlayer.premiumUntil = until.toISOString();
-            
-            updateUserInDatabase(appState.adminSelectedPlayer.user.id.toString(), {
-                isPremium: true,
-                premiumUntil: until.toISOString()
-            });
-            
-            if (appState.adminSelectedPlayer.user.id === appState.user.id) {
-                appState.isPremium = true;
-                appState.premiumUntil = until.toISOString();
-                updateUI();
-                updateProfile();
-            }
-            
-            showNotification(`PepePremium выдан игроку #${appState.adminSelectedPlayer.playerId} на 30 дней`, 'success');
-            updateAdminPanel();
-        }
-
-        function addVipToPlayer() {
-            if (!appState.adminSelectedPlayer) {
-                showNotification('Сначала выберите игрока', 'error');
-                return;
-            }
-            
-            const until = new Date();
-            until.setDate(until.getDate() + 7);
-            
-            appState.adminSelectedPlayer.isVIP = true;
-            appState.adminSelectedPlayer.vipUntil = until.toISOString();
-            
-            updateUserInDatabase(appState.adminSelectedPlayer.user.id.toString(), {
-                isVIP: true,
-                vipUntil: until.toISOString()
-            });
-            
-            if (appState.adminSelectedPlayer.user.id === appState.user.id) {
-                appState.isVIP = true;
-                appState.vipUntil = until.toISOString();
-                updateUI();
-                updateProfile();
-            }
-            
-            showNotification(`VIP статус выдан игроку #${appState.adminSelectedPlayer.playerId} на 7 дней`, 'success');
-            updateAdminPanel();
-        }
-
-        function banPlayer() {
-            if (!appState.adminSelectedPlayer) {
-                showNotification('Сначала выберите игрока', 'error');
-                return;
-            }
-            
-            telegram.showPopup({
-                title: 'Бан игрока',
-                message: `Забанить игрока #${appState.adminSelectedPlayer.playerId} (${appState.adminSelectedPlayer.user.first_name})?`,
-                buttons: [
-                    { type: 'destructive', text: 'Забанить' },
-                    { type: 'cancel', text: 'Отмена' }
-                ]
-            }, (buttonId) => {
-                if (buttonId === 'destructive') {
-                    showNotification('Игрок забанен', 'success');
-                }
-            });
-        }
-
-        function resetPlayer() {
-            if (!appState.adminSelectedPlayer) {
-                showNotification('Сначала выберите игрока', 'error');
-                return;
-            }
-            
-            telegram.showPopup({
-                title: 'Сброс профиля',
-                message: `ВСЕ данные игрока #${appState.adminSelectedPlayer.playerId} будут удалены! Вы уверены?`,
-                buttons: [
-                    { type: 'destructive', text: 'Сбросить' },
-                    { type: 'cancel', text: 'Отмена' }
-                ]
-            }, (buttonId) => {
-                if (buttonId === 'destructive') {
-                    const resetData = {
-                        coins: 100,
-                        exp: 0,
-                        level: 1,
-                        expToNextLevel: 100,
-                        cards: [],
-                        favoriteCard: null,
-                        equippedSuffix: null,
-                        equippedFrame: null,
-                        equippedTitle: 'Новичок',
-                        ownedItems: {
-                            suffixes: [],
-                            frames: [],
-                            titles: []
-                        },
-                        isVIP: false,
-                        vipUntil: null,
-                        isPremium: false,
-                        premiumUntil: null,
-                        lastCardTime: 0
-                    };
-                    
-                    Object.assign(appState.adminSelectedPlayer, resetData);
-                    updateUserInDatabase(appState.adminSelectedPlayer.user.id.toString(), resetData);
-                    
-                    if (appState.adminSelectedPlayer.user.id === appState.user.id) {
-                        Object.assign(appState, resetData);
-                        updateUI();
-                        updateInventory();
-                        updateProfile();
-                        updateCustomization();
-                    }
-                    
-                    updateAdminPanel();
-                    
-                    showNotification('Профиль сброшен', 'success');
-                }
-            });
-        }
-
         function toggleMaintenance() {
             maintenanceMode = !maintenanceMode;
             localStorage.setItem('pepecards_maintenance', maintenanceMode.toString());
@@ -5168,6 +4041,140 @@
                 showNotification('Технический перерыв выключен', 'success');
                 updateCooldown();
             }
+        }
+
+        // Обработка открытия карты с гарантированной анимацией
+        async function openRandomCard() {
+            if (maintenanceMode && !appState.isAdmin) {
+                showNotification('Технический перерыв. Попробуйте позже.', 'error');
+                return;
+            }
+            
+            const now = Math.floor(Date.now() / 1000);
+            
+            if (!appState.isAdmin) {
+                // Проверка кулдауна для обычных пользователей
+                let cooldown;
+                
+                if (appState.isPremium) {
+                    cooldown = CONFIG.COOLDOWN_PREMIUM;
+                } else if (appState.isVIP) {
+                    cooldown = CONFIG.COOLDOWN_VIP;
+                } else {
+                    cooldown = CONFIG.COOLDOWN_NORMAL;
+                }
+                
+                if (now - appState.lastCardTime < cooldown) {
+                    showNotification('Подождите перед открытием следующей карты!', 'error');
+                    return;
+                }
+            }
+            
+            appState.lastCardTime = now;
+            
+            // Получаем случайную карту
+            const card = getRandomCard();
+            
+            // Добавляем карту в коллекцию
+            const cardCopy = { ...card, obtained: new Date().toISOString() };
+            appState.cards.push(cardCopy);
+            
+            // Добавляем награды с учетом бонусов
+            let coins = card.coins;
+            let exp = card.exp;
+            
+            if (appState.isPremium) {
+                coins = Math.floor(coins * 1.5);
+                exp = Math.floor(exp * 1.5);
+            } else if (appState.isVIP) {
+                coins = Math.floor(coins * 1.25);
+                exp = Math.floor(exp * 1.25);
+            }
+            
+            appState.coins += coins;
+            appState.exp += exp;
+            
+            // Проверяем повышение уровня
+            const leveledUp = checkLevelUp();
+            
+            // Сохраняем изменения
+            saveProfile();
+            
+            // Всегда показываем анимацию с задержкой
+            setTimeout(() => {
+                showCardRevealAnimation(card, coins, exp, leveledUp);
+            }, 100);
+            
+            // Обновляем UI
+            updateUI();
+            updateInventory();
+            updateProfile();
+            
+            // Звуковое уведомление
+            if (telegram && telegram.HapticFeedback) {
+                telegram.HapticFeedback.impactOccurred('medium');
+            }
+        }
+
+        // Показ анимации получения карты
+        function showCardRevealAnimation(card, coins, exp, leveledUp) {
+            // Всегда сбрасываем анимацию
+            revealCard.classList.remove('flipped');
+            revealCardImage.style.backgroundImage = `url('${card.image_path}')`;
+            revealCardName.textContent = card.name;
+            revealCardRarity.textContent = card.rarityName;
+            revealCardRarity.className = 'reveal-card-rarity';
+            revealCardRarity.classList.add(`rarity-${card.rarity}`);
+            
+            // Создаем отображение наград
+            revealRewards.innerHTML = `
+                <div class="reveal-reward">
+                    <div class="reveal-reward-icon"><i class="fas fa-coins"></i></div>
+                    <div class="reveal-reward-value">+${coins.toLocaleString()}</div>
+                    <div class="reveal-reward-label">Монеты</div>
+                </div>
+                <div class="reveal-reward">
+                    <div class="reveal-reward-icon"><i class="fas fa-star"></i></div>
+                    <div class="reveal-reward-value">+${exp.toLocaleString()}</div>
+                    <div class="reveal-reward-label">Опыт</div>
+                </div>
+                ${leveledUp ? `
+                <div class="reveal-reward">
+                    <div class="reveal-reward-icon"><i class="fas fa-level-up-alt"></i></div>
+                    <div class="reveal-reward-value">${appState.level}</div>
+                    <div class="reveal-reward-label">Уровень!</div>
+                </div>
+                ` : ''}
+            `;
+            
+            // Показываем модалку
+            cardRevealModal.classList.remove('hidden');
+            
+            // Запускаем анимацию переворота с задержкой
+            setTimeout(() => {
+                revealCard.classList.add('flipped');
+                
+                // Создаем конфетти для редких карт
+                if (card.rarity === 'legendary' || card.rarity === 'mythic' || card.rarity === 'secret') {
+                    createConfetti();
+                }
+                
+                // Автоматическое скрытие
+                setTimeout(() => {
+                    cardRevealModal.classList.add('hidden');
+                    
+                    // Показываем уведомление о новой карте
+                    if (card.rarity === 'secret') {
+                        showNotification('🎉 НЕВЕРОЯТНО! Вы нашли СЕКРЕТНУЮ карту! 🎉', 'success');
+                    } else if (card.rarity === 'mythic') {
+                        showNotification('🔥 Вы получили МИФИЧЕСКУЮ карту!', 'success');
+                    } else if (card.rarity === 'legendary') {
+                        showNotification('⭐ Вы получили ЛЕГЕНДАРНУЮ карту!', 'success');
+                    } else {
+                        showNotification(`Вы получили карту: ${card.name}`, 'success');
+                    }
+                }, 4000);
+            }, 500); // Задержка перед переворотом
         }
 
         // Инициализация приложения при загрузке DOM
